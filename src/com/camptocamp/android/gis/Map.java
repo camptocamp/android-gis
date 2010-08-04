@@ -9,22 +9,19 @@ import android.widget.ZoomControls;
 
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.android.MapView;
-import com.nutiteq.cache.MemoryCache;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.controls.AndroidKeysHandler;
 import com.nutiteq.log.AndroidLogger;
 import com.nutiteq.log.Log;
-import com.nutiteq.maps.GeoMap;
 import com.nutiteq.ui.ThreadDrivenPanning;
 
 public class Map extends Activity {
 
+    private boolean onRetainCalled;
     private MapView mapView;
     private BasicMapComponent mapComponent;
-    private boolean onRetainCalled;
     private ZoomControls zoomControls;
 
-    /** Called when the activity is first created. */
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,26 +32,22 @@ public class Map extends Activity {
 
         final Object savedMapComponent = getLastNonConfigurationInstance();
         if (savedMapComponent == null) {
-            mapComponent = new BasicMapComponent("abcdtrial", "Nutiteq", "Android Mapper", 1, 1,
-                    new WgsPoint(0, 0), 0);
+            mapComponent = new BasicMapComponent("182be0c5cdcd5072bb1864cdee4d3d6e4c593f89365962.70956542",
+                    "Camptocamp SA", "c2c-android-gis", 1, 1, new WgsPoint(8.226667, 46.801111), 0);
 
-            GeoMap map = new Tilecache(getString(R.string.base_url), 256, 0, 11, ".jpeg",
-                    "Camptocamp SA");
+            mapComponent.setMap(new Tilecache(getString(R.string.base_url), ".jpeg", 256, 0, 11, "Camptocamp SA"));
 
-            mapComponent.setMap(map);
-
-            final MemoryCache memoryCache = new MemoryCache(1024 * 1024);
-            mapComponent.setNetworkCache(memoryCache);
+            // final MemoryCache memoryCache = new MemoryCache(1024 * 1024);
+            // mapComponent.setNetworkCache(memoryCache);
             mapComponent.setPanningStrategy(new ThreadDrivenPanning());
             mapComponent.setControlKeysHandler(new AndroidKeysHandler());
-
             mapComponent.startMapping();
             mapComponent.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
         } else {
             mapComponent = (BasicMapComponent) savedMapComponent;
         }
 
-        Log.setLogger(new AndroidLogger("NutiteqMapper"));
+        Log.setLogger(new AndroidLogger("GIS"));
         Log.enableAll();
 
         // Zoom
