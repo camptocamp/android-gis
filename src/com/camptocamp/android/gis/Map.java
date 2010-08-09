@@ -22,6 +22,13 @@ public class Map extends Activity {
     private BasicMapComponent mapComponent;
     private ZoomControls zoomControls;
 
+    private final String KEY = "182be0c5cdcd5072bb1864cdee4d3d6e4c593f89365962.70956542";
+    private final String VENDOR = "Camptocamp SA";
+    private final String APP = "c2c-android-gis";
+
+    private final double lat = 46.044127;
+    private final double lng = 8.730499;
+
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,14 +39,19 @@ public class Map extends Activity {
 
         final Object savedMapComponent = getLastNonConfigurationInstance();
         if (savedMapComponent == null) {
-            mapComponent = new BasicMapComponent("182be0c5cdcd5072bb1864cdee4d3d6e4c593f89365962.70956542",
-                    "Camptocamp SA", "c2c-android-gis", 1, 1, new WgsPoint(8.226667, 46.801111), 0);
 
-            mapComponent.setMap(new Tilecache(getString(R.string.base_url), ".jpeg", 256, 0, 11, "Camptocamp SA"));
+            mapComponent = new BasicMapComponent(KEY, VENDOR, APP, 1, 1, new WgsPoint(lng, lat), 14);
+            mapComponent.setMap(new Tilecache(getString(R.string.base_url), ".jpeg", 256, 14, 26,
+                    VENDOR, 14));
+
+            // mapComponent.setMap(OpenStreetMap.MAPNIK);
+            // mapComponent.setMap(new
+            // MyOpenstreetmap("http://tile.openstreetmap.org/", 256, 0, 17));
 
             // final MemoryCache memoryCache = new MemoryCache(1024 * 1024);
             // mapComponent.setNetworkCache(memoryCache);
             mapComponent.setPanningStrategy(new ThreadDrivenPanning());
+            // mapComponent.setPanningStrategy(new EventDrivenPanning());
             mapComponent.setControlKeysHandler(new AndroidKeysHandler());
             mapComponent.startMapping();
             mapComponent.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
@@ -47,7 +59,7 @@ public class Map extends Activity {
             mapComponent = (BasicMapComponent) savedMapComponent;
         }
 
-        Log.setLogger(new AndroidLogger("GIS"));
+        Log.setLogger(new AndroidLogger(APP));
         Log.enableAll();
 
         // Zoom
