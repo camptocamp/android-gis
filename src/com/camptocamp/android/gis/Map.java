@@ -19,15 +19,17 @@ public class Map extends Activity {
 
     private boolean onRetainCalled;
     private MapView mapView;
-    private BasicMapComponent mapComponent;
+    private SwissMapComponent mapComponent;
     private ZoomControls zoomControls;
 
+    public static final String D = "C2C:";
+    // private final static String TAG = "Map";
     private final String KEY = "182be0c5cdcd5072bb1864cdee4d3d6e4c593f89365962.70956542";
     private final String VENDOR = "Camptocamp SA";
     private final String APP = "c2c-android-gis";
 
-    private final double lat = 46.044127;
-    private final double lng = 8.730499;
+    private final double lat = 46.517815; // X: 152'210
+    private final double lng = 6.562805; // Y: 532'790
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -40,8 +42,8 @@ public class Map extends Activity {
         final Object savedMapComponent = getLastNonConfigurationInstance();
         if (savedMapComponent == null) {
 
-            mapComponent = new BasicMapComponent(KEY, VENDOR, APP, 1, 1, new WgsPoint(lng, lat), 14);
-            mapComponent.setMap(new Tilecache(getString(R.string.base_url), ".jpeg", 256, 14, 26,
+            mapComponent = new SwissMapComponent(KEY, VENDOR, APP, 1, 1, new WgsPoint(lng, lat), 14);
+            mapComponent.setMap(new Swisstopo(getString(R.string.base_url), ".jpeg", 256, 14, 26,
                     VENDOR, 14));
 
             // mapComponent.setMap(OpenStreetMap.MAPNIK);
@@ -56,7 +58,7 @@ public class Map extends Activity {
             mapComponent.startMapping();
             mapComponent.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
         } else {
-            mapComponent = (BasicMapComponent) savedMapComponent;
+            mapComponent = (SwissMapComponent) savedMapComponent;
         }
 
         Log.setLogger(new AndroidLogger(APP));

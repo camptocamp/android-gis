@@ -1,12 +1,10 @@
 package com.camptocamp.android.gis;
 
-import android.util.Log;
-
 import com.nutiteq.maps.UnstreamedMap;
 
 public class Tilecache extends CH1903 implements UnstreamedMap {
 
-    private static final String TAG = "Tilecache";
+    // private static final String TAG = Map.D + "Tilecache";
 
     private String baseUrl;
     private String format;
@@ -21,19 +19,10 @@ public class Tilecache extends CH1903 implements UnstreamedMap {
     }
 
     public String buildPath(int mapX, int mapY, int zoom) {
-
         int x = mapX / tileSize;
         int y = mapY / tileSize;
-        Log.v(TAG, "x=" + x + ", y=" + y + ", z=" + zoom);
-        
-        return String.format(baseUrl,
-                zoom,
-                (int) (x / 1000000),
-                (int) (x / 1000) % 1000,
-                (int) (x % 1000),
-                (int) (y / 1000000),
-                (int) (y / 1000) % 1000,
-                (int) (y % 1000),
+        return String.format(baseUrl, zoom, (int) (x / 1000000), (int) (x / 1000) % 1000,
+                (int) (x % 1000), (int) (y / 1000000), (int) (y / 1000) % 1000, (int) (y % 1000),
                 format);
     }
 }
