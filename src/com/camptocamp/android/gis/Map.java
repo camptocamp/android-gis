@@ -9,6 +9,7 @@ import android.widget.ZoomControls;
 
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.android.MapView;
+import com.nutiteq.cache.MemoryCache;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.controls.AndroidKeysHandler;
 import com.nutiteq.log.AndroidLogger;
@@ -46,12 +47,9 @@ public class Map extends Activity {
             mapComponent.setMap(new Tilecache(getString(R.string.base_url), ".jpeg", 256, 14, 26,
                     VENDOR, 14));
 
-            // mapComponent.setMap(OpenStreetMap.MAPNIK);
-            // mapComponent.setMap(new
-            // MyOpenstreetmap("http://tile.openstreetmap.org/", 256, 0, 17));
-
-            // final MemoryCache memoryCache = new MemoryCache(1024 * 1024);
-            // mapComponent.setNetworkCache(memoryCache);
+            final MemoryCache memoryCache = new MemoryCache(1024 * 1024);
+            mapComponent.setNetworkCache(memoryCache);
+            // mapComponent.setNetworkCache(new MemoryCache(0));
             mapComponent.setPanningStrategy(new ThreadDrivenPanning());
             // mapComponent.setPanningStrategy(new EventDrivenPanning());
             mapComponent.setControlKeysHandler(new AndroidKeysHandler());

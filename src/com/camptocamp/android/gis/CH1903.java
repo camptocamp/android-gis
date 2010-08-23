@@ -19,19 +19,19 @@ import com.nutiteq.ui.Copyright;
 
 public abstract class CH1903 extends BaseMap implements Projection {
 
-    private static final long FALSE_NORTHING = 1000L;
-    private static final long FALSE_EASTING = 1000L;
-    private final String TAG = Map.D + "CH1903";
-    private final double CH_MIN_X = 76443.1884;
-    private final double CH_MAX_X = 299941.7864;
-    private final double CH_MIN_Y = 485869.5728;
-    private final double CH_MAX_Y = 837076.5648;
-    private final double CH_X = CH_MAX_X - CH_MIN_X;
-    private final double CH_Y = CH_MAX_Y - CH_MIN_Y;
-    private double CH_PX_X;
-    private double CH_PX_Y;
+    private static final String TAG = Map.D + "CH1903";
+    private static final double CH_MIN_X = 76443.1884;
+    private static final double CH_MAX_X = 299941.7864;
+    private static final double CH_MIN_Y = 485869.5728;
+    private static final double CH_MAX_Y = 837076.5648;
+    private static final double CH_X = CH_MAX_X - CH_MIN_X;
+    private static final double CH_Y = CH_MAX_Y - CH_MIN_Y;
     private int zoom;
     private int tileSize;
+    protected double CH_PX_X;
+    protected double CH_PX_Y;
+    private int DECAY_X;
+    private int DECAY_Y;
 
     public CH1903(final Copyright copyright, final int tileSize, final int minZoom,
             final int maxZoom, final int initialZoom) {
@@ -51,10 +51,11 @@ public abstract class CH1903 extends BaseMap implements Projection {
 
     public Point mapPosToWgs(MapPos pos) {
         // Convert from CH1903 to pixel
-        int y_aux = (int) PIXtoCHy((double) -pos.getY() - FALSE_EASTING);
-        int x_aux = (int) PIXtoCHx((double) pos.getX() - FALSE_NORTHING);
-        // int y_aux = pos.getY();
-        // int x_aux = pos.getX();
+        // inverts Y axis
+        // int y_aux = (int) PIXtoCHy((double) -pos.getY() + CH_PX_Y);
+        // int x_aux = (int) PIXtoCHx((double) pos.getX() + CH_PX_X);
+        int y_aux = (int) PIXtoCHy((double) -pos.getY() - DECAY_Y);
+        int x_aux = (int) PIXtoCHx((double) pos.getX() - DECAY_X);
 
         // Converts militar to civil and to unit = 1000km
         // Axiliary values (% Bern)
@@ -100,9 +101,11 @@ public abstract class CH1903 extends BaseMap implements Projection {
         x = CHxtoPIX(x);
         y = CHytoPIX(y);
 
-        // Round & Decay
-        x = Math.round(x + FALSE_EASTING);
-        y = -Math.round(y + FALSE_NORTHING);
+        // Round & Decay (inverts Y axis)
+        // x = Math.round(x - CH_PX_X);
+        // y = -Math.round(y - CH_PX_Y);
+        x = Math.round(x + DECAY_X);
+        y = -Math.round(y + DECAY_Y);
 
         Log.i(TAG + ":wgsToMapPos", "x=" + (int) x + ", y=" + (int) y);
         return new MapPos((int) x, (int) y, zoom);
@@ -162,18 +165,26 @@ public abstract class CH1903 extends BaseMap implements Projection {
         case 14:
             CH_PX_X = 3 * tileSize;
             CH_PX_Y = 2 * tileSize;
+            DECAY_X = -512;
+            DECAY_Y = -768;
             break;
         case 15:
             CH_PX_X = 4 * tileSize;
             CH_PX_Y = 3 * tileSize;
+            DECAY_X = -512;
+            DECAY_Y = -768;
             break;
         case 16:
             CH_PX_X = 8 * tileSize;
             CH_PX_Y = 5 * tileSize;
+            DECAY_X = -512;
+            DECAY_Y = -768;
             break;
         default:
             CH_PX_X = 3 * tileSize;
             CH_PX_Y = 2 * tileSize;
+            DECAY_X = -512;
+            DECAY_Y = -768;
         }
     }
 }
