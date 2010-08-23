@@ -19,6 +19,8 @@ import com.nutiteq.ui.Copyright;
 
 public abstract class CH1903 extends BaseMap implements Projection {
 
+    private static final long FALSE_NORTHING = 1000L;
+    private static final long FALSE_EASTING = 1000L;
     private final String TAG = Map.D + "CH1903";
     private final double CH_MIN_X = 76443.1884;
     private final double CH_MAX_X = 299941.7864;
@@ -26,6 +28,8 @@ public abstract class CH1903 extends BaseMap implements Projection {
     private final double CH_MAX_Y = 837076.5648;
     private final double CH_X = CH_MAX_X - CH_MIN_X;
     private final double CH_Y = CH_MAX_Y - CH_MIN_Y;
+    private double CH_PX_X;
+    private double CH_PX_Y;
     private int zoom;
     private int tileSize;
 
@@ -34,6 +38,7 @@ public abstract class CH1903 extends BaseMap implements Projection {
         super(copyright, tileSize, minZoom, maxZoom);
         zoom = initialZoom;
         this.tileSize = tileSize;
+        setChMapPixelWidth(initialZoom);
     }
 
     public CH1903(final String copyright, final int tileSize, final int minZoom, final int maxZoom,
@@ -41,12 +46,13 @@ public abstract class CH1903 extends BaseMap implements Projection {
         super(copyright, tileSize, minZoom, maxZoom);
         zoom = initialZoom;
         this.tileSize = tileSize;
+        setChMapPixelWidth(initialZoom);
     }
 
     public Point mapPosToWgs(MapPos pos) {
         // Convert from CH1903 to pixel
-        int y_aux = (int) PIXtoCHy((double) pos.getY());
-        int x_aux = (int) PIXtoCHx((double) pos.getX());
+        int y_aux = (int) PIXtoCHy((double) -pos.getY() - FALSE_EASTING);
+        int x_aux = (int) PIXtoCHx((double) pos.getX() - FALSE_NORTHING);
         // int y_aux = pos.getY();
         // int x_aux = pos.getX();
 
@@ -63,17 +69,17 @@ public abstract class CH1903 extends BaseMap implements Projection {
                 * Math.pow(x_aux, 2) - 0.0436 * Math.pow(y_aux, 3);
 
         // Unit 10000'' to 1'' and converts seconds to degrees (dec)
-        _lat = Math.round(_lat * 100 / 36 * 1000000);
-        _long = Math.round(_long * 100 / 36 * 1000000);
+        _lat = Math.round(_lat * 100 / 36 * 1000000D);
+        _long = Math.round(_long * 100 / 36 * 1000000D);
 
         Log.i(TAG + ":mapPosToWgs", "lat=" + (int) _lat + ", long=" + (int) _long);
-        return new Point((int) _lat, (int) _long);
+        return new Point((int) _long, (int) _lat);
     }
 
     public MapPos wgsToMapPos(Point wgs, int zoom) {
         // Converts degrees dec to sex
-        double _lat = DECtoSEX(wgs.getY() / 1000000);
-        double _long = DECtoSEX(wgs.getX() / 1000000);
+        double _lat = DECtoSEX(wgs.getY() / 1000000D);
+        double _long = DECtoSEX(wgs.getX() / 1000000D);
 
         // Converts degrees to seconds (sex)
         _lat = DEGtoSEC(_lat);
@@ -94,92 +100,32 @@ public abstract class CH1903 extends BaseMap implements Projection {
         x = CHxtoPIX(x);
         y = CHytoPIX(y);
 
-        // Round
-        x = Math.round(x);
-        y = Math.round(y);
+        // Round & Decay
+        x = Math.round(x + FALSE_EASTING);
+        y = -Math.round(y + FALSE_NORTHING);
 
         Log.i(TAG + ":wgsToMapPos", "x=" + (int) x + ", y=" + (int) y);
         return new MapPos((int) x, (int) y, zoom);
     }
 
     private double CHxtoPIX(double pt) {
-        // int w = getMapWidth(zoom);
-        // return (pt * w / CH_X) - (w / 2);
-        int w = 0;
-        // FIXME: This switch must be in zoom()
-        switch (zoom) {
-        case 14:
-            w = 3 * tileSize;
-            break;
-        case 15:
-            w = 4 * tileSize;
-            break;
-        case 16:
-            w = 8 * tileSize;
-            break;
-        }
-        Log.v(TAG, pt + " (CHx) -> " + (pt * w / CH_X) + " (PX)");
-        return pt * w / CH_X;
+        Log.v(TAG, pt + " (CHx) -> " + (pt * CH_PX_X / CH_X) + " (PX)");
+        return pt * CH_PX_X / CH_X;
     }
 
     private double CHytoPIX(double pt) {
-        // int h = (int) (CH_Y * getMapHeight(zoom) / CH_X);
-        // return (pt * h / CH_Y) - (h / 2);
-        int h = 0;
-        // FIXME: This switch must be in zoom()
-        switch (zoom) {
-        case 14:
-            h = 2 * tileSize;
-            break;
-        case 15:
-            h = 3 * tileSize;
-            break;
-        case 16:
-            h = 5 * tileSize;
-            break;
-        }
-        Log.v(TAG, pt + " (CHy) -> " + (pt * h / CH_Y) + " (PX)");
-        return pt * h / CH_Y;
+        Log.v(TAG, pt + " (CHy) -> " + (pt * CH_PX_Y / CH_Y) + " (PX)");
+        return pt * CH_PX_Y / CH_Y;
     }
 
     private double PIXtoCHx(double pt) {
-        // int w = getMapWidth(zoom);
-        // return (pt + (w / 2)) * CH_X / w;
-        int w = 0;
-        // FIXME: This switch must be in zoom()
-        switch (zoom) {
-        case 14:
-            w = 3 * tileSize;
-            break;
-        case 15:
-            w = 4 * tileSize;
-            break;
-        case 16:
-            w = 8 * tileSize;
-            break;
-        }
-        Log.v(TAG, pt + " (PX) -> " + (pt * CH_X / w) + " (CHx)");
-        return pt * CH_X / w;
+        Log.v(TAG, pt + " (PX) -> " + (pt * CH_X / CH_PX_X) + " (CHx)");
+        return pt * CH_X / CH_PX_X;
     }
 
     private double PIXtoCHy(double pt) {
-        // int h = (int) (CH_Y * getMapHeight(zoom) / CH_X);
-        // return (pt + (h / 2)) * CH_Y / h;
-        int h = 0;
-        // FIXME: This switch must be in zoom()
-        switch (zoom) {
-        case 14:
-            h = 2 * tileSize;
-            break;
-        case 15:
-            h = 3 * tileSize;
-            break;
-        case 16:
-            h = 5 * tileSize;
-            break;
-        }
-        Log.v(TAG, pt + " (CHy) -> " + (pt * CH_Y / h) + " (PX)");
-        return pt * CH_Y / h;
+        Log.v(TAG, pt + " (PX) -> " + (pt * CH_Y / CH_PX_Y) + " (CHy)");
+        return pt * CH_Y / CH_PX_Y;
     }
 
     // Convert DEC angle to SEX DMS
@@ -206,19 +152,28 @@ public abstract class CH1903 extends BaseMap implements Projection {
 
     @Override
     public MapPos zoom(MapPos middlePoint, int zoomSteps) {
-        // bounds = getTileMapBounds(middlePoint.getZoom());
         zoom = middlePoint.getZoom();
+        setChMapPixelWidth(zoom);
         return super.zoom(middlePoint, zoomSteps);
     }
 
-    // Convert SEX DMS angle to DEC
-    // private double SEXtoDEC(double angle) {
-    // // Extract DMS
-    // int deg = (int) angle;
-    // int min = (int) ((angle - deg) * 100);
-    // double sec = (((angle - deg) * 100) - min) * 100;
-    //
-    // // Result in degrees sex (dd.mmss)
-    // return deg + (sec / 60 + min) / 60;
-    // }
+    private void setChMapPixelWidth(int zoom) {
+        switch (zoom) {
+        case 14:
+            CH_PX_X = 3 * tileSize;
+            CH_PX_Y = 2 * tileSize;
+            break;
+        case 15:
+            CH_PX_X = 4 * tileSize;
+            CH_PX_Y = 3 * tileSize;
+            break;
+        case 16:
+            CH_PX_X = 8 * tileSize;
+            CH_PX_Y = 5 * tileSize;
+            break;
+        default:
+            CH_PX_X = 3 * tileSize;
+            CH_PX_Y = 2 * tileSize;
+        }
+    }
 }

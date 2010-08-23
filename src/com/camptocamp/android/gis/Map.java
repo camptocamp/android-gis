@@ -43,7 +43,7 @@ public class Map extends Activity {
         if (savedMapComponent == null) {
 
             mapComponent = new SwissMapComponent(KEY, VENDOR, APP, 1, 1, new WgsPoint(lng, lat), 14);
-            mapComponent.setMap(new Swisstopo(getString(R.string.base_url), ".jpeg", 256, 14, 26,
+            mapComponent.setMap(new Tilecache(getString(R.string.base_url), ".jpeg", 256, 14, 26,
                     VENDOR, 14));
 
             // mapComponent.setMap(OpenStreetMap.MAPNIK);

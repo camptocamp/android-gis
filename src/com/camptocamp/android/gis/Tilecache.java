@@ -19,8 +19,8 @@ public class Tilecache extends CH1903 implements UnstreamedMap {
     }
 
     public String buildPath(int mapX, int mapY, int zoom) {
-        int x = mapX / tileSize;
-        int y = mapY / tileSize;
+        int x = Math.abs(mapX) / tileSize;
+        int y = Math.abs(mapY) / tileSize;
         return String.format(baseUrl, zoom, (int) (x / 1000000), (int) (x / 1000) % 1000,
                 (int) (x % 1000), (int) (y / 1000000), (int) (y / 1000) % 1000, (int) (y % 1000),
                 format);
