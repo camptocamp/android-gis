@@ -1,9 +1,12 @@
 package com.camptocamp.android.gis;
 
+import java.util.HashMap;
+
 import android.util.Log;
 
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.Point;
+import com.nutiteq.components.TileMapBounds;
 import com.nutiteq.maps.BaseMap;
 import com.nutiteq.maps.projections.Projection;
 import com.nutiteq.ui.Copyright;
@@ -21,46 +24,56 @@ public abstract class CH1903 extends BaseMap implements Projection {
 
     private static final String TAG = Map.D + "CH1903";
     private static final double CH_MIN_X = 76443.1884;
-    private static final double CH_MAX_X = 299941.7864;
     private static final double CH_MIN_Y = 485869.5728;
+    private static final double CH_MAX_X = 299941.7864;
     private static final double CH_MAX_Y = 837076.5648;
-    private static final double CH_X = CH_MAX_X - CH_MIN_X;
-    private static final double CH_Y = CH_MAX_Y - CH_MIN_Y;
+    private final HashMap<Integer, Double> resolutions = new HashMap<Integer, Double>();
     private int zoom;
-    private int tileSize;
-    protected double CH_PX_X;
-    protected double CH_PX_Y;
-    private int DECAY_X;
-    private int DECAY_Y;
+    protected int ch_pixel_w;
 
     public CH1903(final Copyright copyright, final int tileSize, final int minZoom,
             final int maxZoom, final int initialZoom) {
         super(copyright, tileSize, minZoom, maxZoom);
-        zoom = initialZoom;
-        this.tileSize = tileSize;
-        setChMapPixelWidth(initialZoom);
+        initResolutions();
+        setValues(initialZoom, tileSize);
     }
 
     public CH1903(final String copyright, final int tileSize, final int minZoom, final int maxZoom,
             final int initialZoom) {
         super(copyright, tileSize, minZoom, maxZoom);
-        zoom = initialZoom;
-        this.tileSize = tileSize;
-        setChMapPixelWidth(initialZoom);
+        initResolutions();
+        setValues(initialZoom, tileSize);
+    }
+
+    private void initResolutions() {
+        resolutions.put(14, 650D);
+        resolutions.put(15, 500D);
+        resolutions.put(16, 250D);
+        resolutions.put(17, 100D);
+        resolutions.put(18, 50D);
+        resolutions.put(19, 20D);
+        resolutions.put(20, 10D);
+        resolutions.put(21, 5D);
+        resolutions.put(22, 2.5D);
+        resolutions.put(23, 2D);
+        resolutions.put(24, 0.5D);
+    }
+
+    private void setValues(final int zoom, final int tileSize) {
+        this.zoom = zoom;
+        ch_pixel_w = (int) (CHytoPIX(CH_MAX_Y) / tileSize);
+        Log.v(TAG, "zoom=" + zoom + ", ch_pixel_w=" + ch_pixel_w);
     }
 
     public Point mapPosToWgs(MapPos pos) {
         // Convert from CH1903 to pixel
-        // inverts Y axis
-        // int y_aux = (int) PIXtoCHy((double) -pos.getY() + CH_PX_Y);
-        // int x_aux = (int) PIXtoCHx((double) pos.getX() + CH_PX_X);
-        int y_aux = (int) PIXtoCHy((double) -pos.getY() - DECAY_Y);
-        int x_aux = (int) PIXtoCHx((double) pos.getX() - DECAY_X);
+        int x_aux = (int) PIXtoCHx((double) pos.getX());
+        int y_aux = (int) PIXtoCHy((double) pos.getY());
 
         // Converts militar to civil and to unit = 1000km
         // Axiliary values (% Bern)
-        y_aux = (y_aux - 600000) / 1000000;
         x_aux = (x_aux - 200000) / 1000000;
+        y_aux = (y_aux - 600000) / 1000000;
 
         // Process lat/long
         double _lat = 16.9023892 + 3.238272 * x_aux - 0.270978 * Math.pow(y_aux, 2) - 0.002528
@@ -101,34 +114,36 @@ public abstract class CH1903 extends BaseMap implements Projection {
         x = CHxtoPIX(x);
         y = CHytoPIX(y);
 
-        // Round & Decay (inverts Y axis)
-        // x = Math.round(x - CH_PX_X);
-        // y = -Math.round(y - CH_PX_Y);
-        x = Math.round(x + DECAY_X);
-        y = -Math.round(y + DECAY_Y);
+        // Round & Decay
+        x = Math.round(x);
+        y = Math.round(y);
 
         Log.i(TAG + ":wgsToMapPos", "x=" + (int) x + ", y=" + (int) y);
         return new MapPos((int) x, (int) y, zoom);
     }
 
     private double CHxtoPIX(double pt) {
-        Log.v(TAG, pt + " (CHx) -> " + (pt * CH_PX_X / CH_X) + " (PX)");
-        return pt * CH_PX_X / CH_X;
+        final double px = pt / resolutions.get(zoom);
+        Log.v(TAG, pt + " (CHy) -> " + px + " (PX)");
+        return px;
     }
 
     private double CHytoPIX(double pt) {
-        Log.v(TAG, pt + " (CHy) -> " + (pt * CH_PX_Y / CH_Y) + " (PX)");
-        return pt * CH_PX_Y / CH_Y;
+        final double px = pt / resolutions.get(zoom);
+        Log.v(TAG, pt + " (CHy) -> " + px + " (PX)");
+        return px;
     }
 
-    private double PIXtoCHx(double pt) {
-        Log.v(TAG, pt + " (PX) -> " + (pt * CH_X / CH_PX_X) + " (CHx)");
-        return pt * CH_X / CH_PX_X;
+    private double PIXtoCHx(double px) {
+        final double pt = px * resolutions.get(zoom);
+        Log.v(TAG, px + " (PX) -> " + pt + " (CHx)");
+        return pt;
     }
 
-    private double PIXtoCHy(double pt) {
-        Log.v(TAG, pt + " (PX) -> " + (pt * CH_Y / CH_PX_Y) + " (CHy)");
-        return pt * CH_Y / CH_PX_Y;
+    private double PIXtoCHy(double px) {
+        final double pt = px * resolutions.get(zoom);
+        Log.v(TAG, px + " (PX) -> " + pt + " (CHy)");
+        return pt;
     }
 
     // Convert DEC angle to SEX DMS
@@ -155,36 +170,16 @@ public abstract class CH1903 extends BaseMap implements Projection {
 
     @Override
     public MapPos zoom(MapPos middlePoint, int zoomSteps) {
-        zoom = middlePoint.getZoom();
-        setChMapPixelWidth(zoom);
-        return super.zoom(middlePoint, zoomSteps);
+        MapPos pos = super.zoom(middlePoint, zoomSteps);
+        setValues(pos.getZoom(), getTileSize());
+        return pos;
     }
 
-    private void setChMapPixelWidth(int zoom) {
-        switch (zoom) {
-        case 14:
-            CH_PX_X = 3 * tileSize;
-            CH_PX_Y = 2 * tileSize;
-            DECAY_X = -512;
-            DECAY_Y = -768;
-            break;
-        case 15:
-            CH_PX_X = 4 * tileSize;
-            CH_PX_Y = 3 * tileSize;
-            DECAY_X = -512;
-            DECAY_Y = -768;
-            break;
-        case 16:
-            CH_PX_X = 8 * tileSize;
-            CH_PX_Y = 5 * tileSize;
-            DECAY_X = -512;
-            DECAY_Y = -768;
-            break;
-        default:
-            CH_PX_X = 3 * tileSize;
-            CH_PX_Y = 2 * tileSize;
-            DECAY_X = -512;
-            DECAY_Y = -768;
-        }
+    @Override
+    public TileMapBounds getTileMapBounds(final int zoom) {
+        final MapPos min = new MapPos((int) CHxtoPIX(CH_MIN_X), (int) CHxtoPIX(CH_MIN_Y), zoom);
+        final MapPos max = new MapPos((int) CHxtoPIX(CH_MAX_X) - 1, (int) CHytoPIX(CH_MAX_Y) - 1,
+                zoom);
+        return new TileMapBounds(min, max);
     }
 }

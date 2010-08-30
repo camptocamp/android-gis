@@ -14,13 +14,13 @@ import com.nutiteq.components.WgsPoint;
 import com.nutiteq.controls.AndroidKeysHandler;
 import com.nutiteq.log.AndroidLogger;
 import com.nutiteq.log.Log;
-import com.nutiteq.ui.ThreadDrivenPanning;
+import com.nutiteq.ui.EventDrivenPanning;
 
 public class Map extends Activity {
 
     private boolean onRetainCalled;
     private MapView mapView;
-    private SwissMapComponent mapComponent;
+    private BasicMapComponent mapComponent;
     private ZoomControls zoomControls;
 
     public static final String D = "C2C:";
@@ -32,6 +32,9 @@ public class Map extends Activity {
     private final double lat = 46.517815; // X: 152'210
     private final double lng = 6.562805; // Y: 532'790
 
+    // private final double lat = 44.890033; // X: 0
+    // private final double lng = -0.161718; // Y: 0
+
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,24 +42,24 @@ public class Map extends Activity {
         onRetainCalled = false;
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-
+        
         final Object savedMapComponent = getLastNonConfigurationInstance();
         if (savedMapComponent == null) {
 
-            mapComponent = new SwissMapComponent(KEY, VENDOR, APP, 1, 1, new WgsPoint(lng, lat), 14);
-            mapComponent.setMap(new Tilecache(getString(R.string.base_url), ".jpeg", 256, 14, 26,
-                    VENDOR, 14));
+            mapComponent = new BasicMapComponent(KEY, VENDOR, APP, 1, 1, new WgsPoint(lng, lat), 14);
+            mapComponent.setMap(new SwisstopoMap(getString(R.string.base_url), ".jpeg", 256, 14,
+                    24, VENDOR, 14));
 
             final MemoryCache memoryCache = new MemoryCache(1024 * 1024);
             mapComponent.setNetworkCache(memoryCache);
             // mapComponent.setNetworkCache(new MemoryCache(0));
-            mapComponent.setPanningStrategy(new ThreadDrivenPanning());
-            // mapComponent.setPanningStrategy(new EventDrivenPanning());
+            // mapComponent.setPanningStrategy(new ThreadDrivenPanning());
+            mapComponent.setPanningStrategy(new EventDrivenPanning());
             mapComponent.setControlKeysHandler(new AndroidKeysHandler());
             mapComponent.startMapping();
             mapComponent.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
         } else {
-            mapComponent = (SwissMapComponent) savedMapComponent;
+            mapComponent = (BasicMapComponent) savedMapComponent;
         }
 
         Log.setLogger(new AndroidLogger(APP));

@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry kind="lib" path="lib/android_maps_lib.jar">
+	<classpathentry kind="lib" path="lib/android_maps_lib.jar" sourcepath="/home/jbaubort/Bureau/SIG Android/maps_lib_src/maps_lib/src">
 		<attributes>
 			<attribute name="javadoc_location" value="file:/home/jbaubort/Bureau/SIG Android/maps-lib-android_1_1_0/javadoc/"/>
 		</attributes>
