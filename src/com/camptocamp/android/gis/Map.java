@@ -42,7 +42,7 @@ public class Map extends Activity {
         onRetainCalled = false;
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        
+
         final Object savedMapComponent = getLastNonConfigurationInstance();
         if (savedMapComponent == null) {
 

@@ -1,5 +1,7 @@
 package com.camptocamp.android.gis;
 
+//import android.util.Log;
+
 import com.nutiteq.maps.UnstreamedMap;
 
 public class SwisstopoMap extends CH1903 implements UnstreamedMap {
@@ -18,14 +20,12 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
     }
 
     public String buildPath(int mapX, int mapY, int zoom) {
-        int x = mapX / tileSize;
-        int y = mapY / tileSize;
-        y = (ch_pixel_w - 1) - y;
-        return String.format(baseUrl, zoom, 0, 0, x, 0, 0, y, format);
-        // return String.format(baseUrl, zoom, (int) (x / 1000000), (int) (x /
-        // 1000) % 1000,
-        // (int) (x % 1000), (int) (y / 1000000), (int) (y / 1000) % 1000, (int)
-        // (y % 1000),
-        // format);
+        int x = (mapX / tileSize) - 1 - ch_pixel_w;
+        int y = (-mapY / tileSize) - 1 - ch_pixel_h;
+        // Log.v(TAG, "x=" + x + ", y=" + y);
+        // return String.format(baseUrl, zoom, 0, 0, x, 0, 0, y, format);
+        return String.format(baseUrl, zoom, (int) (x / 1000000), (int) (x / 1000) % 1000,
+                (int) (x % 1000), (int) (y / 1000000), (int) (y / 1000) % 1000, (int) (y % 1000),
+                format);
     }
 }

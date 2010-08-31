@@ -23,13 +23,14 @@ import com.nutiteq.ui.Copyright;
 public abstract class CH1903 extends BaseMap implements Projection {
 
     private static final String TAG = Map.D + "CH1903";
-    private static final double CH_MIN_X = 76443.1884;
-    private static final double CH_MIN_Y = 485869.5728;
-    private static final double CH_MAX_X = 299941.7864;
-    private static final double CH_MAX_Y = 837076.5648;
+    private static final double CH_MIN_X = 485869.5728;
+    private static final double CH_MIN_Y = 76443.1884;
+    private static final double CH_MAX_X = 837076.5648;
+    private static final double CH_MAX_Y = 299941.7864;
     private final HashMap<Integer, Double> resolutions = new HashMap<Integer, Double>();
     private int zoom;
     protected int ch_pixel_w;
+    protected int ch_pixel_h;
 
     public CH1903(final Copyright copyright, final int tileSize, final int minZoom,
             final int maxZoom, final int initialZoom) {
@@ -59,16 +60,10 @@ public abstract class CH1903 extends BaseMap implements Projection {
         resolutions.put(24, 0.5D);
     }
 
-    private void setValues(final int zoom, final int tileSize) {
-        this.zoom = zoom;
-        ch_pixel_w = (int) (CHytoPIX(CH_MAX_Y) / tileSize);
-        Log.v(TAG, "zoom=" + zoom + ", ch_pixel_w=" + ch_pixel_w);
-    }
-
     public Point mapPosToWgs(MapPos pos) {
         // Convert from CH1903 to pixel
-        int x_aux = (int) PIXtoCHx((double) pos.getX());
-        int y_aux = (int) PIXtoCHy((double) pos.getY());
+        double x_aux = PIXtoCHx((double) pos.getX());
+        double y_aux = PIXtoCHy((double) pos.getY());
 
         // Converts militar to civil and to unit = 1000km
         // Axiliary values (% Bern)
@@ -83,8 +78,12 @@ public abstract class CH1903 extends BaseMap implements Projection {
                 * Math.pow(x_aux, 2) - 0.0436 * Math.pow(y_aux, 3);
 
         // Unit 10000'' to 1'' and converts seconds to degrees (dec)
-        _lat = Math.round(_lat * 100 / 36 * 1000000D);
-        _long = Math.round(_long * 100 / 36 * 1000000D);
+        _lat = _lat * 100 / 36 * 1000000D;
+        _long = _long * 100 / 36 * 1000000D;
+
+        // Round up
+        _lat = Math.ceil(_lat);
+        _long = Math.ceil(_long);
 
         Log.i(TAG + ":mapPosToWgs", "lat=" + (int) _lat + ", long=" + (int) _long);
         return new Point((int) _long, (int) _lat);
@@ -114,43 +113,19 @@ public abstract class CH1903 extends BaseMap implements Projection {
         x = CHxtoPIX(x);
         y = CHytoPIX(y);
 
-        // Round & Decay
-        x = Math.round(x);
-        y = Math.round(y);
+        // Round up
+        x = Math.ceil(x);
+        y = Math.ceil(y);
 
         Log.i(TAG + ":wgsToMapPos", "x=" + (int) x + ", y=" + (int) y);
         return new MapPos((int) x, (int) y, zoom);
     }
 
-    private double CHxtoPIX(double pt) {
-        final double px = pt / resolutions.get(zoom);
-        Log.v(TAG, pt + " (CHy) -> " + px + " (PX)");
-        return px;
-    }
-
-    private double CHytoPIX(double pt) {
-        final double px = pt / resolutions.get(zoom);
-        Log.v(TAG, pt + " (CHy) -> " + px + " (PX)");
-        return px;
-    }
-
-    private double PIXtoCHx(double px) {
-        final double pt = px * resolutions.get(zoom);
-        Log.v(TAG, px + " (PX) -> " + pt + " (CHx)");
-        return pt;
-    }
-
-    private double PIXtoCHy(double px) {
-        final double pt = px * resolutions.get(zoom);
-        Log.v(TAG, px + " (PX) -> " + pt + " (CHy)");
-        return pt;
-    }
-
     // Convert DEC angle to SEX DMS
     private double DECtoSEX(double angle) {
         // Extract DMS
-        int deg = (int) Math.floor(angle);
-        int min = (int) Math.floor((angle - deg) * 60);
+        double deg = Math.floor(angle);
+        double min = Math.floor((angle - deg) * 60);
         double sec = (((angle - deg) * 60) - min) * 60;
 
         // Result in degrees sex (dd.mmss)
@@ -168,6 +143,37 @@ public abstract class CH1903 extends BaseMap implements Projection {
         return sec + (double) min * 60 + (double) deg * 3600;
     }
 
+    private double CHxtoPIX(double pt) {
+        final double px = pt / resolutions.get(zoom);
+        Log.v(TAG, pt + " (CHx) -> " + px + " (PX)");
+        return px;
+    }
+
+    private double CHytoPIX(double pt) {
+        final double px = -(pt / resolutions.get(zoom));
+        Log.v(TAG, pt + " (CHy) -> " + px + " (PX)");
+        return px;
+    }
+
+    private double PIXtoCHx(double px) {
+        final double pt = px * resolutions.get(zoom);
+        Log.v(TAG, px + " (PX) -> " + pt + " (CHx)");
+        return pt;
+    }
+
+    private double PIXtoCHy(double px) {
+        final double pt = -px * resolutions.get(zoom);
+        Log.v(TAG, px + " (PX) -> " + pt + " (CHy)");
+        return pt;
+    }
+
+    private void setValues(final int zoom, final int tileSize) {
+        this.zoom = zoom;
+        // Number of tiles to minimum
+        ch_pixel_w = (int) Math.ceil(CHxtoPIX(CH_MIN_X) / tileSize);
+        ch_pixel_h = (int) Math.ceil(-CHytoPIX(CH_MIN_Y) / tileSize);
+    }
+
     @Override
     public MapPos zoom(MapPos middlePoint, int zoomSteps) {
         MapPos pos = super.zoom(middlePoint, zoomSteps);
@@ -177,9 +183,8 @@ public abstract class CH1903 extends BaseMap implements Projection {
 
     @Override
     public TileMapBounds getTileMapBounds(final int zoom) {
-        final MapPos min = new MapPos((int) CHxtoPIX(CH_MIN_X), (int) CHxtoPIX(CH_MIN_Y), zoom);
-        final MapPos max = new MapPos((int) CHxtoPIX(CH_MAX_X) - 1, (int) CHytoPIX(CH_MAX_Y) - 1,
-                zoom);
+        final MapPos min = new MapPos((int) CHxtoPIX(CH_MIN_X), (int) CHytoPIX(CH_MAX_Y), zoom);
+        final MapPos max = new MapPos((int) CHxtoPIX(CH_MAX_X), (int) CHytoPIX(CH_MIN_Y), zoom);
         return new TileMapBounds(min, max);
     }
 }
