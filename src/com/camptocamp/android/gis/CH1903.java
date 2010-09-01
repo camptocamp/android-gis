@@ -23,14 +23,14 @@ import com.nutiteq.ui.Copyright;
 public abstract class CH1903 extends BaseMap implements Projection {
 
     private static final String TAG = Map.D + "CH1903";
-    private static final double CH_MIN_X = 485869.5728;
-    private static final double CH_MIN_Y = 76443.1884;
-    private static final double CH_MAX_X = 837076.5648;
-    private static final double CH_MAX_Y = 299941.7864;
+    private static final double CH_MIN_X = 420000; // 485869.5728;
+    private static final double CH_MAX_X = 900000; // 837076.5648;
+    private static final double CH_MIN_Y = 350000; // 299941.7864;
+    private static final double CH_MAX_Y = 30000; // 76443.1884;
     private final HashMap<Integer, Double> resolutions = new HashMap<Integer, Double>();
     private int zoom;
-    protected int ch_pixel_w;
-    protected int ch_pixel_h;
+    protected double ch_pixel_w;
+    protected double ch_pixel_h;
 
     public CH1903(final Copyright copyright, final int tileSize, final int minZoom,
             final int maxZoom, final int initialZoom) {
@@ -67,15 +67,15 @@ public abstract class CH1903 extends BaseMap implements Projection {
 
         // Converts militar to civil and to unit = 1000km
         // Axiliary values (% Bern)
-        x_aux = (x_aux - 200000) / 1000000;
-        y_aux = (y_aux - 600000) / 1000000;
+        x_aux = (x_aux - 600000) / 1000000;
+        y_aux = (y_aux - 200000) / 1000000;
 
         // Process lat/long
-        double _lat = 16.9023892 + 3.238272 * x_aux - 0.270978 * Math.pow(y_aux, 2) - 0.002528
-                * Math.pow(x_aux, 2) - 0.0447 * Math.pow(y_aux, 2) * x_aux - 0.0140
-                * Math.pow(x_aux, 3);
-        double _long = 2.6779094 + 4.728982 * y_aux + 0.791484 * y_aux * x_aux + 0.1306 * y_aux
-                * Math.pow(x_aux, 2) - 0.0436 * Math.pow(y_aux, 3);
+        double _lat = 16.9023892 + 3.238272 * y_aux - 0.270978 * Math.pow(x_aux, 2) - 0.002528
+                * Math.pow(y_aux, 2) - 0.0447 * Math.pow(x_aux, 2) * y_aux - 0.0140
+                * Math.pow(y_aux, 3);
+        double _long = 2.6779094 + 4.728982 * x_aux + 0.791484 * x_aux * y_aux + 0.1306 * x_aux
+                * Math.pow(y_aux, 2) - 0.0436 * Math.pow(x_aux, 3);
 
         // Unit 10000'' to 1'' and converts seconds to degrees (dec)
         _lat = _lat * 100 / 36 * 1000000D;
@@ -103,11 +103,11 @@ public abstract class CH1903 extends BaseMap implements Projection {
         double lng_aux = (_long - 26782.5) / 10000;
 
         // Process X/Y
-        double x = 200147.07 + 308807.95 * lat_aux + 3745.25 * Math.pow(lng_aux, 2) + 76.63
+        double x = 600072.37 + 211455.93 * lng_aux - 10938.51 * lng_aux * lat_aux - 0.36 * lng_aux
+                * Math.pow(lat_aux, 2) - 44.54 * Math.pow(lng_aux, 3);
+        double y = 200147.07 + 308807.95 * lat_aux + 3745.25 * Math.pow(lng_aux, 2) + 76.63
                 * Math.pow(lat_aux, 2) - 194.56 * Math.pow(lng_aux, 2) * lat_aux + 119.79
                 * Math.pow(lat_aux, 3);
-        double y = 600072.37 + 211455.93 * lng_aux - 10938.51 * lng_aux * lat_aux - 0.36 * lng_aux
-                * Math.pow(lat_aux, 2) - 44.54 * Math.pow(lng_aux, 3);
 
         // Convert from CH1903 to pixel
         x = CHxtoPIX(x);
@@ -170,8 +170,9 @@ public abstract class CH1903 extends BaseMap implements Projection {
     private void setValues(final int zoom, final int tileSize) {
         this.zoom = zoom;
         // Number of tiles to minimum
-        ch_pixel_w = (int) Math.ceil(CHxtoPIX(CH_MIN_X) / tileSize);
-        ch_pixel_h = (int) Math.ceil(-CHytoPIX(CH_MIN_Y) / tileSize);
+        ch_pixel_w = CHxtoPIX(CH_MIN_X);
+        ch_pixel_h = -CHytoPIX(CH_MAX_Y);
+        Log.v(TAG, "ch_pixel_w=" + ch_pixel_w + ", ch_pixel_h=" + ch_pixel_h);
     }
 
     @Override
@@ -183,8 +184,8 @@ public abstract class CH1903 extends BaseMap implements Projection {
 
     @Override
     public TileMapBounds getTileMapBounds(final int zoom) {
-        final MapPos min = new MapPos((int) CHxtoPIX(CH_MIN_X), (int) CHytoPIX(CH_MAX_Y), zoom);
-        final MapPos max = new MapPos((int) CHxtoPIX(CH_MAX_X), (int) CHytoPIX(CH_MIN_Y), zoom);
+        final MapPos min = new MapPos((int) CHxtoPIX(CH_MIN_X), (int) CHytoPIX(CH_MIN_Y), zoom);
+        final MapPos max = new MapPos((int) CHxtoPIX(CH_MAX_X), (int) CHytoPIX(CH_MAX_Y), zoom);
         return new TileMapBounds(min, max);
     }
 }
