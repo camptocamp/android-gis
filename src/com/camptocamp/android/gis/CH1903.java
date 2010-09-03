@@ -29,8 +29,10 @@ public abstract class CH1903 extends BaseMap implements Projection {
     private static final double CH_MAX_Y = 30000; // 76443.1884;
     private final HashMap<Integer, Double> resolutions = new HashMap<Integer, Double>();
     private int zoom;
-    protected double ch_pixel_w;
-    protected double ch_pixel_h;
+    // protected double ch_pixel_w;
+    // protected double ch_pixel_h;
+    protected double ch_pixel_x;
+    protected double ch_pixel_y;
 
     public CH1903(final Copyright copyright, final int tileSize, final int minZoom,
             final int maxZoom, final int initialZoom) {
@@ -169,10 +171,14 @@ public abstract class CH1903 extends BaseMap implements Projection {
 
     private void setValues(final int zoom, final int tileSize) {
         this.zoom = zoom;
-        // Number of tiles to minimum
-        ch_pixel_w = CHxtoPIX(CH_MIN_X);
-        ch_pixel_h = -CHytoPIX(CH_MAX_Y);
-        Log.v(TAG, "ch_pixel_w=" + ch_pixel_w + ", ch_pixel_h=" + ch_pixel_h);
+        // Number of pixel to minimum
+        ch_pixel_x = CHxtoPIX(CH_MIN_X);
+        ch_pixel_y = -CHytoPIX(CH_MAX_Y);
+        Log.v(TAG, "ch_pixel_x=" + ch_pixel_x + ", ch_pixel_y=" + ch_pixel_y);
+        // Number of tiles for the height of CH
+        // ch_pixel_w = CHxtoPIX(CH_MAX_X - CH_MIN_X);
+        // ch_pixel_h = Math.ceil(CHxtoPIX(CH_MIN_Y - CH_MAX_Y) / tileSize);
+        // Log.v(TAG, "ch_pixel_h=" + ch_pixel_h);
     }
 
     @Override

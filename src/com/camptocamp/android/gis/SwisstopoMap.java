@@ -20,9 +20,10 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
     }
 
     public String buildPath(int mapX, int mapY, int zoom) {
-        int x = (int) mapX / tileSize;
-        int y = (int) -mapY / tileSize;
-        Log.v(TAG, "x=" + x + ", y=" + y);
+        Log.v(TAG, "mapX=" + mapX + ", mapY=" + mapY);
+        int x = (int) Math.floor((mapX - ch_pixel_x) / tileSize);
+        int y = (int) Math.floor((-mapY - ch_pixel_y) / tileSize);
+        // Log.v(TAG, "x=" + x + ", y=" + y);
         return String.format(baseUrl, zoom, 0, 0, x, 0, 0, y, format);
         // return String.format(baseUrl, zoom, (int) (x / 1000000), (int) (x /
         // 1000) % 1000,
