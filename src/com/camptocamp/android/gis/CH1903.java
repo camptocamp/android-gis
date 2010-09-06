@@ -25,13 +25,10 @@ public abstract class CH1903 extends BaseMap implements Projection {
     private static final String TAG = Map.D + "CH1903";
     private static final double CH_MIN_X = 420000; // 485869.5728;
     private static final double CH_MAX_X = 900000; // 837076.5648;
-    private static final double CH_MIN_Y = 350000; // 299941.7864;
-    private static final double CH_MAX_Y = 30000; // 76443.1884;
+    private static final double CH_MIN_Y = 30000; // 76443.1884;
+    private static final double CH_MAX_Y = 350000; // 299941.7864;
     private final HashMap<Integer, Double> resolutions = new HashMap<Integer, Double>();
     private int zoom;
-    // protected double ch_pixel_w;
-    // protected double ch_pixel_h;
-    protected double ch_pixel_x;
     protected double ch_pixel_y;
 
     public CH1903(final Copyright copyright, final int tileSize, final int minZoom,
@@ -146,39 +143,32 @@ public abstract class CH1903 extends BaseMap implements Projection {
     }
 
     private double CHxtoPIX(double pt) {
-        final double px = pt / resolutions.get(zoom);
+        final double px = (pt - CH_MIN_X) / resolutions.get(zoom);
         Log.v(TAG, pt + " (CHx) -> " + px + " (PX)");
         return px;
     }
 
     private double CHytoPIX(double pt) {
-        final double px = -(pt / resolutions.get(zoom));
+        final double px = (CH_MAX_Y - pt) / resolutions.get(zoom);
         Log.v(TAG, pt + " (CHy) -> " + px + " (PX)");
         return px;
     }
 
     private double PIXtoCHx(double px) {
-        final double pt = px * resolutions.get(zoom);
+        final double pt = CH_MIN_X + (px * resolutions.get(zoom));
         Log.v(TAG, px + " (PX) -> " + pt + " (CHx)");
         return pt;
     }
 
     private double PIXtoCHy(double px) {
-        final double pt = -px * resolutions.get(zoom);
+        final double pt = CH_MAX_Y - (px * resolutions.get(zoom));
         Log.v(TAG, px + " (PX) -> " + pt + " (CHy)");
         return pt;
     }
 
     private void setValues(final int zoom, final int tileSize) {
         this.zoom = zoom;
-        // Number of pixel to minimum
-        ch_pixel_x = CHxtoPIX(CH_MIN_X);
-        ch_pixel_y = -CHytoPIX(CH_MAX_Y);
-        Log.v(TAG, "ch_pixel_x=" + ch_pixel_x + ", ch_pixel_y=" + ch_pixel_y);
-        // Number of tiles for the height of CH
-        // ch_pixel_w = CHxtoPIX(CH_MAX_X - CH_MIN_X);
-        // ch_pixel_h = Math.ceil(CHxtoPIX(CH_MIN_Y - CH_MAX_Y) / tileSize);
-        // Log.v(TAG, "ch_pixel_h=" + ch_pixel_h);
+        ch_pixel_y = CHytoPIX(CH_MIN_Y);
     }
 
     @Override
@@ -190,8 +180,8 @@ public abstract class CH1903 extends BaseMap implements Projection {
 
     @Override
     public TileMapBounds getTileMapBounds(final int zoom) {
-        final MapPos min = new MapPos((int) CHxtoPIX(CH_MIN_X), (int) CHytoPIX(CH_MIN_Y), zoom);
-        final MapPos max = new MapPos((int) CHxtoPIX(CH_MAX_X), (int) CHytoPIX(CH_MAX_Y), zoom);
+        final MapPos min = new MapPos((int) CHxtoPIX(CH_MIN_X), (int) CHytoPIX(CH_MAX_Y), zoom);
+        final MapPos max = new MapPos((int) CHxtoPIX(CH_MAX_X), (int) CHytoPIX(CH_MIN_Y), zoom);
         return new TileMapBounds(min, max);
     }
 }
