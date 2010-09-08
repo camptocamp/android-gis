@@ -33,7 +33,7 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
     public String buildPath(int mapX, int mapY, int zoom) {
         // FIXME: This is supposed to be good :(
         // double x = mapX / tileSize;
-        // double y = (ch_pixel_y - mapY) / tileSize;
+        // double y = (ch_pixel_y - mapY - tileSize) / tileSize;
 
         int x = (int) Math.floor(mapX / tileSize);
         int y = (int) Math.floor((ch_pixel_y - mapY) / tileSize);
