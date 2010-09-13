@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.Point;
+import com.nutiteq.components.WgsPoint;
 import com.nutiteq.maps.BaseMap;
 import com.nutiteq.maps.projections.Projection;
 import com.nutiteq.ui.Copyright;
@@ -59,63 +60,58 @@ public abstract class CH1903 extends BaseMap implements Projection {
 
     public Point mapPosToWgs(MapPos pos) {
         // Convert from CH1903 to pixel
-        double x_aux = PIXtoCHx((double) pos.getX());
-        double y_aux = PIXtoCHy((double) pos.getY());
+        // (X and Y are inverted in the CH1903 notation)
+        double y_aux = PIXtoCHy((double) pos.getX());
+        double x_aux = PIXtoCHx((double) pos.getY());
 
         // Converts militar to civil and to unit = 1000km
         // Axiliary values (% Bern)
-        x_aux = (x_aux - 600000) / 1000000;
-        y_aux = (y_aux - 200000) / 1000000;
+        y_aux = (y_aux - 600000) / 1000000;
+        x_aux = (x_aux - 200000) / 1000000;
 
         // Process lat/long
-        double _lat = 16.9023892 + 3.238272 * y_aux - 0.270978 * Math.pow(x_aux, 2) - 0.002528
-                * Math.pow(y_aux, 2) - 0.0447 * Math.pow(x_aux, 2) * y_aux - 0.0140
-                * Math.pow(y_aux, 3);
-        double _long = 2.6779094 + 4.728982 * x_aux + 0.791484 * x_aux * y_aux + 0.1306 * x_aux
-                * Math.pow(y_aux, 2) - 0.0436 * Math.pow(x_aux, 3);
+        double _lat = 16.9023892 + 3.238272 * x_aux - 0.270978 * Math.pow(y_aux, 2) - 0.002528
+                * Math.pow(x_aux, 2) - 0.0447 * Math.pow(y_aux, 2) * x_aux - 0.0140
+                * Math.pow(x_aux, 3);
+        double _long = 2.6779094 + 4.728982 * y_aux + 0.791484 * y_aux * x_aux + 0.1306 * y_aux
+                * Math.pow(x_aux, 2) - 0.0436 * Math.pow(y_aux, 3);
 
         // Unit 10000'' to 1'' and converts seconds to degrees (dec)
-        _lat = _lat * 100 / 36 * 1000000D;
-        _long = _long * 100 / 36 * 1000000D;
+        _lat = _lat * 100 / 36;
+        _long = _long * 100 / 36;
 
-        // Round up
-        _lat = Math.ceil(_lat);
-        _long = Math.ceil(_long);
-
-        Log.i(TAG + ":mapPosToWgs", "lat=" + (int) _lat + ", long=" + (int) _long);
-        return new Point((int) _long, (int) _lat);
+        Log.i(TAG + ":mapPosToWgs", "lat=" + _lat + ", long=" + _long);
+        return new WgsPoint(_long, _lat).toInternalWgs();
     }
 
-    public MapPos wgsToMapPos(Point wgs, int zoom) {
+    public MapPos wgsToMapPos(Point pt, int zoom) {
         // Converts degrees dec to sex
-        double _lat = DECtoSEX(wgs.getY() / 1000000D);
-        double _long = DECtoSEX(wgs.getX() / 1000000D);
+        WgsPoint wgs = pt.toWgsPoint();
+        double _lat = DECtoSEX(wgs.getLat());
+        double _long = DECtoSEX(wgs.getLon());
 
         // Converts degrees to seconds (sex)
-        _lat = DEGtoSEC(_lat);
-        _long = DEGtoSEC(_long);
+        _lat = SEXtoSEC(_lat);
+        _long = SEXtoSEC(_long);
 
         // Axiliary values (% Bern)
         double lat_aux = (_lat - 169028.66) / 10000;
         double lng_aux = (_long - 26782.5) / 10000;
 
         // Process X/Y
-        double x = 600072.37 + 211455.93 * lng_aux - 10938.51 * lng_aux * lat_aux - 0.36 * lng_aux
+        double y = 600072.37 + 211455.93 * lng_aux - 10938.51 * lng_aux * lat_aux - 0.36 * lng_aux
                 * Math.pow(lat_aux, 2) - 44.54 * Math.pow(lng_aux, 3);
-        double y = 200147.07 + 308807.95 * lat_aux + 3745.25 * Math.pow(lng_aux, 2) + 76.63
+        double x = 200147.07 + 308807.95 * lat_aux + 3745.25 * Math.pow(lng_aux, 2) + 76.63
                 * Math.pow(lat_aux, 2) - 194.56 * Math.pow(lng_aux, 2) * lat_aux + 119.79
                 * Math.pow(lat_aux, 3);
 
         // Convert from CH1903 to pixel
-        x = CHxtoPIX(x);
-        y = CHytoPIX(y);
+        // (X and Y are inverted in CH1903 notation)
+        int X = (int) Math.round(CHxtoPIX(y));
+        int Y = (int) Math.round(CHytoPIX(x));
 
-        // Round up
-        x = Math.ceil(x);
-        y = Math.ceil(y);
-
-        Log.i(TAG + ":wgsToMapPos", "x=" + (int) x + ", y=" + (int) y);
-        return new MapPos((int) x, (int) y, zoom);
+        Log.i(TAG + ":wgsToMapPos", "x=" + X + ", y=" + Y);
+        return new MapPos(X, Y, zoom);
     }
 
     // Convert DEC angle to SEX DMS
@@ -129,8 +125,8 @@ public abstract class CH1903 extends BaseMap implements Projection {
         return deg + (double) min / 100 + (double) sec / 10000;
     }
 
-    // Convert Degrees angle to seconds
-    private double DEGtoSEC(double angle) {
+    // Convert Degrees to seconds
+    private double SEXtoSEC(double angle) {
         // Extract DMS
         double deg = Math.floor(angle);
         double min = Math.floor((angle - deg) * 100);

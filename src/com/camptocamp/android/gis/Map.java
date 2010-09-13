@@ -52,9 +52,9 @@ public class Map extends Activity {
             mapComponent.setMap(new SwisstopoMap(getString(R.string.base_url), ".jpeg", 256, 14,
                     24, VENDOR, 14));
 
-            final MemoryCache memoryCache = new MemoryCache(1024 * 1024);
-            mapComponent.setNetworkCache(memoryCache);
-            // mapComponent.setNetworkCache(new MemoryCache(0));
+            // final MemoryCache memoryCache = new MemoryCache(1024 * 1024);
+            // mapComponent.setNetworkCache(memoryCache);
+            mapComponent.setNetworkCache(new MemoryCache(0));
             // mapComponent.setPanningStrategy(new ThreadDrivenPanning());
             mapComponent.setPanningStrategy(new EventDrivenPanning());
             mapComponent.setControlKeysHandler(new AndroidKeysHandler());

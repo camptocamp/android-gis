@@ -1,5 +1,7 @@
 package com.camptocamp.android.gis;
 
+//http://trac.openlayers.org/browser/trunk/openlayers/lib/OpenLayers/Util.js#L1259
+
 import android.util.Log;
 
 import com.nutiteq.components.MapPos;
@@ -9,6 +11,9 @@ import com.nutiteq.maps.UnstreamedMap;
 public class SwisstopoMap extends CH1903 implements UnstreamedMap {
 
     private static final String TAG = Map.D + "SwisstopoMap";
+    private static final int DOTS_PER_INCH = 254;
+    private static final double INCHES_PER_METER = 39.3701;
+    private static final double DOTS_PER_METER = INCHES_PER_METER * DOTS_PER_INCH;
     private String baseUrl;
     private String format;
     private int tileSize;
@@ -34,6 +39,7 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
         int x = (int) Math.ceil(mapX / tileSize);
         int y = (int) Math.ceil((ch_pixel_y - tileSize - mapY) / tileSize);
         // int r = rand.nextInt(MAX - MIN + 1) + MIN;
+        // Log.v(TAG, "x=" + x + ", y=" + y);
         int r = 5;
         return String.format(baseUrl, r, zoom, (int) (x / 1000000), (int) (x / 1000) % 1000,
                 (int) (x % 1000), (int) (y / 1000000), (int) (y / 1000) % 1000, (int) (y % 1000),
@@ -42,17 +48,19 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
 
     protected void initResolutions() {
         // Tile resolution for each zoom level
-        resolutions.put(14, 650D);
-        resolutions.put(15, 500D);
-        resolutions.put(16, 250D);
+        resolutions.put(14, 650D); // 625D);
+        resolutions.put(15, 500D); // 416.67D);
+        resolutions.put(16, 250D); // 208.33D);
         resolutions.put(17, 100D);
         resolutions.put(18, 50D);
         resolutions.put(19, 20D);
         resolutions.put(20, 10D);
-        resolutions.put(21, 5D);
+        resolutions.put(21, 5.0D);
         resolutions.put(22, 2.5D);
-        resolutions.put(23, 2D);
-        resolutions.put(24, 0.5D);
+        resolutions.put(23, 2.0D);
+        resolutions.put(24, 1.5D);
+        resolutions.put(25, 1.0D);
+        resolutions.put(26, 0.5D);
     }
 
     protected double CHxtoPIX(double pt) {
@@ -86,8 +94,10 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
 
     @Override
     public TileMapBounds getTileMapBounds(final int zoom) {
-        final MapPos min = new MapPos((int) CHxtoPIX(CH_MIN_X), (int) CHytoPIX(CH_MAX_Y), zoom);
-        final MapPos max = new MapPos((int) CHxtoPIX(CH_MAX_X), (int) CHytoPIX(CH_MIN_Y), zoom);
+        final MapPos min = new MapPos((int) CHxtoPIX(CH_MIN_X) - 1, (int) CHytoPIX(CH_MAX_Y) - 1,
+                zoom);
+        final MapPos max = new MapPos((int) CHxtoPIX(CH_MAX_X) - 1, (int) CHytoPIX(CH_MIN_Y) - 1,
+                zoom);
         return new TileMapBounds(min, max);
     }
 }
