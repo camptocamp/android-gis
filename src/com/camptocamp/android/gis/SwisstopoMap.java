@@ -2,13 +2,13 @@ package com.camptocamp.android.gis;
 
 //http://trac.openlayers.org/browser/trunk/openlayers/lib/OpenLayers/Util.js#L1259
 
-import com.nutiteq.components.MapPos;
-import com.nutiteq.components.TileMapBounds;
+import android.util.Log;
+
 import com.nutiteq.maps.UnstreamedMap;
 
 public class SwisstopoMap extends CH1903 implements UnstreamedMap {
 
-//    private static final String TAG = Map.D + "SwisstopoMap";
+    private static final String TAG = Map.D + "SwisstopoMap";
     // private static final int DOTS_PER_INCH = 254;
     // private static final double INCHES_PER_METER = 39.3701;
     // private static final double DOTS_PER_METER = INCHES_PER_METER *
@@ -44,18 +44,38 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
                 FORMAT);
     }
 
+    // @Override
+    // public TileMapBounds getTileMapBounds(final int zoom) {
+    // final MapPos min = new MapPos((int) CHxtoPIX(MIN_X) - 1, (int)
+    // CHytoPIX(MAX_Y) - 1, zoom);
+    // final MapPos max = new MapPos((int) CHxtoPIX(MAX_X) - 1, (int)
+    // CHytoPIX(MIN_Y) - 1, zoom);
+    // return new TileMapBounds(min, max);
+    // }
+
     @Override
-    public TileMapBounds getTileMapBounds(final int zoom) {
-        final MapPos min = new MapPos((int) CHxtoPIX(MIN_X) - 1, (int) CHytoPIX(MAX_Y) - 1, zoom);
-        final MapPos max = new MapPos((int) CHxtoPIX(MAX_X) - 1, (int) CHytoPIX(MIN_Y) - 1, zoom);
-        return new TileMapBounds(min, max);
+    public int getMapHeight(final int zoom) {
+        return (int) (Math.ceil(getRealMapHeight(zoom) / TILE_SIZE) * TILE_SIZE);
+    }
+
+    @Override
+    public int getMapWidth(final int zoom) {
+        return (int) (Math.ceil(getRealMapWidth(zoom) / TILE_SIZE) * TILE_SIZE);
+    }
+
+    public double getRealMapHeight(final int zoom) {
+        return (MAX_Y - MIN_Y) / resolutions.get(zoom);
+    }
+
+    public double getRealMapWidth(final int zoom) {
+        return (MAX_X - MIN_X) / resolutions.get(zoom);
     }
 
     protected void initResolutions() {
         // Tile resolution for each zoom level
-        resolutions.put(14, 650.0); // 625D);
-        resolutions.put(15, 500.0); // 416.67D);
-        resolutions.put(16, 250.0); // 208.33D);
+        resolutions.put(14, 650.0);
+        resolutions.put(15, 500.0);
+        resolutions.put(16, 250.0);
         resolutions.put(17, 100.0);
         resolutions.put(18, 50.0);
         resolutions.put(19, 20.0);
@@ -77,7 +97,7 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
     protected double CHytoPIX(double pt) {
         final double px = (MAX_Y - pt) / resolutions.get(zoom);
         // Log.v(TAG, pt + " (CHy) -> " + px + " (PX)");
-        return px;
+        return px + (getMapHeight(zoom) - getRealMapHeight(zoom));
     }
 
     protected double PIXtoCHx(double px) {
@@ -87,6 +107,8 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
     }
 
     protected double PIXtoCHy(double px) {
+        // FIXME: When is this used ?
+        px = px - (getMapHeight(zoom) - getRealMapHeight(zoom));
         final double pt = MAX_Y - (px * resolutions.get(zoom));
         // Log.v(TAG, px + " (PX) -> " + pt + " (CHy)");
         return pt;

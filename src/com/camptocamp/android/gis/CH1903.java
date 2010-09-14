@@ -2,8 +2,6 @@ package com.camptocamp.android.gis;
 
 import java.util.HashMap;
 
-import android.util.Log;
-
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.Point;
 import com.nutiteq.components.WgsPoint;
@@ -22,7 +20,7 @@ import com.nutiteq.ui.Copyright;
 
 public abstract class CH1903 extends BaseMap implements Projection {
 
-    private static final String TAG = Map.D + "CH1903";
+    // private static final String TAG = Map.D + "CH1903";
     protected static double MIN_X = 485869.5728;
     protected static double MAX_X = 837076.5648;
     protected static double MIN_Y = 76443.1884;
