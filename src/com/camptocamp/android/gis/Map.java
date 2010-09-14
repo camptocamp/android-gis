@@ -26,15 +26,16 @@ public class Map extends Activity {
 
     public static final String D = "C2C:";
     // private final static String TAG = "Map";
-    private final String KEY = "182be0c5cdcd5072bb1864cdee4d3d6e4c593f89365962.70956542";
-    private final String VENDOR = "Camptocamp SA";
-    private final String APP = "c2c-android-gis";
+    private static final String KEY = "182be0c5cdcd5072bb1864cdee4d3d6e4c593f89365962.70956542";
+    private static final String VDR = "Camptocamp SA";
+    private static final String APP = "c2c-android-gis";
+    private static final int ZOOM = 22;
 
-    // private final double lat = 46.517815; // X: 152'210
-    // private final double lng = 6.562805; // Y: 532'790
+    private final double lat = 46.517815; // X: 152'210
+    private final double lng = 6.562805; // Y: 532'790
 
-    private final double lat = 46.951081; // X: 200'000
-    private final double lng = 7.438637; // Y: 600'000
+    // private final double lat = 46.951081; // X: 200'000
+    // private final double lng = 7.438637; // Y: 600'000
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -45,8 +46,8 @@ public class Map extends Activity {
         // Create base map
         final Object savedMapComponent = getLastNonConfigurationInstance();
         if (savedMapComponent == null) {
-            mapComponent = new BasicMapComponent(KEY, VENDOR, APP, 1, 1, new WgsPoint(lng, lat), 14);
-            mapComponent.setMap(new SwisstopoMap(getString(R.string.base_url), VENDOR, 14));
+            mapComponent = new BasicMapComponent(KEY, VDR, APP, 1, 1, new WgsPoint(lng, lat), ZOOM);
+            mapComponent.setMap(new SwisstopoMap(getString(R.string.base_url), VDR, ZOOM));
 
             // final MemoryCache memoryCache = new MemoryCache(1024 * 1024);
             // mapComponent.setNetworkCache(memoryCache);

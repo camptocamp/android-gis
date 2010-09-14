@@ -2,6 +2,8 @@ package com.camptocamp.android.gis;
 
 import java.util.HashMap;
 
+import android.util.Log;
+
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.Point;
 import com.nutiteq.components.WgsPoint;
@@ -20,14 +22,14 @@ import com.nutiteq.ui.Copyright;
 
 public abstract class CH1903 extends BaseMap implements Projection {
 
-    // private static final String TAG = Map.D + "CH1903";
+    private static final String TAG = Map.D + "CH1903";
     protected static double MIN_X = 485869.5728;
     protected static double MAX_X = 837076.5648;
     protected static double MIN_Y = 76443.1884;
     protected static double MAX_Y = 299941.7864;
-    protected int zoom;
     protected final HashMap<Integer, Double> resolutions = new HashMap<Integer, Double>();
     protected double ch_pixel_y;
+    protected int zoom;
 
     public CH1903(final Copyright copyright, final int tileSize, final int minZoom,
             final int maxZoom, final int initialZoom) {
@@ -35,7 +37,7 @@ public abstract class CH1903 extends BaseMap implements Projection {
         initResolutions();
         setValues(initialZoom, tileSize);
     }
-
+    
     public CH1903(final String copyright, final int tileSize, final int minZoom, final int maxZoom,
             final int initialZoom) {
         super(copyright, tileSize, minZoom, maxZoom);
@@ -78,7 +80,7 @@ public abstract class CH1903 extends BaseMap implements Projection {
         _lat = _lat * 100 / 36;
         _long = _long * 100 / 36;
 
-        // Log.i(TAG + ":mapPosToWgs", "lat=" + _lat + ", long=" + _long);
+        Log.i(TAG + ":mapPosToWgs", "lat=" + _lat + ", long=" + _long);
         return new WgsPoint(_long, _lat).toInternalWgs();
     }
 
@@ -108,7 +110,7 @@ public abstract class CH1903 extends BaseMap implements Projection {
         int X = (int) Math.ceil(CHxtoPIX(y));
         int Y = (int) Math.ceil(CHytoPIX(x));
 
-        // Log.i(TAG + ":wgsToMapPos", "x=" + X + ", y=" + Y);
+        Log.i(TAG + ":wgsToMapPos", "x=" + X + ", y=" + Y);
         return new MapPos(X, Y, zoom);
     }
 
