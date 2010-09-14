@@ -23,10 +23,10 @@ import com.nutiteq.ui.Copyright;
 public abstract class CH1903 extends BaseMap implements Projection {
 
     private static final String TAG = Map.D + "CH1903";
-    protected static double CH_MIN_X = 485869.5728;
-    protected static double CH_MAX_X = 837076.5648;
-    protected static double CH_MIN_Y = 76443.1884;
-    protected static double CH_MAX_Y = 299941.7864;
+    protected static double MIN_X = 485869.5728;
+    protected static double MAX_X = 837076.5648;
+    protected static double MIN_Y = 76443.1884;
+    protected static double MAX_Y = 299941.7864;
     protected int zoom;
     protected final HashMap<Integer, Double> resolutions = new HashMap<Integer, Double>();
     protected double ch_pixel_y;
@@ -61,8 +61,8 @@ public abstract class CH1903 extends BaseMap implements Projection {
     public Point mapPosToWgs(MapPos pos) {
         // Convert from CH1903 to pixel
         // (X and Y are inverted in the CH1903 notation)
-        double y_aux = PIXtoCHy((double) pos.getX());
-        double x_aux = PIXtoCHx((double) pos.getY());
+        double y_aux = PIXtoCHx((double) pos.getX());
+        double x_aux = PIXtoCHy((double) pos.getY());
 
         // Converts militar to civil and to unit = 1000km
         // Axiliary values (% Bern)
@@ -80,7 +80,7 @@ public abstract class CH1903 extends BaseMap implements Projection {
         _lat = _lat * 100 / 36;
         _long = _long * 100 / 36;
 
-        Log.i(TAG + ":mapPosToWgs", "lat=" + _lat + ", long=" + _long);
+        // Log.i(TAG + ":mapPosToWgs", "lat=" + _lat + ", long=" + _long);
         return new WgsPoint(_long, _lat).toInternalWgs();
     }
 
@@ -107,10 +107,10 @@ public abstract class CH1903 extends BaseMap implements Projection {
 
         // Convert from CH1903 to pixel
         // (X and Y are inverted in CH1903 notation)
-        int X = (int) Math.round(CHxtoPIX(y));
-        int Y = (int) Math.round(CHytoPIX(x));
+        int X = (int) Math.ceil(CHxtoPIX(y));
+        int Y = (int) Math.ceil(CHytoPIX(x));
 
-        Log.i(TAG + ":wgsToMapPos", "x=" + X + ", y=" + Y);
+        // Log.i(TAG + ":wgsToMapPos", "x=" + X + ", y=" + Y);
         return new MapPos(X, Y, zoom);
     }
 

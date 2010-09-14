@@ -36,9 +36,6 @@ public class Map extends Activity {
     private final double lat = 46.951081; // X: 200'000
     private final double lng = 7.438637; // Y: 600'000
 
-    // private final double lat = 44.890033; // X: 0
-    // private final double lng = -0.161718; // Y: 0
-
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,8 +46,7 @@ public class Map extends Activity {
         final Object savedMapComponent = getLastNonConfigurationInstance();
         if (savedMapComponent == null) {
             mapComponent = new BasicMapComponent(KEY, VENDOR, APP, 1, 1, new WgsPoint(lng, lat), 14);
-            mapComponent.setMap(new SwisstopoMap(getString(R.string.base_url), ".jpeg", 256, 14,
-                    24, VENDOR, 14));
+            mapComponent.setMap(new SwisstopoMap(getString(R.string.base_url), VENDOR, 14));
 
             // final MemoryCache memoryCache = new MemoryCache(1024 * 1024);
             // mapComponent.setNetworkCache(memoryCache);
