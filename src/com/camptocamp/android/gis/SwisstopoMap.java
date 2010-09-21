@@ -11,16 +11,16 @@ import com.nutiteq.maps.UnstreamedMap;
 
 public class SwisstopoMap extends CH1903 implements UnstreamedMap {
 
-    @SuppressWarnings("unused")
+    // @SuppressWarnings("unused")
     private static final String TAG = Map.D + "SwisstopoMap";
     private static final int MIN_ZOOM = 14;
-    private static final int MAX_ZOOM = 24;
+    private static final int MAX_ZOOM = 26;
     private static final int TILESIZE = 256;
     private static final String EXT = ".jpeg";
     private static final HashMap<Integer, Double> resolutions = new HashMap<Integer, Double>();
     private double y_shift;
     private String baseUrl;
-    private int zoom;
+    public int zoom;
     // private final Random rand = new Random();
     // private final int MIN = 5;
     // private final int MAX = 9;
@@ -86,8 +86,8 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
         resolutions.put(22, 2.5);
         resolutions.put(23, 2.0);
         resolutions.put(24, 1.5);
-        // resolutions.put(25, 1.0);
-        // resolutions.put(26, 0.5);
+        resolutions.put(25, 1.0);
+        resolutions.put(26, 0.5);
     }
 
     protected double CHxtoPIX(double pt) {

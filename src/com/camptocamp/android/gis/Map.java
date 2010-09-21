@@ -2,6 +2,8 @@ package com.camptocamp.android.gis;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.RelativeLayout;
@@ -25,17 +27,16 @@ public class Map extends Activity {
     private BasicMapComponent mapComponent;
 
     public static final String D = "C2C:";
-    // private final static String TAG = D + "Map";
+    private final static String TAG = D + "Map";
     private static final String KEY = "182be0c5cdcd5072bb1864cdee4d3d6e4c593f89365962.70956542";
     private static final String VDR = "Camptocamp SA";
     private static final String APP = "c2c-android-gis";
     private static final int ZOOM = 14;
+    private static final int MENU_MAP_PIXEL = 0;
+    private static final int MENU_MAP_ORTHO = 1;
 
     private final double lat = 46.517815; // X: 152'210
     private final double lng = 6.562805; // Y: 532'790
-
-    // private final double lat = 46.951081; // X: 200'000
-    // private final double lng = 7.438637; // Y: 600'000
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -46,16 +47,14 @@ public class Map extends Activity {
         // Create base map
         final Object savedMapComponent = getLastNonConfigurationInstance();
         if (savedMapComponent == null) {
-            mapComponent = new MyMap(new WgsPoint(lng, lat), ZOOM);
-            mapComponent.setMap(new SwisstopoMap(getString(R.string.base_url), VDR, ZOOM));
-
+            mapComponent = new BasicMapComponent(KEY, VDR, APP, 1, 1, new WgsPoint(lng, lat), ZOOM);
+            mapComponent.setMap(new SwisstopoMap(getString(R.string.base_url_pixel), VDR, ZOOM));
             // final MemoryCache memoryCache = new MemoryCache(1024 * 1024);
             // mapComponent.setNetworkCache(memoryCache);
             mapComponent.setNetworkCache(new MemoryCache(0));
             // mapComponent.setPanningStrategy(new ThreadDrivenPanning());
             mapComponent.setPanningStrategy(new EventDrivenPanning());
             mapComponent.setControlKeysHandler(new AndroidKeysHandler());
-
             mapComponent.startMapping();
             mapComponent.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
         } else {
@@ -106,6 +105,30 @@ public class Map extends Activity {
         // Markers
         mapComponent.addPlace(new Place(1, "PSE - EPFL", Utils
                 .createImage("/res/drawable/marker.png"), new WgsPoint(6.562794, 46.517705)));
+
+        // Menu
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        menu.add(0, MENU_MAP_PIXEL, 0, "Pixel Map");
+        menu.add(0, MENU_MAP_ORTHO, 1, "Orthophoto");
+        return true;
+    }
+
+    @Override
+    public boolean onMenuItemSelected(final int featureId, final MenuItem item) {
+        // FIXME: Doesn't fully work
+        int zoom = ((SwisstopoMap) mapComponent.getMap()).zoom;
+        switch (item.getItemId()) {
+        case MENU_MAP_PIXEL:
+            mapComponent.setMap(new SwisstopoMap(getString(R.string.base_url_pixel), VDR, zoom));
+            break;
+        case MENU_MAP_ORTHO:
+            mapComponent.setMap(new SwisstopoMap(getString(R.string.base_url_ortho), VDR, zoom));
+            break;
+        }
+        return true;
     }
 
     @Override
@@ -125,13 +148,5 @@ public class Map extends Activity {
             mapComponent.stopMapping();
             mapComponent = null;
         }
-    }
-
-    public class MyMap extends BasicMapComponent {
-
-        public MyMap(WgsPoint middlePoint, int zoom) {
-            super(KEY, VDR, APP, 1, 1, middlePoint, zoom);
-        }
-
     }
 }
