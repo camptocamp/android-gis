@@ -1,7 +1,5 @@
 package com.camptocamp.android.gis;
 
-import java.util.HashMap;
-
 import android.util.Log;
 
 import com.nutiteq.components.MapPos;
@@ -27,26 +25,16 @@ public abstract class CH1903 extends BaseMap implements Projection {
     protected static double MAX_X = 837076.5648;
     protected static double MIN_Y = 76443.1884;
     protected static double MAX_Y = 299941.7864;
-    protected final HashMap<Integer, Double> resolutions = new HashMap<Integer, Double>();
-    protected double ch_pixel_y;
-    protected int zoom;
 
     public CH1903(final Copyright copyright, final int tileSize, final int minZoom,
             final int maxZoom, final int initialZoom) {
         super(copyright, tileSize, minZoom, maxZoom);
-        initResolutions();
-        setValues(initialZoom, tileSize);
     }
-    
+
     public CH1903(final String copyright, final int tileSize, final int minZoom, final int maxZoom,
             final int initialZoom) {
         super(copyright, tileSize, minZoom, maxZoom);
-        initResolutions();
-        setValues(initialZoom, tileSize);
     }
-
-    // Set resolution for each zoom level in the resolutions HashMap
-    protected abstract void initResolutions();
 
     protected abstract double CHxtoPIX(double pt);
 
@@ -55,8 +43,6 @@ public abstract class CH1903 extends BaseMap implements Projection {
     protected abstract double PIXtoCHx(double px);
 
     protected abstract double PIXtoCHy(double px);
-
-    protected abstract void setValues(final int zoom, final int tileSize);
 
     public Point mapPosToWgs(MapPos pos) {
         // Convert from CH1903 to pixel
@@ -134,12 +120,5 @@ public abstract class CH1903 extends BaseMap implements Projection {
 
         // Result in degrees sex (dd.mmss)
         return sec + (double) min * 60 + (double) deg * 3600;
-    }
-
-    @Override
-    public MapPos zoom(MapPos middlePoint, int zoomSteps) {
-        MapPos pos = super.zoom(middlePoint, zoomSteps);
-        setValues(pos.getZoom(), getTileSize());
-        return pos;
     }
 }
