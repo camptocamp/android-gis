@@ -27,10 +27,9 @@ public class Map extends Activity {
     private BasicMapComponent mapComponent;
 
     public static final String D = "C2C:";
-    private final static String TAG = D + "Map";
-    private static final String KEY = "182be0c5cdcd5072bb1864cdee4d3d6e4c593f89365962.70956542";
-    private static final String VDR = "Camptocamp SA";
-    private static final String APP = "c2c-android-gis";
+    // private final static String TAG = D + "Map";
+    public static final String APP = "c2c-android-gis";
+    public static final String VDR = "Camptocamp SA";
     private static final int ZOOM = 14;
     private static final int MENU_MAP_PIXEL = 0;
     private static final int MENU_MAP_ORTHO = 1;
@@ -47,7 +46,7 @@ public class Map extends Activity {
         // Create base map
         final Object savedMapComponent = getLastNonConfigurationInstance();
         if (savedMapComponent == null) {
-            mapComponent = new BasicMapComponent(KEY, VDR, APP, 1, 1, new WgsPoint(lng, lat), ZOOM);
+            mapComponent = new SwisstopoComponent(new WgsPoint(lng, lat), ZOOM);
             mapComponent.setMap(new SwisstopoMap(getString(R.string.base_url_pixel), VDR, ZOOM));
             // final MemoryCache memoryCache = new MemoryCache(1024 * 1024);
             // mapComponent.setNetworkCache(memoryCache);
@@ -105,8 +104,6 @@ public class Map extends Activity {
         // Markers
         mapComponent.addPlace(new Place(1, "PSE - EPFL", Utils
                 .createImage("/res/drawable/marker.png"), new WgsPoint(6.562794, 46.517705)));
-
-        // Menu
     }
 
     @Override

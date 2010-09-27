@@ -36,6 +36,10 @@ public abstract class CH1903 extends BaseMap implements Projection {
         super(copyright, tileSize, minZoom, maxZoom);
     }
 
+    /**
+     * Pixel to CH (in meters) and vice versa. Need to implement meter to pixel
+     * calculation according to tiles resolution by zoom level.
+     */
     protected abstract double CHxtoPIX(double pt);
 
     protected abstract double CHytoPIX(double pt);

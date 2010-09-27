@@ -17,7 +17,6 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
     private static final int MAX_ZOOM = 26;
     private static final int TILESIZE = 256;
     private static final String EXT = ".jpeg";
-    private static final HashMap<Integer, Double> resolutions = new HashMap<Integer, Double>();
     private double y_shift;
     private String baseUrl;
     public int zoom;
@@ -31,11 +30,30 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
     protected static double MIN_Y = 30000;
     protected static double MAX_Y = 350000;
 
+    // Swisstopo resolutions
+    public static final HashMap<Integer, Double> resolutions = new HashMap<Integer, Double>() {
+        private static final long serialVersionUID = -1961062331663888031L;
+        {
+            put(14, 650.0);
+            put(15, 500.0);
+            put(16, 250.0);
+            put(17, 100.0);
+            put(18, 50.0);
+            put(19, 20.0);
+            put(20, 10.0);
+            put(21, 5.0);
+            put(22, 2.5);
+            put(23, 2.0);
+            put(24, 1.5);
+            put(25, 1.0);
+            put(26, 0.5);
+        }
+    };
+
     public SwisstopoMap(String baseUrl, String copyright, final int initialZoom) {
         super(copyright, TILESIZE, MIN_ZOOM, MAX_ZOOM, initialZoom);
         this.baseUrl = baseUrl;
         this.zoom = initialZoom;
-        initResolutions();
         setValues();
     }
 
@@ -73,23 +91,6 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
         return (MAX_Y - MIN_Y) / resolutions.get(zoom);
     }
 
-    protected void initResolutions() {
-        // Tile resolution for each zoom level
-        resolutions.put(14, 650.0);
-        resolutions.put(15, 500.0);
-        resolutions.put(16, 250.0);
-        resolutions.put(17, 100.0);
-        resolutions.put(18, 50.0);
-        resolutions.put(19, 20.0);
-        resolutions.put(20, 10.0);
-        resolutions.put(21, 5.0);
-        resolutions.put(22, 2.5);
-        resolutions.put(23, 2.0);
-        resolutions.put(24, 1.5);
-        resolutions.put(25, 1.0);
-        resolutions.put(26, 0.5);
-    }
-
     protected double CHxtoPIX(double pt) {
         return (pt - MIN_X) / resolutions.get(zoom);
     }
@@ -111,4 +112,5 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
         // Log.v(TAG, "ch_pixel_y=" + ch_pixel_y);
         Log.v(TAG, "y_shift=" + y_shift);
     }
+
 }
