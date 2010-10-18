@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ZoomControls;
 
@@ -15,8 +16,6 @@ import com.nutiteq.cache.MemoryCache;
 import com.nutiteq.components.Place;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.controls.AndroidKeysHandler;
-import com.nutiteq.log.AndroidLogger;
-import com.nutiteq.log.Log;
 import com.nutiteq.ui.EventDrivenPanning;
 import com.nutiteq.utils.Utils;
 
@@ -42,6 +41,8 @@ public class Map extends Activity {
         super.onCreate(savedInstanceState);
         onRetainCalled = false;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.main);
+        LinearLayout mapLayout = ((LinearLayout) findViewById(R.id.map));
 
         // Create base map
         final Object savedMapComponent = getLastNonConfigurationInstance();
@@ -60,22 +61,17 @@ public class Map extends Activity {
             mapComponent = (BasicMapComponent) savedMapComponent;
         }
 
-        Log.setLogger(new AndroidLogger(APP));
-        Log.enableAll();
-
-        final RelativeLayout relativeLayout = new RelativeLayout(this);
-        setContentView(relativeLayout);
+        // Log.setLogger(new AndroidLogger(APP));
+        // Log.enableAll();
 
         // Map View
         mapView = new MapView(this, mapComponent);
-        final RelativeLayout.LayoutParams mapViewLayoutParams = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
-        relativeLayout.addView(mapView, mapViewLayoutParams);
+        mapLayout.addView(mapView);
         mapView.setClickable(true);
         mapView.setEnabled(true);
 
         // Zoom
-        ZoomControls zoomControls = new ZoomControls(this);
+        final ZoomControls zoomControls = (ZoomControls) findViewById(R.id.zoom);
         zoomControls.setOnZoomInClickListener(new View.OnClickListener() {
             public void onClick(final View v) {
                 mapComponent.zoomIn();
@@ -86,11 +82,6 @@ public class Map extends Activity {
                 mapComponent.zoomOut();
             }
         });
-        final RelativeLayout.LayoutParams zoomControlsLayoutParams = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        zoomControlsLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        zoomControlsLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        relativeLayout.addView(zoomControls, zoomControlsLayoutParams);
 
         // GPS Location
         // final LocationSource locationSource = new AndroidGPSProvider(
