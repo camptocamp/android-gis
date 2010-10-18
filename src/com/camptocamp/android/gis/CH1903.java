@@ -1,7 +1,5 @@
 package com.camptocamp.android.gis;
 
-import android.util.Log;
-
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.Point;
 import com.nutiteq.components.WgsPoint;
@@ -20,7 +18,7 @@ import com.nutiteq.ui.Copyright;
 
 public abstract class CH1903 extends BaseMap implements Projection {
 
-    private static final String TAG = Map.D + "CH1903";
+    // private static final String TAG = Map.D + "CH1903";
     protected static double MIN_X = 485869.5728;
     protected static double MAX_X = 837076.5648;
     protected static double MIN_Y = 76443.1884;
@@ -70,7 +68,7 @@ public abstract class CH1903 extends BaseMap implements Projection {
         _lat = _lat * 100 / 36;
         _long = _long * 100 / 36;
 
-        Log.i(TAG + ":mapPosToWgs", "lat=" + _lat + ", long=" + _long);
+        // Log.i(TAG + ":mapPosToWgs", "lat=" + _lat + ", long=" + _long);
         return new WgsPoint(_long, _lat).toInternalWgs();
     }
 
@@ -100,7 +98,7 @@ public abstract class CH1903 extends BaseMap implements Projection {
         int X = (int) Math.ceil(CHxtoPIX(y));
         int Y = (int) Math.ceil(CHytoPIX(x));
 
-        Log.i(TAG + ":wgsToMapPos", "x=" + X + ", y=" + Y);
+        // Log.i(TAG + ":wgsToMapPos", "x=" + X + ", y=" + Y);
         return new MapPos(X, Y, zoom);
     }
 

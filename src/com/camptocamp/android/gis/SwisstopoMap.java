@@ -4,15 +4,12 @@ package com.camptocamp.android.gis;
 
 import java.util.HashMap;
 
-import android.util.Log;
-
 import com.nutiteq.components.MapPos;
 import com.nutiteq.maps.UnstreamedMap;
 
 public class SwisstopoMap extends CH1903 implements UnstreamedMap {
 
-    // @SuppressWarnings("unused")
-    private static final String TAG = Map.D + "SwisstopoMap";
+    // private static final String TAG = Map.D + "SwisstopoMap";
     private static final int MIN_ZOOM = 14;
     private static final int MAX_ZOOM = 26;
     private static final int TILESIZE = 256;
@@ -110,7 +107,7 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
     protected void setValues() {
         y_shift = getMapHeight(zoom) - getRealMapHeight(zoom);
         // Log.v(TAG, "ch_pixel_y=" + ch_pixel_y);
-        Log.v(TAG, "y_shift=" + y_shift);
+        // Log.v(TAG, "y_shift=" + y_shift);
     }
 
 }

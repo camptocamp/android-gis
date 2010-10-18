@@ -16,11 +16,10 @@ public class SwisstopoComponent extends BasicMapComponent {
 
     @Override
     public void zoomIn() {
-        int z1 = middlePoint.getZoom();
-
         if (middlePoint.getZoom() == displayedMap.getMaxZoom()) {
             return;
         }
+        int z1 = middlePoint.getZoom();
         cleanMapBuffer();
         middlePoint = displayedMap.zoom(middlePoint, 1);
         tileMapBounds = displayedMap.getTileMapBounds(middlePoint.getZoom());
@@ -28,9 +27,11 @@ public class SwisstopoComponent extends BasicMapComponent {
         // Zoom buffer according to map resolution
         double ratio = SwisstopoMap.resolutions.get(z1)
                 / SwisstopoMap.resolutions.get(middlePoint.getZoom());
+        // Log.v(TAG, "ratio=" + ratio);
         double exp = Math.log(ratio) / Math.log(2);
+        Log.v(TAG, "exp=" + -exp);
 
-        createZoomBufferAndUpdateScreen(-exp, true);
+        createZoomBufferAndUpdateScreen(exp, true, false);
 
         // Try with super.zoomIn()
         // int z1 = middlePoint.getZoom();
@@ -45,21 +46,22 @@ public class SwisstopoComponent extends BasicMapComponent {
 
     @Override
     public void zoomOut() {
-        int z1 = middlePoint.getZoom();
 
         if (middlePoint.getZoom() == displayedMap.getMaxZoom()) {
             return;
         }
+        int z1 = middlePoint.getZoom();
         cleanMapBuffer();
         middlePoint = displayedMap.zoom(middlePoint, -1);
         tileMapBounds = displayedMap.getTileMapBounds(middlePoint.getZoom());
 
         // Zoom buffer according to map resolution
-        double ratio = SwisstopoMap.resolutions.get(z1)
-                / SwisstopoMap.resolutions.get(middlePoint.getZoom());
+        double ratio = SwisstopoMap.resolutions.get(middlePoint.getZoom())
+                / SwisstopoMap.resolutions.get(z1);
+        // Log.v(TAG, "ratio=" + ratio);
         double exp = Math.log(ratio) / Math.log(2);
         Log.v(TAG, "exp=" + exp);
 
-        createZoomBufferAndUpdateScreen(exp, true);
+        createZoomBufferAndUpdateScreen(exp, true, true);
     }
 }
