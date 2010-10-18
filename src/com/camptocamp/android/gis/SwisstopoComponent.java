@@ -45,9 +45,8 @@ public class SwisstopoComponent extends BasicMapComponent {
     }
 
     @Override
-    public void zoomOut() {
-
-        if (middlePoint.getZoom() == displayedMap.getMaxZoom()) {
+    public void zoomOut() {        
+        if (middlePoint.getZoom() == displayedMap.getMinZoom()) {
             return;
         }
         int z1 = middlePoint.getZoom();
