@@ -1,29 +1,39 @@
 package com.camptocamp.android.gis;
 
 import android.app.Activity;
+import android.content.Context;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.widget.Toast;
 import android.widget.ZoomControls;
 
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.android.MapView;
 import com.nutiteq.cache.MemoryCache;
-import com.nutiteq.components.Place;
+import com.nutiteq.components.PlaceIcon;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.controls.AndroidKeysHandler;
+import com.nutiteq.location.LocationSource;
+import com.nutiteq.location.NutiteqLocationMarker;
+import com.nutiteq.location.providers.AndroidGPSProvider;
+import com.nutiteq.log.AndroidLogger;
+import com.nutiteq.log.Log;
 import com.nutiteq.ui.EventDrivenPanning;
 import com.nutiteq.utils.Utils;
 
 public class Map extends Activity {
 
+    private boolean isTrackingPosition = false;
     private boolean onRetainCalled;
     private MapView mapView;
     private BasicMapComponent mapComponent;
+    private SwisstopoMap geomap;
 
     public static final String D = "C2C:";
     // private final static String TAG = D + "Map";
@@ -47,11 +57,12 @@ public class Map extends Activity {
         // Create base map
         final Object savedMapComponent = getLastNonConfigurationInstance();
         if (savedMapComponent == null) {
+            geomap = new SwisstopoMap(getString(R.string.base_url_pixel), VDR, ZOOM);
             mapComponent = new SwisstopoComponent(new WgsPoint(lng, lat), ZOOM);
-            mapComponent.setMap(new SwisstopoMap(getString(R.string.base_url_pixel), VDR, ZOOM));
-            // final MemoryCache memoryCache = new MemoryCache(1024 * 1024);
-            // mapComponent.setNetworkCache(memoryCache);
-            mapComponent.setNetworkCache(new MemoryCache(0));
+            mapComponent.setMap(geomap);
+            final MemoryCache memoryCache = new MemoryCache(1024 * 1024);
+            mapComponent.setNetworkCache(memoryCache);
+            // mapComponent.setNetworkCache(new MemoryCache(0));
             // mapComponent.setPanningStrategy(new ThreadDrivenPanning());
             mapComponent.setPanningStrategy(new EventDrivenPanning());
             mapComponent.setControlKeysHandler(new AndroidKeysHandler());
@@ -61,8 +72,8 @@ public class Map extends Activity {
             mapComponent = (BasicMapComponent) savedMapComponent;
         }
 
-        // Log.setLogger(new AndroidLogger(APP));
-        // Log.enableAll();
+        Log.setLogger(new AndroidLogger(APP));
+        Log.enableAll();
 
         // Map View
         mapView = new MapView(this, mapComponent);
@@ -84,17 +95,31 @@ public class Map extends Activity {
         });
 
         // GPS Location
-        // final LocationSource locationSource = new AndroidGPSProvider(
-        // (LocationManager) getSystemService(Context.LOCATION_SERVICE), 1000L);
-        // final LocationMarker marker = new NutiteqLocationMarker(new
-        // PlaceIcon(Utils
-        // .createImage("/res/drawable/marker.png"), 16, 32), 0, false);
-        // locationSource.setLocationMarker(marker);
-        // mapComponent.setLocationSource(locationSource);
+        final LocationSource locationSource = new AndroidGPSProvider(
+                (LocationManager) getSystemService(Context.LOCATION_SERVICE), 1000L);
+        locationSource.setLocationMarker(new NutiteqLocationMarker(new PlaceIcon(Utils
+                .createImage("/res/drawable/marker.png"), 8, 8), 0, true));
+        final ImageButton btn = (ImageButton) findViewById(R.id.position_track);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isTrackingPosition) {
+                    Toast.makeText(Map.this, "GPS tracking stopped !", Toast.LENGTH_SHORT).show();
+                    locationSource.quit();
+                    isTrackingPosition = false;
+                } else {
+                    Toast.makeText(Map.this, "GPS tracking started !", Toast.LENGTH_SHORT).show();
+                    mapComponent.setLocationSource(locationSource);
+                    isTrackingPosition = true;
+                }
+            }
+        });
 
         // Markers
-        mapComponent.addPlace(new Place(1, "PSE - EPFL", Utils
-                .createImage("/res/drawable/marker.png"), new WgsPoint(6.562794, 46.517705)));
+        // mapComponent.addPlace(new Place(1, "PSE - EPFL", Utils
+        // .createImage("/res/drawable/marker.png"), new WgsPoint(6.562794,
+        // 46.517705)));
+        // 6.562794, 46.517705
     }
 
     @Override

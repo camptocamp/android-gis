@@ -25,9 +25,8 @@ public class SwisstopoComponent extends BasicMapComponent {
         // Zoom buffer according to map resolution
         double ratio = SwisstopoMap.resolutions.get(z1)
                 / SwisstopoMap.resolutions.get(middlePoint.getZoom());
-        double exp = Math.log(ratio) / Math.log(2);
 
-        createZoomBufferAndUpdateScreen(exp, true, false);
+        createZoomBufferAndUpdateScreen(Math.log(ratio) / Math.log(2), true, false);
 
     }
 
@@ -44,8 +43,7 @@ public class SwisstopoComponent extends BasicMapComponent {
         // Zoom buffer according to map resolution
         double ratio = SwisstopoMap.resolutions.get(middlePoint.getZoom())
                 / SwisstopoMap.resolutions.get(z1);
-        double exp = Math.log(ratio) / Math.log(2);
 
-        createZoomBufferAndUpdateScreen(exp, true, true);
+        createZoomBufferAndUpdateScreen(Math.log(ratio) / Math.log(2), true, true);
     }
 }
