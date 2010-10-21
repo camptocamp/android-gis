@@ -1,15 +1,13 @@
 package com.camptocamp.android.gis;
 
-import com.nutiteq.BasicMapComponent;
 import com.nutiteq.components.WgsPoint;
 
-public class SwisstopoComponent extends BasicMapComponent {
+public class SwisstopoComponent extends MyMapComponent {
 
     // private static final String TAG = Map.D + "SwisstopoComponent";
-    private static final String KEY = "182be0c5cdcd5072bb1864cdee4d3d6e4c593f89365962.70956542";
 
     public SwisstopoComponent(WgsPoint middlePoint, int zoom) {
-        super(KEY, Map.VDR, Map.APP, 1, 1, middlePoint, zoom);
+        super(middlePoint, zoom);
     }
 
     @Override

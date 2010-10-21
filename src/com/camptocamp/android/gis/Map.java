@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.widget.ZoomControls;
 
+import com.mgmaps.cache.ScreenCache;
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.android.MapView;
 import com.nutiteq.cache.MemoryCache;
@@ -22,6 +23,7 @@ import com.nutiteq.controls.AndroidKeysHandler;
 import com.nutiteq.location.LocationSource;
 import com.nutiteq.location.NutiteqLocationMarker;
 import com.nutiteq.location.providers.AndroidGPSProvider;
+import com.nutiteq.location.providers.CellIdLocationProvider;
 import com.nutiteq.log.AndroidLogger;
 import com.nutiteq.log.Log;
 import com.nutiteq.ui.EventDrivenPanning;
@@ -72,8 +74,8 @@ public class Map extends Activity {
             mapComponent = (BasicMapComponent) savedMapComponent;
         }
 
-        Log.setLogger(new AndroidLogger(APP));
-        Log.enableAll();
+        // Log.setLogger(new AndroidLogger(APP));
+        // Log.enableAll();
 
         // Map View
         mapView = new MapView(this, mapComponent);
@@ -94,7 +96,9 @@ public class Map extends Activity {
             }
         });
 
-        // GPS Location
+        // GPS Location tracking
+        // FIXME: Implements CellId/Wifi provider and automatic choice of best
+        // data available
         final LocationSource locationSource = new AndroidGPSProvider(
                 (LocationManager) getSystemService(Context.LOCATION_SERVICE), 1000L);
         locationSource.setLocationMarker(new NutiteqLocationMarker(new PlaceIcon(Utils
