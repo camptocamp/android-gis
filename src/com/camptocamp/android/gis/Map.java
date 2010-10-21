@@ -13,7 +13,6 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.widget.ZoomControls;
 
-import com.mgmaps.cache.ScreenCache;
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.android.MapView;
 import com.nutiteq.cache.MemoryCache;
@@ -23,9 +22,6 @@ import com.nutiteq.controls.AndroidKeysHandler;
 import com.nutiteq.location.LocationSource;
 import com.nutiteq.location.NutiteqLocationMarker;
 import com.nutiteq.location.providers.AndroidGPSProvider;
-import com.nutiteq.location.providers.CellIdLocationProvider;
-import com.nutiteq.log.AndroidLogger;
-import com.nutiteq.log.Log;
 import com.nutiteq.ui.EventDrivenPanning;
 import com.nutiteq.utils.Utils;
 
@@ -99,8 +95,8 @@ public class Map extends Activity {
         // GPS Location tracking
         // FIXME: Implements CellId/Wifi provider and automatic choice of best
         // data available
-        final LocationSource locationSource = new AndroidGPSProvider(
-                (LocationManager) getSystemService(Context.LOCATION_SERVICE), 1000L);
+        final LocationManager locmanager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        final LocationSource locationSource = new AndroidGPSProvider(locmanager, 1000L);
         locationSource.setLocationMarker(new NutiteqLocationMarker(new PlaceIcon(Utils
                 .createImage("/res/drawable/marker.png"), 8, 8), 0, true));
         final ImageButton btn = (ImageButton) findViewById(R.id.position_track);
@@ -115,6 +111,12 @@ public class Map extends Activity {
                     Toast.makeText(Map.this, "GPS tracking started !", Toast.LENGTH_SHORT).show();
                     mapComponent.setLocationSource(locationSource);
                     isTrackingPosition = true;
+                    // if
+                    // (locmanager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+                    // {
+                    // Toast.makeText(Map.this, "GPS is disabled !",
+                    // Toast.LENGTH_SHORT).show();
+                    // }
                 }
             }
         });
