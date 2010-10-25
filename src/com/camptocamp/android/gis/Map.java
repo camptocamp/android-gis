@@ -25,7 +25,8 @@ import com.nutiteq.location.providers.AndroidGPSProvider;
 import com.nutiteq.log.AndroidLogger;
 import com.nutiteq.log.Log;
 import com.nutiteq.maps.GeoMap;
-import com.nutiteq.maps.QKMap;
+import com.nutiteq.maps.OpenStreetMap;
+import com.nutiteq.maps.SimpleWMSMap;
 import com.nutiteq.ui.EventDrivenPanning;
 import com.nutiteq.utils.Utils;
 
@@ -44,7 +45,8 @@ public class Map extends Activity {
     private static final int ZOOM = 14;
     private static final int MENU_MAP_PIXEL = 0;
     private static final int MENU_MAP_ORTHO = 1;
-    private static final int MENU_MAP_BING = 2;
+    private static final int MENU_MAP_OSM = 2;
+    private static final int MENU_MAP_WMS = 3;
 
     private final double lat = 46.517815; // X: 152'210
     private final double lng = 6.562805; // Y: 532'790
@@ -137,7 +139,8 @@ public class Map extends Activity {
     public boolean onCreateOptionsMenu(final Menu menu) {
         menu.add(0, MENU_MAP_PIXEL, 0, "SwissTopo Pixel Map");
         menu.add(0, MENU_MAP_ORTHO, 1, "SwissTopo Orthophoto");
-        menu.add(0, MENU_MAP_BING, 2, "Bing Map Orthophoto");
+        menu.add(0, MENU_MAP_OSM, 2, "OpenStreetMap");
+        menu.add(0, MENU_MAP_WMS, 3, "WMS Test");
         return true;
     }
 
@@ -154,10 +157,17 @@ public class Map extends Activity {
             setMapComponent(new SwisstopoComponent(mapComponent.getMiddlePoint(), zoom),
                     new SwisstopoMap(getString(R.string.base_url_ortho), VDR, zoom));
             break;
-        case MENU_MAP_BING:
-            setMapComponent(new C2CMapComponent(mapComponent.getMiddlePoint(), 12), new QKMap(
-                    "Microsoft", "http://ecn.t2.tiles.virtualearth.net/tiles/h", 256, 1, 18,
-                    ".jpeg?g=321&mkt=en-us"));
+        case MENU_MAP_OSM:
+            setMapComponent(new C2CMapComponent(mapComponent.getMiddlePoint(), zoom),
+                    OpenStreetMap.MAPNIK);
+            break;
+        case MENU_MAP_WMS:
+            SimpleWMSMap wms = new SimpleWMSMap(
+                    "http://iceds.ge.ucl.ac.uk/cgi-bin/icedswms?VERSION=1.1.1&SRS=EPSG:4326", 256,
+                    0, 18, "bluemarble,cities,countries", "image/jpeg", "default", "GetMap",
+                    "© UCL");
+            wms.setWidthHeightRatio(2.0);
+            setMapComponent(new C2CMapComponent(mapComponent.getMiddlePoint(), 3), wms);
             break;
         default:
             setMapComponent(new SwisstopoComponent(new WgsPoint(lng, lat), ZOOM), new SwisstopoMap(
@@ -168,22 +178,16 @@ public class Map extends Activity {
     }
 
     private void setMapComponent(final BasicMapComponent mc, final GeoMap gm) {
-        // if (mapComponent != null) {
-        // mapComponent.stopMapping();
-        // }
         final Object savedMapComponent = getLastNonConfigurationInstance();
         if (savedMapComponent == null) {
             mc.setMap(gm);
-            // mapComponent.setNetworkCache(new MemoryCache(0));
             mc.setNetworkCache(new MemoryCache(1024 * 1024));
-            // mapComponent.setPanningStrategy(new ThreadDrivenPanning());
             mc.setPanningStrategy(new EventDrivenPanning());
             mc.setControlKeysHandler(new AndroidKeysHandler());
             mc.startMapping();
             mc.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
             mapComponent = mc;
         } else {
-            android.util.Log.v(TAG, "get last saved map component");
             mapComponent = (BasicMapComponent) savedMapComponent;
         }
     }
