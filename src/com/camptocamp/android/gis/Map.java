@@ -24,6 +24,8 @@ import com.nutiteq.location.NutiteqLocationMarker;
 import com.nutiteq.location.providers.AndroidGPSProvider;
 import com.nutiteq.log.AndroidLogger;
 import com.nutiteq.log.Log;
+import com.nutiteq.maps.GeoMap;
+import com.nutiteq.maps.QKMap;
 import com.nutiteq.ui.EventDrivenPanning;
 import com.nutiteq.utils.Utils;
 
@@ -31,17 +33,18 @@ public class Map extends Activity {
 
     private boolean isTrackingPosition = false;
     private boolean onRetainCalled;
-    private MapView mapView;
-    private BasicMapComponent mapComponent;
-    private SwisstopoMap geomap;
+    private LinearLayout mapLayout;
+    private MapView mapView = null;
+    private BasicMapComponent mapComponent = null;
 
     public static final String D = "C2C:";
-    // private final static String TAG = D + "Map";
+    private final static String TAG = D + "Map";
     public static final String APP = "c2c-android-gis";
-    public static final String VDR = "Camptocamp SA";
+    public static final String VDR = "Swisstopo";
     private static final int ZOOM = 14;
     private static final int MENU_MAP_PIXEL = 0;
     private static final int MENU_MAP_ORTHO = 1;
+    private static final int MENU_MAP_BING = 2;
 
     private final double lat = 46.517815; // X: 152'210
     private final double lng = 6.562805; // Y: 532'790
@@ -52,34 +55,15 @@ public class Map extends Activity {
         onRetainCalled = false;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
-        LinearLayout mapLayout = ((LinearLayout) findViewById(R.id.map));
+        mapLayout = ((LinearLayout) findViewById(R.id.map));
 
-        // Create base map
-        final Object savedMapComponent = getLastNonConfigurationInstance();
-        if (savedMapComponent == null) {
-            geomap = new SwisstopoMap(getString(R.string.base_url_pixel), VDR, ZOOM);
-            mapComponent = new SwisstopoComponent(new WgsPoint(lng, lat), ZOOM);
-            mapComponent.setMap(geomap);
-            final MemoryCache memoryCache = new MemoryCache(1024 * 1024);
-            mapComponent.setNetworkCache(memoryCache);
-            // mapComponent.setNetworkCache(new MemoryCache(0));
-            // mapComponent.setPanningStrategy(new ThreadDrivenPanning());
-            mapComponent.setPanningStrategy(new EventDrivenPanning());
-            mapComponent.setControlKeysHandler(new AndroidKeysHandler());
-            mapComponent.startMapping();
-            mapComponent.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
-        } else {
-            mapComponent = (BasicMapComponent) savedMapComponent;
-        }
+        // Set default map
+        setMapComponent(new SwisstopoComponent(new WgsPoint(lng, lat), ZOOM), new SwisstopoMap(
+                getString(R.string.base_url_pixel), VDR, ZOOM));
+        setMapView();
 
         Log.setLogger(new AndroidLogger(APP));
         // Log.enableAll();
-
-        // Map View
-        mapView = new MapView(this, mapComponent);
-        mapLayout.addView(mapView);
-        mapView.setClickable(true);
-        mapView.setEnabled(true);
 
         // Zoom
         final ZoomControls zoomControls = (ZoomControls) findViewById(R.id.zoom);
@@ -131,34 +115,6 @@ public class Map extends Activity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(final Menu menu) {
-        menu.add(0, MENU_MAP_PIXEL, 0, "Pixel Map");
-        menu.add(0, MENU_MAP_ORTHO, 1, "Orthophoto");
-        return true;
-    }
-
-    @Override
-    public boolean onMenuItemSelected(final int featureId, final MenuItem item) {
-        // FIXME: Doesn't fully work
-        int zoom = ((SwisstopoMap) mapComponent.getMap()).zoom;
-        switch (item.getItemId()) {
-        case MENU_MAP_PIXEL:
-            mapComponent.setMap(new SwisstopoMap(getString(R.string.base_url_pixel), VDR, zoom));
-            break;
-        case MENU_MAP_ORTHO:
-            mapComponent.setMap(new SwisstopoMap(getString(R.string.base_url_ortho), VDR, zoom));
-            break;
-        }
-        return true;
-    }
-
-    @Override
-    public Object onRetainNonConfigurationInstance() {
-        onRetainCalled = true;
-        return mapComponent;
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
         if (mapView != null) {
@@ -169,5 +125,76 @@ public class Map extends Activity {
             mapComponent.stopMapping();
             mapComponent = null;
         }
+    }
+
+    @Override
+    public Object onRetainNonConfigurationInstance() {
+        onRetainCalled = true;
+        return mapComponent;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        menu.add(0, MENU_MAP_PIXEL, 0, "SwissTopo Pixel Map");
+        menu.add(0, MENU_MAP_ORTHO, 1, "SwissTopo Orthophoto");
+        menu.add(0, MENU_MAP_BING, 2, "Bing Map Orthophoto");
+        return true;
+    }
+
+    @Override
+    public boolean onMenuItemSelected(final int featureId, final MenuItem item) {
+        int zoom = mapComponent.getZoom();
+
+        switch (item.getItemId()) {
+        case MENU_MAP_PIXEL:
+            setMapComponent(new SwisstopoComponent(mapComponent.getMiddlePoint(), zoom),
+                    new SwisstopoMap(getString(R.string.base_url_pixel), VDR, zoom));
+            break;
+        case MENU_MAP_ORTHO:
+            setMapComponent(new SwisstopoComponent(mapComponent.getMiddlePoint(), zoom),
+                    new SwisstopoMap(getString(R.string.base_url_ortho), VDR, zoom));
+            break;
+        case MENU_MAP_BING:
+            setMapComponent(new C2CMapComponent(mapComponent.getMiddlePoint(), 12), new QKMap(
+                    "Microsoft", "http://ecn.t2.tiles.virtualearth.net/tiles/h", 256, 1, 18,
+                    ".jpeg?g=321&mkt=en-us"));
+            break;
+        default:
+            setMapComponent(new SwisstopoComponent(new WgsPoint(lng, lat), ZOOM), new SwisstopoMap(
+                    getString(R.string.base_url_pixel), VDR, zoom));
+        }
+        setMapView();
+        return true;
+    }
+
+    private void setMapComponent(final BasicMapComponent mc, final GeoMap gm) {
+        // if (mapComponent != null) {
+        // mapComponent.stopMapping();
+        // }
+        final Object savedMapComponent = getLastNonConfigurationInstance();
+        if (savedMapComponent == null) {
+            mc.setMap(gm);
+            // mapComponent.setNetworkCache(new MemoryCache(0));
+            mc.setNetworkCache(new MemoryCache(1024 * 1024));
+            // mapComponent.setPanningStrategy(new ThreadDrivenPanning());
+            mc.setPanningStrategy(new EventDrivenPanning());
+            mc.setControlKeysHandler(new AndroidKeysHandler());
+            mc.startMapping();
+            mc.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
+            mapComponent = mc;
+        } else {
+            android.util.Log.v(TAG, "get last saved map component");
+            mapComponent = (BasicMapComponent) savedMapComponent;
+        }
+    }
+
+    private void setMapView() {
+        if (mapView != null) {
+            mapLayout.removeAllViews();
+        }
+        mapView = new MapView(getApplicationContext(), mapComponent);
+        mapLayout.addView(mapView);
+        mapView.setClickable(true);
+        mapView.setEnabled(true);
     }
 }

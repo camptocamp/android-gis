@@ -104,6 +104,9 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
     }
 
     protected void setValues() {
+        if (zoom < MIN_ZOOM || zoom > MAX_ZOOM) {
+            zoom = MIN_ZOOM;
+        }
         y_shift = getMapHeight(zoom) - getRealMapHeight(zoom);
     }
 
