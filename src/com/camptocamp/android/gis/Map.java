@@ -22,6 +22,8 @@ import com.nutiteq.controls.AndroidKeysHandler;
 import com.nutiteq.location.LocationSource;
 import com.nutiteq.location.NutiteqLocationMarker;
 import com.nutiteq.location.providers.AndroidGPSProvider;
+import com.nutiteq.log.AndroidLogger;
+import com.nutiteq.log.Log;
 import com.nutiteq.ui.EventDrivenPanning;
 import com.nutiteq.utils.Utils;
 
@@ -70,7 +72,7 @@ public class Map extends Activity {
             mapComponent = (BasicMapComponent) savedMapComponent;
         }
 
-        // Log.setLogger(new AndroidLogger(APP));
+        Log.setLogger(new AndroidLogger(APP));
         // Log.enableAll();
 
         // Map View

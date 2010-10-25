@@ -9,7 +9,7 @@ import com.nutiteq.BasicMapComponent;
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.WgsPoint;
 
-public class MyMapComponent extends BasicMapComponent {
+public class C2CMapComponent extends BasicMapComponent {
 
     private static final String TAG = Map.D + "MyMapComponent";
     private static final String KEY = "182be0c5cdcd5072bb1864cdee4d3d6e4c593f89365962.70956542";
@@ -19,7 +19,7 @@ public class MyMapComponent extends BasicMapComponent {
     private int lastpanx = 0;
     private int lastpany = 0;
 
-    public MyMapComponent(WgsPoint middlePoint, int zoom) {
+    public C2CMapComponent(WgsPoint middlePoint, int zoom) {
         super(KEY, Map.VDR, Map.APP, 1, 1, middlePoint, zoom);
     }
 

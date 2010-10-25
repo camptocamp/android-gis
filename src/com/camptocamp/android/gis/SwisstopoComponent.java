@@ -2,7 +2,7 @@ package com.camptocamp.android.gis;
 
 import com.nutiteq.components.WgsPoint;
 
-public class SwisstopoComponent extends MyMapComponent {
+public class SwisstopoComponent extends C2CMapComponent {
 
     // private static final String TAG = Map.D + "SwisstopoComponent";
 
