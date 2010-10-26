@@ -1,8 +1,9 @@
 package com.camptocamp.android.gis;
 
+import java.util.List;
+
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.animation.DecelerateInterpolator;
 
 import com.nutiteq.BasicMapComponent;
@@ -21,8 +22,10 @@ public class C2CMapComponent extends BasicMapComponent {
 
     private int lastposx = 0;
     private int lastposy = 0;
-    private int lastpanx = 0;
-    private int lastpany = 0;
+    // private int lastpanx = 0;
+    // private int lastpany = 0;
+    private int[] lastpanx = new int[2];
+    private int[] lastpany = new int[2];
     private long lasttouch;
 
     public C2CMapComponent(WgsPoint middlePoint, int zoom) {
@@ -44,8 +47,11 @@ public class C2CMapComponent extends BasicMapComponent {
             panY = 0;
         }
 
-        lastpanx = panX;
-        lastpany = panY;
+        // Save last two pan value
+        lastpanx[1] = lastpanx[0];
+        lastpany[1] = lastpany[0];
+        lastpanx[0] = panX;
+        lastpany[0] = panY;
 
         super.panMap(panX, panY);
     }
@@ -64,14 +70,17 @@ public class C2CMapComponent extends BasicMapComponent {
     public void pointerReleased(final int x, final int y) {
         super.pointerReleased(x, y);
 
+        int panx = lastpanx[0] + lastpanx[1];
+        int pany = lastpany[0] + lastpany[1];
+
         // Initiate Easing
-        mHandler.sendMessageDelayed(mHandler.obtainMessage(MOVE, lastpanx, lastpany), DELAY);
+        mHandler.sendMessageDelayed(mHandler.obtainMessage(MOVE, panx, pany), DELAY);
 
         // Double Tap ZoomIn
         long now = System.currentTimeMillis();
         if (now - lasttouch <= DOUBLETAP_DELTA && Math.abs(lastposx - x) < DOUBLETAP_RADIUS
-                && Math.abs(lastposy - y) < DOUBLETAP_RADIUS && lastpanx < DOUBLETAP_PAN
-                && lastpany < DOUBLETAP_PAN) {
+                && Math.abs(lastposy - y) < DOUBLETAP_RADIUS && panx < DOUBLETAP_PAN
+                && pany < DOUBLETAP_PAN) {
             panMap(x - (getWidth() / 2), y - (getHeight() / 2));
             zoomIn();
         }
