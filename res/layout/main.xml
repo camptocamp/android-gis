@@ -25,5 +25,12 @@
 	        android:padding="5dip"
 	        android:background="@drawable/btn_bg"
 	        android:src="@android:drawable/ic_menu_mylocation" />
+	    <ImageButton
+            android:id="@+id/switch_overlay_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dip"
+            android:background="@drawable/btn_bg"
+            android:src="@android:drawable/ic_menu_slideshow" />
     </LinearLayout>
 </LinearLayout>

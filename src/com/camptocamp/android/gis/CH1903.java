@@ -38,13 +38,13 @@ public abstract class CH1903 extends BaseMap implements Projection {
      * Pixel to CH (in meters) and vice versa. Need to implement meter to pixel
      * calculation according to tiles resolution by zoom level.
      */
-    protected abstract double CHxtoPIX(double pt);
+    public abstract double CHxtoPIX(double pt);
 
-    protected abstract double CHytoPIX(double pt);
+    public abstract double CHytoPIX(double pt);
 
-    protected abstract double PIXtoCHx(double px);
+    public abstract double PIXtoCHx(double px);
 
-    protected abstract double PIXtoCHy(double px);
+    public abstract double PIXtoCHy(double px);
 
     public Point mapPosToWgs(MapPos pos) {
         // Convert from CH1903 to pixel

@@ -87,19 +87,19 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
         return (MAX_Y - MIN_Y) / resolutions.get(zoom);
     }
 
-    protected double CHxtoPIX(double pt) {
+    public double CHxtoPIX(double pt) {
         return (pt - MIN_X) / resolutions.get(zoom);
     }
 
-    protected double CHytoPIX(double pt) {
+    public double CHytoPIX(double pt) {
         return ((MAX_Y - pt) / resolutions.get(zoom)) + y_shift;
     }
 
-    protected double PIXtoCHx(double px) {
+    public double PIXtoCHx(double px) {
         return MIN_X + (px * resolutions.get(zoom));
     }
 
-    protected double PIXtoCHy(double px) {
+    public double PIXtoCHy(double px) {
         return MAX_Y - ((px - y_shift) * resolutions.get(zoom));
     }
 

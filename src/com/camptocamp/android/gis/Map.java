@@ -32,21 +32,23 @@ import com.nutiteq.utils.Utils;
 
 public class Map extends Activity {
 
-    private boolean isTrackingPosition = false;
-    private boolean onRetainCalled;
-    private LinearLayout mapLayout;
-    private MapView mapView = null;
-    private BasicMapComponent mapComponent = null;
-
     public static final String D = "C2C:";
-    private final static String TAG = D + "Map";
     public static final String APP = "c2c-android-gis";
     public static final String VDR = "Swisstopo";
+    // private static final String TAG = D + "Map";
     private static final int ZOOM = 14;
     private static final int MENU_MAP_PIXEL = 0;
     private static final int MENU_MAP_ORTHO = 1;
     private static final int MENU_MAP_OSM = 2;
     private static final int MENU_MAP_WMS = 3;
+    private static final String LAYERS = "PointsHotel,PointsBedBreak,PointsJugen,PointsBackpacker,PointsGruppen,PointsUbernachten,PointsBauernhof,PointsFerien,PointsCamping,PointsBerghuette";
+
+    private boolean hasOverlay = false;
+    private boolean isTrackingPosition = false;
+    private boolean onRetainCalled;
+    private LinearLayout mapLayout;
+    private MapView mapView = null;
+    private BasicMapComponent mapComponent = null;
 
     private final double lat = 46.517815; // X: 152'210
     private final double lng = 6.562805; // Y: 532'790
@@ -87,25 +89,42 @@ public class Map extends Activity {
         final LocationSource locationSource = new AndroidGPSProvider(locmanager, 1000L);
         locationSource.setLocationMarker(new NutiteqLocationMarker(new PlaceIcon(Utils
                 .createImage("/res/drawable/marker.png"), 8, 8), 0, true));
-        final ImageButton btn = (ImageButton) findViewById(R.id.position_track);
-        btn.setOnClickListener(new View.OnClickListener() {
+        final ImageButton btn_gps = (ImageButton) findViewById(R.id.position_track);
+        btn_gps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (isTrackingPosition) {
                     Toast.makeText(Map.this, "GPS tracking stopped !", Toast.LENGTH_SHORT).show();
                     locationSource.quit();
-                    isTrackingPosition = false;
                 } else {
                     Toast.makeText(Map.this, "GPS tracking started !", Toast.LENGTH_SHORT).show();
                     mapComponent.setLocationSource(locationSource);
-                    isTrackingPosition = true;
-                    // if
-                    // (locmanager.isProviderEnabled(LocationManager.GPS_PROVIDER))
-                    // {
-                    // Toast.makeText(Map.this, "GPS is disabled !",
-                    // Toast.LENGTH_SHORT).show();
-                    // }
                 }
+                isTrackingPosition = !isTrackingPosition;
+            }
+        });
+
+        // Switch test overlay
+        final ImageButton btn_overlay = (ImageButton) findViewById(R.id.switch_overlay_test);
+        btn_overlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // FIXME: Find a better solution
+                mapComponent.panMap(0, 0);
+
+                GeoMap gm = mapComponent.getMap();
+                if (hasOverlay) {
+                    Toast.makeText(Map.this, "Overlays removed !", Toast.LENGTH_SHORT).show();
+                    gm.addTileOverlay(null);
+                } else {
+                    Toast.makeText(Map.this, "Overlays added !", Toast.LENGTH_SHORT).show();
+                    gm
+                            .addTileOverlay(new TestOverlay(getString(R.string.base_url_overlay),
+                                    LAYERS));
+                }
+                hasOverlay = !hasOverlay;
+
+                setMapView();
             }
         });
 
@@ -181,7 +200,7 @@ public class Map extends Activity {
         final Object savedMapComponent = getLastNonConfigurationInstance();
         if (savedMapComponent == null) {
             mc.setMap(gm);
-            mc.setNetworkCache(new MemoryCache(1024 * 1024));
+            mc.setNetworkCache(new MemoryCache(8 * 1024 * 1024));
             mc.setPanningStrategy(new EventDrivenPanning());
             mc.setControlKeysHandler(new AndroidKeysHandler());
             mc.startMapping();
