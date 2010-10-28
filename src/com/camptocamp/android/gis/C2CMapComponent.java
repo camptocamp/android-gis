@@ -7,6 +7,7 @@ import android.os.Message;
 import android.view.animation.DecelerateInterpolator;
 
 import com.nutiteq.BasicMapComponent;
+import com.nutiteq.MapComponent;
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.WgsPoint;
 

@@ -1,9 +1,18 @@
 package com.camptocamp.android.gis;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,11 +46,39 @@ public class Map extends Activity {
     public static final String VDR = "Swisstopo";
     // private static final String TAG = D + "Map";
     private static final int ZOOM = 14;
-    private static final int MENU_MAP_PIXEL = 0;
-    private static final int MENU_MAP_ORTHO = 1;
+
+    private int MENU_CURRENT = MENU_MAP_ST_PIXEL;
+    private static final int MENU_MAP_ST_PIXEL = 0;
+    private static final int MENU_MAP_ST_ORTHO = 1;
     private static final int MENU_MAP_OSM = 2;
     private static final int MENU_MAP_WMS = 3;
-    private static final String LAYERS = "PointsHotel,PointsBedBreak,PointsJugen,PointsBackpacker,PointsGruppen,PointsUbernachten,PointsBauernhof,PointsFerien,PointsCamping,PointsBerghuette";
+
+    private List<String> mSelectedLayers = new ArrayList<String>();
+    private static final HashMap<String, String> ST_LAYERS = new HashMap<String, String>() {
+        private static final long serialVersionUID = -5103685184290294076L;
+        {
+            put(
+                    "Cycling in Switzerland",
+                    "VelolandRoutenNational,VelolandRoutenRegional,VelolandRoutenLokal,VelolandMiet,VelolandEbikestation,VelolandService");
+            put("Hiking in Switzerland",
+                    "WanderlandRoutenNational,WanderlandRoutenRegional,WanderlandRoutenLokal,Wanderwegnetz");
+            put("Mountainbiking in Switzerland",
+                    "MtblandRoutenNational,MtblandRoutenRegional,MtblandRoutenLokal,MtblandMiet,MtblandService");
+            put("Skating in Switzerland",
+                    "SkatinglandRoutenNational,SkatinglandRoutenRegional,SkatinglandRoutenLokal");
+            put("Canoeing in Switzerland",
+                    "KanulandRoutenNational,KanulandRoutenRegional,KanulandRafting,KanulandClub");
+            put(
+                    "Rail, bus, boat",
+                    "OffentlicherBahn,OffentlicherBus,OffentlicherTramBus,OffentlicherSchiff,OffentlicherSeilbahn,OffentlicherStandseilbahn");
+            put("Places", "Orte");
+            put(
+                    "Accommodation",
+                    "PointsHotel,PointsBedBreak,PointsJugen,PointsBackpacker,PointsGruppen,PointsUbernachten,PointsBauernhof,PointsFerien,PointsCamping,PointsBerghuette");
+            put("Shopping", "Migros");
+            put("Places of interest", "Natur,Kultur,Erlebnisse");
+        }
+    };
 
     private boolean hasOverlay = false;
     private boolean isTrackingPosition = false;
@@ -104,27 +141,51 @@ public class Map extends Activity {
             }
         });
 
-        // Switch test overlay
+        // Switch overlay
         final ImageButton btn_overlay = (ImageButton) findViewById(R.id.switch_overlay_test);
         btn_overlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // FIXME: Find a better solution
-                mapComponent.panMap(0, 0);
-
-                GeoMap gm = mapComponent.getMap();
-                if (hasOverlay) {
-                    Toast.makeText(Map.this, "Overlays removed !", Toast.LENGTH_SHORT).show();
-                    gm.addTileOverlay(null);
+                // Layers only for Swisstopo maps (FIXME: Be generic)
+                if (MENU_CURRENT == MENU_MAP_ST_PIXEL || MENU_CURRENT == MENU_MAP_ST_ORTHO) {
+                    final String[] layers_keys = (String[]) ST_LAYERS.keySet().toArray(
+                            new String[ST_LAYERS.size()]);
+                    boolean[] layers_states = new boolean[ST_LAYERS.size()];
+                    for (int i = 0; i < ST_LAYERS.size(); i++) {
+                        layers_states[i] = mSelectedLayers.contains(ST_LAYERS.get(layers_keys[i]));
+                    }
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(Map.this);
+                    dialog.setTitle("Choose layer(s):");
+                    dialog.setMultiChoiceItems(layers_keys, layers_states,
+                            new DialogInterface.OnMultiChoiceClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which,
+                                        boolean isChecked) {
+                                    if (isChecked) {
+                                        mSelectedLayers.add(ST_LAYERS.get(layers_keys[which]));
+                                    } else {
+                                        mSelectedLayers.remove(ST_LAYERS.get(layers_keys[which]));
+                                    }
+                                }
+                            });
+                    dialog.setPositiveButton("Add layer(s)", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            GeoMap gm = mapComponent.getMap();
+                            if (mSelectedLayers.size() > 0) {
+                                gm.addTileOverlay(new TestOverlay(
+                                        getString(R.string.base_url_overlay), TextUtils.join(",",
+                                                mSelectedLayers.toArray())));
+                            } else {
+                                gm.addTileOverlay(null);
+                            }
+                            mapComponent.refreshTileOverlay();
+                        }
+                    });
+                    dialog.show();
                 } else {
-                    Toast.makeText(Map.this, "Overlays added !", Toast.LENGTH_SHORT).show();
-                    gm
-                            .addTileOverlay(new TestOverlay(getString(R.string.base_url_overlay),
-                                    LAYERS));
+                    Toast.makeText(Map.this, "No layer available!", Toast.LENGTH_SHORT).show();
                 }
-                hasOverlay = !hasOverlay;
-
-                setMapView();
             }
         });
 
@@ -156,8 +217,8 @@ public class Map extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
-        menu.add(0, MENU_MAP_PIXEL, 0, "SwissTopo Pixel Map");
-        menu.add(0, MENU_MAP_ORTHO, 1, "SwissTopo Orthophoto");
+        menu.add(0, MENU_MAP_ST_PIXEL, 0, "SwissTopo Pixel Map");
+        menu.add(0, MENU_MAP_ST_ORTHO, 1, "SwissTopo Orthophoto");
         menu.add(0, MENU_MAP_OSM, 2, "OpenStreetMap");
         menu.add(0, MENU_MAP_WMS, 3, "WMS Test");
         return true;
@@ -167,12 +228,13 @@ public class Map extends Activity {
     public boolean onMenuItemSelected(final int featureId, final MenuItem item) {
         int zoom = mapComponent.getZoom();
 
-        switch (item.getItemId()) {
-        case MENU_MAP_PIXEL:
+        MENU_CURRENT = item.getItemId();
+        switch (MENU_CURRENT) {
+        case MENU_MAP_ST_PIXEL:
             setMapComponent(new SwisstopoComponent(mapComponent.getMiddlePoint(), zoom),
                     new SwisstopoMap(getString(R.string.base_url_pixel), VDR, zoom));
             break;
-        case MENU_MAP_ORTHO:
+        case MENU_MAP_ST_ORTHO:
             setMapComponent(new SwisstopoComponent(mapComponent.getMiddlePoint(), zoom),
                     new SwisstopoMap(getString(R.string.base_url_ortho), VDR, zoom));
             break;
@@ -192,6 +254,7 @@ public class Map extends Activity {
             setMapComponent(new SwisstopoComponent(new WgsPoint(lng, lat), ZOOM), new SwisstopoMap(
                     getString(R.string.base_url_pixel), VDR, zoom));
         }
+        hasOverlay = false;
         setMapView();
         return true;
     }
