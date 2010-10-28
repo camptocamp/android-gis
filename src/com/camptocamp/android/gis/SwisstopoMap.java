@@ -16,7 +16,9 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
     private static final String EXT = ".jpeg";
     private double y_shift;
     private String baseUrl;
-    public int zoom;
+    private int y;
+    private int x;
+    private int zoom;
     // private final Random rand = new Random();
     // private final int MIN = 5;
     // private final int MAX = 9;
@@ -55,11 +57,10 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
     }
 
     public String buildPath(int mapX, int mapY, int zoom) {
-        int x = (int) Math.ceil(mapX / TILESIZE);
-        int y = (int) Math.ceil((getMapHeight(zoom) - TILESIZE - mapY) / TILESIZE);
+        x = (int) Math.ceil(mapX / TILESIZE);
+        y = (int) Math.ceil((getMapHeight(zoom) - TILESIZE - mapY) / TILESIZE);
         // int r = rand.nextInt(MAX - MIN + 1) + MIN;
-        int r = 5;
-        return String.format(baseUrl, r, zoom, (int) (x / 1000000), (int) (x / 1000) % 1000,
+        return String.format(baseUrl, 5, zoom, (int) (x / 1000000), (int) (x / 1000) % 1000,
                 (int) (x % 1000), (int) (y / 1000000), (int) (y / 1000) % 1000, (int) (y % 1000),
                 EXT);
     }

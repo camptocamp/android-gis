@@ -1,8 +1,6 @@
 package com.camptocamp.android.gis;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -44,6 +42,8 @@ public class Map extends Activity {
     public static final String D = "C2C:";
     public static final String APP = "c2c-android-gis";
     public static final String VDR = "Swisstopo";
+    // An image is ~25kB => 1MB = 40 cached images
+    private static final int SCREENCACHE = 1024 * 1024; // Bytes
     // private static final String TAG = D + "Map";
     private static final int ZOOM = 14;
 
@@ -80,7 +80,6 @@ public class Map extends Activity {
         }
     };
 
-    private boolean hasOverlay = false;
     private boolean isTrackingPosition = false;
     private boolean onRetainCalled;
     private LinearLayout mapLayout;
@@ -217,10 +216,10 @@ public class Map extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
-        menu.add(0, MENU_MAP_ST_PIXEL, 0, "SwissTopo Pixel Map");
-        menu.add(0, MENU_MAP_ST_ORTHO, 1, "SwissTopo Orthophoto");
+        menu.add(0, MENU_MAP_ST_PIXEL, 0, "swisstopo Color map");
+        menu.add(0, MENU_MAP_ST_ORTHO, 1, "swisstopo Aerial imagery");
         menu.add(0, MENU_MAP_OSM, 2, "OpenStreetMap");
-        menu.add(0, MENU_MAP_WMS, 3, "WMS Test");
+        menu.add(0, MENU_MAP_WMS, 3, "WMS example");
         return true;
     }
 
@@ -254,7 +253,6 @@ public class Map extends Activity {
             setMapComponent(new SwisstopoComponent(new WgsPoint(lng, lat), ZOOM), new SwisstopoMap(
                     getString(R.string.base_url_pixel), VDR, zoom));
         }
-        hasOverlay = false;
         setMapView();
         return true;
     }
@@ -263,7 +261,7 @@ public class Map extends Activity {
         final Object savedMapComponent = getLastNonConfigurationInstance();
         if (savedMapComponent == null) {
             mc.setMap(gm);
-            mc.setNetworkCache(new MemoryCache(8 * 1024 * 1024));
+            mc.setNetworkCache(new MemoryCache(SCREENCACHE));
             mc.setPanningStrategy(new EventDrivenPanning());
             mc.setControlKeysHandler(new AndroidKeysHandler());
             mc.startMapping();

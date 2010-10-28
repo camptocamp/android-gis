@@ -1,19 +1,16 @@
 package com.camptocamp.android.gis;
 
-import java.util.List;
-
 import android.os.Handler;
 import android.os.Message;
 import android.view.animation.DecelerateInterpolator;
 
 import com.nutiteq.BasicMapComponent;
-import com.nutiteq.MapComponent;
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.WgsPoint;
 
 public class C2CMapComponent extends BasicMapComponent {
 
-    private static final String TAG = Map.D + "MyMapComponent";
+    // private static final String TAG = Map.D + "MyMapComponent";
     private static final String KEY = "182be0c5cdcd5072bb1864cdee4d3d6e4c593f89365962.70956542";
     private static final int MOVE = 0;
     private static final long DELAY = 24; // ms
