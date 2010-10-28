@@ -16,7 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.widget.ZoomControls;
 
@@ -82,7 +82,7 @@ public class Map extends Activity {
 
     private boolean isTrackingPosition = false;
     private boolean onRetainCalled;
-    private LinearLayout mapLayout;
+    private RelativeLayout mapLayout;
     private MapView mapView = null;
     private BasicMapComponent mapComponent = null;
 
@@ -95,7 +95,7 @@ public class Map extends Activity {
         onRetainCalled = false;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
-        mapLayout = ((LinearLayout) findViewById(R.id.map));
+        mapLayout = ((RelativeLayout) findViewById(R.id.map));
 
         // Set default map
         setMapComponent(new SwisstopoComponent(new WgsPoint(lng, lat), ZOOM), new SwisstopoMap(
@@ -104,6 +104,9 @@ public class Map extends Activity {
 
         Log.setLogger(new AndroidLogger(APP));
         // Log.enableAll();
+
+        // Top bar
+        findViewById(R.id.searchbar).clearFocus();
 
         // Zoom
         final ZoomControls zoomControls = (ZoomControls) findViewById(R.id.zoom);
@@ -274,10 +277,12 @@ public class Map extends Activity {
 
     private void setMapView() {
         if (mapView != null) {
-            mapLayout.removeAllViews();
+            // mapLayout.removeAllViews();
+            mapLayout.removeView(mapView);
         }
         mapView = new MapView(getApplicationContext(), mapComponent);
         mapLayout.addView(mapView);
+        mapLayout.bringChildToFront((View) findViewById(R.id.zoom));
         mapView.setClickable(true);
         mapView.setEnabled(true);
     }

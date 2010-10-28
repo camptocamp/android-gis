@@ -3,35 +3,59 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical">
-	<LinearLayout
+    android:orientation="vertical"
+    android:background="#ffffffff">
+    <!-- Dummy view to prevent EditText having the focus -->
+    <LinearLayout 
+	    android:focusable="true" android:focusableInTouchMode="true"
+	    android:layout_width="0px" android:layout_height="0px"/>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="48dip"
+        android:background="@android:drawable/status_bar_item_background">
+        <EditText 
+            android:id="@+id/searchbar"
+            android:layout_width="0dip"
+            android:layout_height="42dip"
+            android:layout_weight="1"
+            android:layout_margin="6dip"
+            android:hint="Search location ..."
+            android:singleLine="true" />
+        <View
+            android:layout_width="1dip"
+            android:layout_height="fill_parent"
+            android:background="#11000000" />
+        <ImageButton
+            android:id="@+id/position_track"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="6dip"
+            android:background="@drawable/btn_bg"
+            android:src="@drawable/location" />
+        <View
+            android:layout_width="1dip"
+            android:layout_height="fill_parent"
+            android:background="#11000000" />
+        <ImageButton
+            android:id="@+id/switch_overlay_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="6dip"
+            android:background="@drawable/btn_bg"
+            android:src="@drawable/layers" />
+    </LinearLayout>
+	<RelativeLayout
 	    android:id="@+id/map"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
-	    android:layout_weight="1" />
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="#ffffffff">
+	    android:layout_weight="1">
 	    <ZoomControls
 	        android:id="@+id/zoom"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:layout_margin="0dip"
-	        android:padding="5dip" />
-	    <ImageButton
-	        android:id="@+id/position_track"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:padding="5dip"
-	        android:background="@drawable/btn_bg"
-	        android:src="@android:drawable/ic_menu_mylocation" />
-	    <ImageButton
-            android:id="@+id/switch_overlay_test"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="5dip"
-            android:background="@drawable/btn_bg"
-            android:src="@android:drawable/ic_menu_slideshow" />
-    </LinearLayout>
+	        android:layout_alignParentBottom="true"
+	        android:gravity="center_horizontal" />
+    </RelativeLayout>
 </LinearLayout>
