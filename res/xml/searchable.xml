@@ -1,8 +1,9 @@
 <searchable
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:label="@string/search_label"
+    android:hint="@string/search_bar_hint"
     android:searchSettingsDescription="@string/search_description"
     android:includeInGlobalSearch="true"
-    android:searchSuggestAuthority="com.camptocamp.android.gis.SearchLocation"
-    android:searchSuggestIntentAction="android.intent.action.VIEW">
-</searchable>
+    android:searchSuggestAuthority="com.camptocamp.android.gis.C2CSearch"
+    android:searchSuggestIntentAction="android.intent.action.VIEW"
+    android:voiceSearchMode="showVoiceSearchButton|launchRecognizer" />

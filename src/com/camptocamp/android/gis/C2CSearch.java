@@ -5,7 +5,13 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 
-public class SearchLocation extends ContentProvider {
+public class C2CSearch extends ContentProvider {
+
+    @Override
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
+            String sortOrder) {
+        return null;
+    }
 
     @Override
     public boolean onCreate() {
@@ -28,14 +34,7 @@ public class SearchLocation extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
-            String sortOrder) {
-        return null;
-    }
-
-    @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         return 0;
     }
-
 }

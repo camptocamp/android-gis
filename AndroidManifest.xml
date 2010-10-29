@@ -30,8 +30,8 @@
         </activity>
         
         <provider
-            android:name="SearchLocation"
-	        android:authorities="com.camptocamp.android.gis.SearchLocation"
+            android:name="SwisstopoSearch"
+	        android:authorities="com.camptocamp.android.gis.C2CSearch"
 	        android:syncable="false" />
 
     </application>

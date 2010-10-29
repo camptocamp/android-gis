@@ -5,8 +5,10 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -15,9 +17,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ZoomControls;
 
@@ -136,9 +138,21 @@ public class Map extends Activity {
         findViewById(R.id.search_bar).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startSearch(null, false, null, false);
+                onSearchRequested();
             }
         });
+
+        Intent intent = getIntent();
+        // Handle search query
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            ((TextView) findViewById(R.id.search_query)).setText(query);
+        }
+        // Handle search suggestion
+        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            String query = intent.getDataString();
+            ((TextView) findViewById(R.id.search_query)).setText(query);
+        }
 
         // Markers
         // mapComponent.addPlace(new Place(1, "PSE - EPFL", Utils
