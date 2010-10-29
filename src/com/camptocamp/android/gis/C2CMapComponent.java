@@ -84,6 +84,8 @@ public class C2CMapComponent extends BasicMapComponent {
         lasttouch = now;
         lastposx = x;
         lastposy = y;
+        
+        // FIXME: Get missing overlay tiles
     }
 
     // Easing Handler and variables

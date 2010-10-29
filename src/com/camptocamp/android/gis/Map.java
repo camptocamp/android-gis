@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -128,6 +129,14 @@ public class Map extends Activity {
                 } else {
                     Toast.makeText(Map.this, R.string.toast_no_layer, Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+
+        // Search Bar
+        findViewById(R.id.search_bar).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startSearch(null, false, null, false);
             }
         });
 

@@ -13,14 +13,22 @@
         android:layout_width="fill_parent"
         android:layout_height="48dip"
         android:background="@android:drawable/status_bar_item_background">
-        <EditText 
-            android:id="@+id/searchbar"
+        <LinearLayout
+            android:id="@+id/search_bar"
             android:layout_width="0dip"
-            android:layout_height="42dip"
+            android:layout_height="fill_parent"
             android:layout_weight="1"
             android:layout_margin="6dip"
-            android:hint="@string/search_bar_hint"
-            android:singleLine="true" />
+            android:background="@android:drawable/editbox_background">
+	        <TextView 
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:text="@string/search_bar_hint"
+	            android:singleLine="true"
+                android:layout_gravity="center_vertical"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
         <View
             android:layout_width="1dip"
             android:layout_height="fill_parent"
@@ -55,6 +63,7 @@
 	        android:id="@+id/zoom"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="5dip"
 	        android:layout_alignParentBottom="true"
 	        android:gravity="center_horizontal" />
     </RelativeLayout>
