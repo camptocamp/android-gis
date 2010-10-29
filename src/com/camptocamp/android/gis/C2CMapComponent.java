@@ -20,8 +20,6 @@ public class C2CMapComponent extends BasicMapComponent {
 
     private int lastposx = 0;
     private int lastposy = 0;
-    // private int lastpanx = 0;
-    // private int lastpany = 0;
     private int[] lastpanx = new int[2];
     private int[] lastpany = new int[2];
     private long lasttouch;
