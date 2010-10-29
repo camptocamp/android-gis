@@ -12,6 +12,7 @@ public class C2CMapComponent extends BasicMapComponent {
 
     // private static final String TAG = Map.D + "MyMapComponent";
     private static final String KEY = "182be0c5cdcd5072bb1864cdee4d3d6e4c593f89365962.70956542";
+    private static final String VDR = "Camptocamp SA";
     private static final int MOVE = 0;
     private static final long DELAY = 24; // ms
     private static final long DOUBLETAP_DELTA = 500; // ms
@@ -25,7 +26,7 @@ public class C2CMapComponent extends BasicMapComponent {
     private long lasttouch;
 
     public C2CMapComponent(WgsPoint middlePoint, int zoom) {
-        super(KEY, Map.VDR, Map.APP, 1, 1, middlePoint, zoom);
+        super(KEY, VDR, Map.APP, 1, 1, middlePoint, zoom);
     }
 
     @Override

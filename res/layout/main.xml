@@ -19,7 +19,7 @@
             android:layout_height="42dip"
             android:layout_weight="1"
             android:layout_margin="6dip"
-            android:hint="Search location ..."
+            android:hint="@string/search_bar_hint"
             android:singleLine="true" />
         <View
             android:layout_width="1dip"

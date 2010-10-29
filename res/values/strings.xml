@@ -1,4 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">android-gis</string>
+    
+    <string name="vendor_swisstopo">swisstopo</string>
+    <string name="vendor_wms">© UCL</string>
+    
+    <string name="dialog_layer_title">Choose layer(s):</string>
+    <string name="search_bar_hint">Search location</string>
+    
+    <string name="btn_apply">Apply</string>
+    
+    <string name="menu_swisstopo_pixel">swisstopo Color map</string>
+    <string name="menu_swisstopo_ortho">swisstopo Aerial imagery</string>
+    <string name="menu_osm">OpenStreetMap</string>
+    <string name="menu_wms_example">WMS example</string>
+    
+    <string name="toast_gps_start">GPS tracking started !</string>
+    <string name="toast_gps_stop">GPS tracking stopped !</string>
+    <string name="toast_no_layer">No layer available!</string>
+    <string name="toast_overlay_added">Overlay added !</string>
+    <string name="toast_overlay_removed">Overlay removed !</string>
+    
+    <string name="overlay_osm_contours">http://map.stephane-brunner.ch/contours/</string>
+    
+<!--    <string name=""></string>-->
 </resources>
