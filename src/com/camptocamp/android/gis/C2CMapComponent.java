@@ -2,7 +2,6 @@ package com.camptocamp.android.gis;
 
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.animation.DecelerateInterpolator;
 
 import com.nutiteq.BasicMapComponent;

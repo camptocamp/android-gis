@@ -3,13 +3,13 @@ package com.camptocamp.android.gis;
 import com.nutiteq.components.MapTile;
 import com.nutiteq.maps.MapTileOverlay;
 
-public class TestOverlay implements MapTileOverlay {
+public class SwisstopoOverlay implements MapTileOverlay {
     // private static final String TAG = Map.D + "TestOverlay";
     private static final int TILESIZE = 256;
     private String baseUrl;
     private String layers;
 
-    public TestOverlay(final String baseUrl, final String layers) {
+    public SwisstopoOverlay(final String baseUrl, final String layers) {
         this.baseUrl = baseUrl;
         this.layers = layers;
     }

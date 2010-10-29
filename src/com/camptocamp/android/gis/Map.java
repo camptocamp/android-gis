@@ -171,7 +171,7 @@ public class Map extends Activity {
                         public void onClick(DialogInterface dialog, int which) {
                             GeoMap gm = mapComponent.getMap();
                             if (mSelectedLayers.size() > 0) {
-                                gm.addTileOverlay(new TestOverlay(
+                                gm.addTileOverlay(new SwisstopoOverlay(
                                         getString(R.string.base_url_overlay), TextUtils.join(",",
                                                 mSelectedLayers.toArray())));
                             } else {
