@@ -92,6 +92,8 @@ public class Map extends Activity {
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.setLogger(new AndroidLogger(APP));
+        // Log.enableAll();
         onRetainCalled = false;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
@@ -101,12 +103,6 @@ public class Map extends Activity {
         setMapComponent(new SwisstopoComponent(new WgsPoint(lng, lat), ZOOM), new SwisstopoMap(
                 getString(R.string.base_url_pixel), VDR, ZOOM));
         setMapView();
-
-        Log.setLogger(new AndroidLogger(APP));
-        // Log.enableAll();
-
-        // Top bar
-        findViewById(R.id.searchbar).clearFocus();
 
         // Zoom
         final ZoomControls zoomControls = (ZoomControls) findViewById(R.id.zoom);

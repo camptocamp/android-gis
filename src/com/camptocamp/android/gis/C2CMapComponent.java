@@ -2,6 +2,7 @@ package com.camptocamp.android.gis;
 
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.animation.DecelerateInterpolator;
 
 import com.nutiteq.BasicMapComponent;
@@ -77,8 +78,8 @@ public class C2CMapComponent extends BasicMapComponent {
         // Double Tap ZoomIn
         long now = System.currentTimeMillis();
         if (now - lasttouch <= DOUBLETAP_DELTA && Math.abs(lastposx - x) < DOUBLETAP_RADIUS
-                && Math.abs(lastposy - y) < DOUBLETAP_RADIUS && panx < DOUBLETAP_PAN
-                && pany < DOUBLETAP_PAN) {
+                && Math.abs(lastposy - y) < DOUBLETAP_RADIUS && Math.abs(panx) < DOUBLETAP_PAN
+                && Math.abs(pany) < DOUBLETAP_PAN) {
             panMap(x - (getWidth() / 2), y - (getHeight() / 2));
             zoomIn();
         }
