@@ -1,0 +1,15 @@
+Только в nutiteq_map_sdk_1_1_0_patched: nutiteq_map_sdk
+diff -u -r nutiteq_map_sdk_1_1_0_patched/src/com/nutiteq/BasicMapComponent.java nutiteq_map_sdk/src/com/nutiteq/BasicMapComponent.java
+--- nutiteq_map_sdk_1_1_0_patched/src/com/nutiteq/BasicMapComponent.java	2010-09-26 15:53:32.000000000 +0400
++++ nutiteq_map_sdk/src/com/nutiteq/BasicMapComponent.java	2010-09-25 22:30:19.000000000 +0400
+@@ -1985,7 +1985,9 @@
+ 
+     mappingStarted = false;
+ 
+-    panning.quit();
++    if( panning != null ) {
++    	panning.quit();
++    }
+ 
+     if (locationSource != null) {
+       locationSource.quit();

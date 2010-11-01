@@ -1,0 +1,64 @@
+diff -u -r ./nutiteq_map_sdk.orig/src/com/mgmaps/cache/ScreenCache.java ./nutiteq_map_sdk/src/com/mgmaps/cache/ScreenCache.java
+--- ./nutiteq_map_sdk.orig/src/com/mgmaps/cache/ScreenCache.java	2010-06-22 15:23:06.000000000 +0400
++++ ./nutiteq_map_sdk/src/com/mgmaps/cache/ScreenCache.java	2010-09-20 06:34:54.000000000 +0400
+@@ -3,6 +3,8 @@
+  */
+ package com.mgmaps.cache;
+ 
++import java.util.Vector;
++
+ import javax.microedition.lcdui.Graphics;
+ import javax.microedition.lcdui.Image;
+ 
+@@ -210,4 +212,22 @@
+     }
+   }
+   //BattleTac code ends
++
++	public Vector<MapTile> getTiles() {
++		Vector<MapTile> tls = new Vector<MapTile>();  
++		for(int i=0; i < size; i++) {
++			if( valid[i] && tiles[i] != null ) {
++				tls.add(tiles[i]);
++			}
++		}
++		return tls; 
++	}
++	
++	public void renewTileImages() {
++		for(int i=0; i < size; i++) {
++			if( valid[i] && tiles[i] != null ) {
++				images[i] = tiles[i].getImage();
++			}
++		}
++	}
+ }
+diff -u -r ./nutiteq_map_sdk.orig/src/com/nutiteq/BasicMapComponent.java ./nutiteq_map_sdk/src/com/nutiteq/BasicMapComponent.java
+--- ./nutiteq_map_sdk.orig/src/com/nutiteq/BasicMapComponent.java	2010-07-28 19:35:22.000000000 +0400
++++ ./nutiteq_map_sdk/src/com/nutiteq/BasicMapComponent.java	2010-09-20 07:31:56.000000000 +0400
+@@ -1536,6 +1536,25 @@
+ 
+     }
+   }
++  
++  public void refreshTileOverlay() {
++	  Vector<MapTile> cachedTiles = screenCache.getTiles();
++	  
++	  final MapTileOverlay overlay = displayedMap.getTileOverlay();
++
++      if (overlay != null ) {
++    	  for(int i=0; i < cachedTiles.size(); i++) {
++    		  enqueueDownload(new TileOverlayRetriever(cachedTiles.get(i), overlay), Cache.CACHE_LEVEL_MEMORY);
++    	  }
++      } else {
++    	  for(int i=0; i < cachedTiles.size(); i++) {
++    		  cachedTiles.get(i).setOverlayData(null);
++    	  }
++    	  screenCache.renewTileImages();
++    	  fullScreenUpdate();
++    	  repaint();
++      }
++  }
+ 
+   /**
+    * Not part of public API
