@@ -5,7 +5,7 @@
     <string name="search_label">Location Search</string>   
     <string name="search_description">Search a location from Swisstopo database</string>    
     
-    <string name="vendor_swisstopo">swisstopo</string>
+    <string name="vendor_swisstopo">geodata © swisstopo</string>
     <string name="vendor_wms">© UCL</string>
     
     <string name="dialog_layer_title">Choose layer(s):</string>

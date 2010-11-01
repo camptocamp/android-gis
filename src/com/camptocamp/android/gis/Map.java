@@ -3,6 +3,13 @@ package com.camptocamp.android.gis;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.microedition.lcdui.Graphics;
+import javax.microedition.lcdui.Image;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.SearchManager;
@@ -25,8 +32,11 @@ import android.widget.ZoomControls;
 
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.android.MapView;
+import com.nutiteq.cache.CachingChain;
 import com.nutiteq.cache.MemoryCache;
+import com.nutiteq.components.MapPos;
 import com.nutiteq.components.PlaceIcon;
+import com.nutiteq.components.WgsBoundingBox;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.controls.AndroidKeysHandler;
 import com.nutiteq.location.LocationSource;
@@ -108,7 +118,7 @@ public class Map extends Activity {
             @Override
             public void onClick(View v) {
                 if (isTrackingPosition) {
-                    Toast.makeText(Map.this, R.string.toast_gps_start, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Map.this, R.string.toast_gps_stop, Toast.LENGTH_SHORT).show();
                     locationSource.quit();
                 } else {
                     Toast.makeText(Map.this, R.string.toast_gps_start, Toast.LENGTH_SHORT).show();
@@ -147,11 +157,38 @@ public class Map extends Activity {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
             ((TextView) findViewById(R.id.search_query)).setText(query);
+            // TODO: DO SEARCH
         }
         // Handle search suggestion
-        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            String query = intent.getDataString();
-            ((TextView) findViewById(R.id.search_query)).setText(query);
+        else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            // FIXME: activity must be started only once
+
+            try {
+                JSONObject json = new JSONObject(intent.getDataString());
+
+                // Label
+                String query = json.getString("label");
+                ((TextView) findViewById(R.id.search_query)).setText(query);
+
+                // WGS bbox
+                JSONArray a = json.getJSONArray("bbox");
+                SwisstopoMap map = (SwisstopoMap) mapComponent.getMap();
+                int zoom = mapComponent.getZoom();
+                int minx = (int) Math.round(map.CHxtoPIX(a.getDouble(0)));
+                int miny = (int) Math.round(map.CHytoPIX(a.getDouble(1)));
+                int maxx = (int) Math.round(map.CHxtoPIX(a.getDouble(2)));
+                int maxy = (int) Math.round(map.CHytoPIX(a.getDouble(3)));
+                WgsBoundingBox bbox = new WgsBoundingBox(map.mapPosToWgs(
+                        new MapPos(minx, miny, zoom)).toWgsPoint(), map.mapPosToWgs(
+                        new MapPos(maxx, maxy, zoom)).toWgsPoint());
+                mapComponent.setBoundingBox(bbox);
+                // FIXME: HACKish
+                mapComponent.zoomIn();
+                mapComponent.zoomIn();
+                mapComponent.zoomIn();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
         // Markers
@@ -225,16 +262,28 @@ public class Map extends Activity {
         return true;
     }
 
-    private void setMapComponent(final BasicMapComponent mc, final GeoMap gm) {
+    private void setMapComponent(final BasicMapComponent bmc, final GeoMap gm) {
         final Object savedMapComponent = getLastNonConfigurationInstance();
         if (savedMapComponent == null) {
-            mc.setMap(gm);
-            mc.setNetworkCache(new MemoryCache(SCREENCACHE));
-            mc.setPanningStrategy(new EventDrivenPanning());
-            mc.setControlKeysHandler(new AndroidKeysHandler());
-            mc.startMapping();
-            mc.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
-            mapComponent = mc;
+
+            // FIXME: HACKish
+            Image missingTile = Image.createImage(256, 256);
+            final Graphics g = missingTile.getGraphics();
+            g.setColor(0xFFFFFFFF);
+            g.fillRect(0, 0, 256, 256);
+            gm.setMissingTileImage(missingTile);
+            // END HACK
+
+            bmc.setMap(gm);
+            final MemoryCache mc = new MemoryCache(SCREENCACHE);
+            // final RmsCache rc = new RmsCache("ML_NETWORK_CACHE", 64 * 1024,
+            // 5);
+            bmc.setNetworkCache(new CachingChain(new com.nutiteq.cache.Cache[] { mc }));
+            bmc.setPanningStrategy(new EventDrivenPanning());
+            bmc.setControlKeysHandler(new AndroidKeysHandler());
+            bmc.startMapping();
+            bmc.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
+            mapComponent = bmc;
         } else {
             mapComponent = (BasicMapComponent) savedMapComponent;
         }
