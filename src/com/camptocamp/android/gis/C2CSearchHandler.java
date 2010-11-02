@@ -5,6 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ListActivity;
+import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,7 +21,9 @@ public class C2CSearchHandler extends ListActivity {
 
         // Handle search query (just send the query)
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            // String query = intent.getStringExtra(SearchManager.QUERY);
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            newintent.setAction(Map.ACTION_SEARCH);
+            newintent.putExtra(Map.EXTRA_LABEL, query);
             // TODO: DO SEARCH USING PROVIDER, SHOW LIST AND USE BELOW TO GO TO
             // MAP APP
         }

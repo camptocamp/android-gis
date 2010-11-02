@@ -19,7 +19,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:layout_margin="6dip"
-            android:background="@android:drawable/editbox_background">
+            android:background="@drawable/search_bg">
 	        <TextView
                 android:id="@+id/search_query"
 	            android:layout_width="fill_parent"

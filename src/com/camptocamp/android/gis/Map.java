@@ -3,9 +3,6 @@ package com.camptocamp.android.gis;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.microedition.lcdui.Graphics;
-import javax.microedition.lcdui.Image;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -57,6 +54,7 @@ public class Map extends Activity {
     private static final String TAG = D + "Map";
 
     public static final String ACTION_GOTO = "action_goto";
+    public static final String ACTION_SEARCH = "action_search";
     public static final String EXTRA_LABEL = "extra_label";
     public static final String EXTRA_MINX = "extra_minx"; // MapPos (px)
     public static final String EXTRA_MINY = "extra_miny";
@@ -183,22 +181,25 @@ public class Map extends Activity {
         Intent intent = getIntent();
         // Goto Place
         if (ACTION_GOTO.equals(intent.getAction())) {
+            
+            ((TextView) findViewById(R.id.search_query))
+                    .setText(intent.getStringExtra(EXTRA_LABEL));
 
-            if (intent.hasExtra(EXTRA_LABEL) && intent.hasExtra(EXTRA_MINX)) {
+            int minx = intent.getIntExtra(EXTRA_MINX, 0);
+            int miny = intent.getIntExtra(EXTRA_MINY, 0);
+            int maxx = intent.getIntExtra(EXTRA_MAXX, 0);
+            int maxy = intent.getIntExtra(EXTRA_MAXY, 0);
 
-                ((TextView) findViewById(R.id.search_query)).setText(intent
-                        .getStringExtra(EXTRA_LABEL));
+            SwisstopoMap map = (SwisstopoMap) mapComponent.getMap();
+            WgsPoint min = map.mapPosToWgs(new MapPos(minx, miny, ZOOM)).toWgsPoint();
+            WgsPoint max = map.mapPosToWgs(new MapPos(maxx, maxy, ZOOM)).toWgsPoint();
+            mapComponent.setBoundingBox(new WgsBoundingBox(min, max));
+            
+        } else if (ACTION_SEARCH.equals(intent.getAction())) {
 
-                int minx = intent.getIntExtra(EXTRA_MINX, 0);
-                int miny = intent.getIntExtra(EXTRA_MINY, 0);
-                int maxx = intent.getIntExtra(EXTRA_MAXX, 0);
-                int maxy = intent.getIntExtra(EXTRA_MAXY, 0);
+            ((TextView) findViewById(R.id.search_query))
+                    .setText(intent.getStringExtra(EXTRA_LABEL));
 
-                SwisstopoMap map = (SwisstopoMap) mapComponent.getMap();
-                WgsPoint min = map.mapPosToWgs(new MapPos(minx, miny, ZOOM)).toWgsPoint();
-                WgsPoint max = map.mapPosToWgs(new MapPos(maxx, maxy, ZOOM)).toWgsPoint();
-                mapComponent.setBoundingBox(new WgsBoundingBox(min, max));
-            }
         }
     }
 
