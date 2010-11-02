@@ -43,10 +43,10 @@ public class SwisstopoOverlay extends C2COverlay {
         SwisstopoMap map = (SwisstopoMap) tile.getMap();
         int tx = tile.getX();
         int ty = tile.getY() + TILESIZE;
-        double x1 = map.PIXtoCHx(tx);
-        double y1 = map.PIXtoCHy(ty);
-        double x2 = map.PIXtoCHx(tx + TILESIZE);
-        double y2 = map.PIXtoCHy(ty + TILESIZE);
+        double x1 = map.PIXtoCHx(tx, tile.getZoom());
+        double y1 = map.PIXtoCHy(ty, tile.getZoom());
+        double x2 = map.PIXtoCHx(tx + TILESIZE, tile.getZoom());
+        double y2 = map.PIXtoCHy(ty + TILESIZE, tile.getZoom());
         return String.format(baseUrl, layers_selected, x1, y1, x2, y2);
     }
 

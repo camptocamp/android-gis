@@ -38,19 +38,19 @@ public abstract class CH1903 extends BaseMap implements Projection {
      * Pixel to CH (in meters) and vice versa. Need to implement meter to pixel
      * calculation according to tiles resolution by zoom level.
      */
-    public abstract double CHxtoPIX(double pt);
+    public abstract double CHxtoPIX(double pt, int zoom);
 
-    public abstract double CHytoPIX(double pt);
+    public abstract double CHytoPIX(double pt, int zoom);
 
-    public abstract double PIXtoCHx(double px);
+    public abstract double PIXtoCHx(double px, int zoom);
 
-    public abstract double PIXtoCHy(double px);
+    public abstract double PIXtoCHy(double px, int zoom);
 
     public Point mapPosToWgs(MapPos pos) {
         // Convert from CH1903 to pixel
         // (X and Y are inverted in the CH1903 notation)
-        double y_aux = PIXtoCHx((double) pos.getX());
-        double x_aux = PIXtoCHy((double) pos.getY());
+        double y_aux = PIXtoCHx((double) pos.getX(), pos.getZoom());
+        double x_aux = PIXtoCHy((double) pos.getY(), pos.getZoom());
 
         // Converts militar to civil and to unit = 1000km
         // Axiliary values (% Bern)
@@ -95,8 +95,8 @@ public abstract class CH1903 extends BaseMap implements Projection {
 
         // Convert from CH1903 to pixel
         // (X and Y are inverted in CH1903 notation)
-        int X = (int) Math.ceil(CHxtoPIX(y));
-        int Y = (int) Math.ceil(CHytoPIX(x));
+        int X = (int) Math.ceil(CHxtoPIX(y, zoom));
+        int Y = (int) Math.ceil(CHytoPIX(x, zoom));
 
         // Log.i(TAG + ":wgsToMapPos", "x=" + X + ", y=" + Y);
         return new MapPos(X, Y, zoom);

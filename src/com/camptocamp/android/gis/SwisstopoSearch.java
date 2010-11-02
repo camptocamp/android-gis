@@ -1,14 +1,13 @@
 package com.camptocamp.android.gis;
 
-import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URI;
 import java.net.URLEncoder;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -34,34 +33,42 @@ public class SwisstopoSearch extends C2CSearch {
                 SearchManager.SUGGEST_COLUMN_TEXT_1, SearchManager.SUGGEST_COLUMN_ICON_1,
                 SearchManager.SUGGEST_COLUMN_INTENT_DATA });
         String query = URLEncoder.encode(uri.getLastPathSegment().toLowerCase());
-
         if (!SearchManager.SUGGEST_URI_PATH_QUERY.equals(query)) {
+
             // Get search results as JSON
             String url = String.format(getContext().getString(R.string.url_search), System
                     .currentTimeMillis(), query);
 
-            DefaultHttpClient client = new DefaultHttpClient();
+            HttpEntity entity = null;
             InputStream is = null;
             Writer w = new StringWriter();
+            HttpGet method = null;
+            byte[] data;
             try {
-                HttpGet method = new HttpGet(new URI(url));
+                DefaultHttpClient client = new DefaultHttpClient();
+                method = new HttpGet(new URI(url));
                 HttpResponse response = client.execute(method);
-                is = response.getEntity().getContent();
-                Reader r = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8 * 1024);
-                char[] bb = new char[1024];
-                int n;
-                while ((n = r.read(bb)) != -1) {
-                    w.write(bb, 0, n);
-                }
+                entity = response.getEntity();
+                is = entity.getContent();
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
+                data = IOUtils.readFully(is);
+                if (method != null) {
+                    method.abort();
+                }
+                if (entity != null) {
+                    try {
+                        entity.consumeContent();
+                    } catch (IOException e) {
+                    }
+                }
                 IOUtils.closeStream(is);
             }
 
             // Parse JSON
             try {
-                JSONObject json = new JSONObject(w.toString());
+                JSONObject json = new JSONObject(new String(data));
                 JSONArray results = json.getJSONArray("results");
                 for (int i = 0; i < results.length(); i++) {
                     JSONObject elem = results.getJSONObject(i);
@@ -83,6 +90,12 @@ public class SwisstopoSearch extends C2CSearch {
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    w.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return answer;

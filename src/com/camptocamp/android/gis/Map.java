@@ -6,13 +6,8 @@ import java.util.List;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,6 +15,7 @@ import android.content.res.Resources;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +28,7 @@ import android.widget.ZoomControls;
 
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.android.MapView;
+import com.nutiteq.cache.Cache;
 import com.nutiteq.cache.CachingChain;
 import com.nutiteq.cache.MemoryCache;
 import com.nutiteq.components.MapPos;
@@ -54,10 +51,17 @@ public class Map extends Activity {
 
     public static final String D = "C2C:";
     public static final String APP = "c2c-android-gis";
+    public static final int ZOOM = 14;
     // An image is ~25kB => 1MB = 40 cached images
     private static final int SCREENCACHE = 1024 * 1024; // Bytes
     private static final String TAG = D + "Map";
-    private static final int ZOOM = 14;
+
+    public static final String ACTION_GOTO = "action_goto";
+    public static final String EXTRA_LABEL = "extra_label";
+    public static final String EXTRA_MINX = "extra_minx"; // MapPos (px)
+    public static final String EXTRA_MINY = "extra_miny";
+    public static final String EXTRA_MAXX = "extra_maxx";
+    public static final String EXTRA_MAXY = "extra_maxy";
 
     private int MENU_CURRENT = MENU_MAP_ST_PIXEL;
     private static final int MENU_MAP_ST_PIXEL = 0;
@@ -71,6 +75,8 @@ public class Map extends Activity {
 
     private boolean isTrackingPosition = false;
     private boolean onRetainCalled;
+    private int mWidth;
+    private int mHeight;
     private RelativeLayout mapLayout;
     private MapView mapView = null;
     private BasicMapComponent mapComponent = null;
@@ -88,9 +94,15 @@ public class Map extends Activity {
         setContentView(R.layout.main);
         mapLayout = ((RelativeLayout) findViewById(R.id.map));
 
+        // Width and Height
+        Display display = getWindowManager().getDefaultDisplay();
+        mWidth = display.getWidth();
+        mHeight = display.getHeight();
+
         // Set default map
-        setMapComponent(new SwisstopoComponent(new WgsPoint(lng, lat), ZOOM), new SwisstopoMap(
-                getString(R.string.url_pixel), getString(R.string.vendor_swisstopo), ZOOM));
+        setMapComponent(new SwisstopoComponent(new WgsPoint(lng, lat), mWidth, mHeight, ZOOM),
+                new SwisstopoMap(getString(R.string.url_pixel),
+                        getString(R.string.vendor_swisstopo), ZOOM));
         setMapView();
 
         // Zoom
@@ -152,50 +164,42 @@ public class Map extends Activity {
             }
         });
 
-        Intent intent = getIntent();
-        // Handle search query
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            ((TextView) findViewById(R.id.search_query)).setText(query);
-            // TODO: DO SEARCH
-        }
-        // Handle search suggestion
-        else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            // FIXME: activity must be started only once
-
-            try {
-                JSONObject json = new JSONObject(intent.getDataString());
-
-                // Label
-                String query = json.getString("label");
-                ((TextView) findViewById(R.id.search_query)).setText(query);
-
-                // WGS bbox
-                JSONArray a = json.getJSONArray("bbox");
-                SwisstopoMap map = (SwisstopoMap) mapComponent.getMap();
-                int zoom = mapComponent.getZoom();
-                int minx = (int) Math.round(map.CHxtoPIX(a.getDouble(0)));
-                int miny = (int) Math.round(map.CHytoPIX(a.getDouble(1)));
-                int maxx = (int) Math.round(map.CHxtoPIX(a.getDouble(2)));
-                int maxy = (int) Math.round(map.CHytoPIX(a.getDouble(3)));
-                WgsBoundingBox bbox = new WgsBoundingBox(map.mapPosToWgs(
-                        new MapPos(minx, miny, zoom)).toWgsPoint(), map.mapPosToWgs(
-                        new MapPos(maxx, maxy, zoom)).toWgsPoint());
-                mapComponent.setBoundingBox(bbox);
-                // FIXME: HACKish
-                mapComponent.zoomIn();
-                mapComponent.zoomIn();
-                mapComponent.zoomIn();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
+        handleIntent();
 
         // Markers
         // mapComponent.addPlace(new Place(1, "PSE - EPFL", Utils
         // .createImage("/res/drawable/marker.png"), new WgsPoint(6.562794,
         // 46.517705)));
         // 6.562794, 46.517705
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        setIntent(intent);
+        handleIntent();
+    }
+
+    private void handleIntent() {
+        Intent intent = getIntent();
+        // Goto Place
+        if (ACTION_GOTO.equals(intent.getAction())) {
+
+            if (intent.hasExtra(EXTRA_LABEL) && intent.hasExtra(EXTRA_MINX)) {
+
+                ((TextView) findViewById(R.id.search_query)).setText(intent
+                        .getStringExtra(EXTRA_LABEL));
+
+                int minx = intent.getIntExtra(EXTRA_MINX, 0);
+                int miny = intent.getIntExtra(EXTRA_MINY, 0);
+                int maxx = intent.getIntExtra(EXTRA_MAXX, 0);
+                int maxy = intent.getIntExtra(EXTRA_MAXY, 0);
+
+                SwisstopoMap map = (SwisstopoMap) mapComponent.getMap();
+                WgsPoint min = map.mapPosToWgs(new MapPos(minx, miny, ZOOM)).toWgsPoint();
+                WgsPoint max = map.mapPosToWgs(new MapPos(maxx, maxy, ZOOM)).toWgsPoint();
+                mapComponent.setBoundingBox(new WgsBoundingBox(min, max));
+            }
+        }
     }
 
     @Override
@@ -233,18 +237,18 @@ public class Map extends Activity {
         MENU_CURRENT = item.getItemId();
         switch (MENU_CURRENT) {
         case MENU_MAP_ST_PIXEL:
-            setMapComponent(new SwisstopoComponent(mapComponent.getMiddlePoint(), zoom),
-                    new SwisstopoMap(getString(R.string.url_pixel),
-                            getString(R.string.vendor_swisstopo), zoom));
+            setMapComponent(new SwisstopoComponent(mapComponent.getMiddlePoint(), mWidth, mHeight,
+                    zoom), new SwisstopoMap(getString(R.string.url_pixel),
+                    getString(R.string.vendor_swisstopo), zoom));
             break;
         case MENU_MAP_ST_ORTHO:
-            setMapComponent(new SwisstopoComponent(mapComponent.getMiddlePoint(), zoom),
-                    new SwisstopoMap(getString(R.string.url_ortho),
-                            getString(R.string.vendor_swisstopo), zoom));
+            setMapComponent(new SwisstopoComponent(mapComponent.getMiddlePoint(), mWidth, mHeight,
+                    zoom), new SwisstopoMap(getString(R.string.url_ortho),
+                    getString(R.string.vendor_swisstopo), zoom));
             break;
         case MENU_MAP_OSM:
-            setMapComponent(new C2CMapComponent(mapComponent.getMiddlePoint(), zoom),
-                    OpenStreetMap.MAPNIK);
+            setMapComponent(new C2CMapComponent(mapComponent.getMiddlePoint(), mWidth, mHeight,
+                    zoom), OpenStreetMap.MAPNIK);
             break;
         case MENU_MAP_WMS:
             SimpleWMSMap wms = new SimpleWMSMap(
@@ -252,11 +256,13 @@ public class Map extends Activity {
                     0, 18, "bluemarble,cities,countries", "image/jpeg", "default", "GetMap",
                     getString(R.string.vendor_wms));
             wms.setWidthHeightRatio(2.0);
-            setMapComponent(new C2CMapComponent(mapComponent.getMiddlePoint(), 3), wms);
+            setMapComponent(new C2CMapComponent(mapComponent.getMiddlePoint(), mWidth, mHeight, 3),
+                    wms);
             break;
         default:
-            setMapComponent(new SwisstopoComponent(new WgsPoint(lng, lat), ZOOM), new SwisstopoMap(
-                    getString(R.string.url_pixel), getString(R.string.vendor_swisstopo), zoom));
+            setMapComponent(new SwisstopoComponent(new WgsPoint(lng, lat), mWidth, mHeight, ZOOM),
+                    new SwisstopoMap(getString(R.string.url_pixel),
+                            getString(R.string.vendor_swisstopo), zoom));
         }
         setMapView();
         return true;
@@ -265,21 +271,13 @@ public class Map extends Activity {
     private void setMapComponent(final BasicMapComponent bmc, final GeoMap gm) {
         final Object savedMapComponent = getLastNonConfigurationInstance();
         if (savedMapComponent == null) {
-
-            // FIXME: HACKish
-            Image missingTile = Image.createImage(256, 256);
-            final Graphics g = missingTile.getGraphics();
-            g.setColor(0xFFFFFFFF);
-            g.fillRect(0, 0, 256, 256);
-            gm.setMissingTileImage(missingTile);
-            // END HACK
-
             bmc.setMap(gm);
             final MemoryCache mc = new MemoryCache(SCREENCACHE);
             // final RmsCache rc = new RmsCache("ML_NETWORK_CACHE", 64 * 1024,
             // 5);
-            bmc.setNetworkCache(new CachingChain(new com.nutiteq.cache.Cache[] { mc }));
+            bmc.setNetworkCache(new CachingChain(new Cache[] { mc }));
             bmc.setPanningStrategy(new EventDrivenPanning());
+            // bmc.setPanningStrategy(new ThreadDrivenPanning());
             bmc.setControlKeysHandler(new AndroidKeysHandler());
             bmc.startMapping();
             bmc.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);

@@ -25,8 +25,8 @@ public class C2CMapComponent extends BasicMapComponent {
     private int[] lastpany = new int[2];
     private long lasttouch;
 
-    public C2CMapComponent(WgsPoint middlePoint, int zoom) {
-        super(KEY, VDR, Map.APP, 1, 1, middlePoint, zoom);
+    public C2CMapComponent(WgsPoint middlePoint, int width, int height, int zoom) {
+        super(KEY, VDR, Map.APP, width, height, middlePoint, zoom);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class C2CMapComponent extends BasicMapComponent {
         lasttouch = now;
         lastposx = x;
         lastposy = y;
-        
+
         // FIXME: Get missing overlay tiles
     }
 

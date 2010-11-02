@@ -6,8 +6,8 @@ public class SwisstopoComponent extends C2CMapComponent {
 
     // private static final String TAG = Map.D + "SwisstopoComponent";
 
-    public SwisstopoComponent(WgsPoint middlePoint, int zoom) {
-        super(middlePoint, zoom);
+    public SwisstopoComponent(WgsPoint middlePoint, int width, int height, int zoom) {
+        super(middlePoint, width, height, zoom);
     }
 
     @Override
