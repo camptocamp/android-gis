@@ -66,6 +66,7 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
     }
 
     public MapPos zoom(final MapPos middlePoint, final int zoomSteps) {
+        zoom = middlePoint.getZoom();
         double xx = PIXtoCHx(middlePoint.getX());
         double yy = PIXtoCHy(middlePoint.getY());
         zoom += zoomSteps;
