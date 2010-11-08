@@ -19,8 +19,8 @@ public class C2CMapComponent extends BasicMapComponent {
     private static final int DOUBLETAP_RADIUS = 50; // px
     private static final int DOUBLETAP_PAN = 2; // px
     
-    private static final int[] lastpanx = new int[2];
-    private static final int[] lastpany = new int[2];
+    private final int[] lastpanx = new int[2];
+    private final int[] lastpany = new int[2];
 
     private int lastposx = 0;
     private int lastposy = 0;

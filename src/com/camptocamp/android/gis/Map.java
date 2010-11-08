@@ -104,11 +104,9 @@ public class Map extends Activity {
         mapLayout = ((RelativeLayout) findViewById(R.id.map));
 
         // Width and Height
-//        Display display = getWindowManager().getDefaultDisplay();
-//        mWidth = display.getWidth();
-//        mHeight = display.getHeight();
-        mWidth = 480;
-        mHeight = 690;
+        Display display = getWindowManager().getDefaultDisplay();
+        mWidth = display.getWidth();
+        mHeight = display.getHeight();
 
         // Set default map
         setMapComponent(new SwisstopoComponent(new WgsPoint(lng, lat), mWidth, mHeight, ZOOM),
@@ -230,6 +228,8 @@ public class Map extends Activity {
         if (!onRetainCalled) {
             mapComponent.stopMapping();
             mapComponent = null;
+            cache_memory = null;
+            cache_fs = null;
         }
     }
 
@@ -290,8 +290,11 @@ public class Map extends Activity {
         final Object savedMapComponent = getLastNonConfigurationInstance();
         if (savedMapComponent == null) {
             bmc.setMap(gm);
-            
+
             // Caching
+            if (cache_memory != null) {
+                cache_memory.deinitialize();
+            }
             cache_memory = new MemoryCache(SCREENCACHE);
             cache_fs = new AndroidFileSystemCache(getApplicationContext(), APP, FSCACHEDIR,
                     FSCACHESIZE);
