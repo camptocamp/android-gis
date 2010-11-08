@@ -44,7 +44,7 @@ import com.nutiteq.log.Log;
 import com.nutiteq.maps.GeoMap;
 import com.nutiteq.maps.OpenStreetMap;
 import com.nutiteq.maps.SimpleWMSMap;
-import com.nutiteq.ui.EventDrivenPanning;
+import com.nutiteq.ui.ThreadDrivenPanning;
 import com.nutiteq.utils.Utils;
 
 public class Map extends Activity {
@@ -54,7 +54,7 @@ public class Map extends Activity {
     public static final int ZOOM = 14;
     private static final String PKG = "com.camptocamp.android.gis";
     // An image is ~25kB => 1MB = 40 cached images
-    private static final int SCREENCACHE = 32 * 1024; // Bytes
+    private static final int SCREENCACHE = 1024 * 1024; // Bytes
     private static final int FSCACHESIZE = 32 * 1024 * 1024; // Bytes
     private static final File FSCACHEDIR = new File(Environment.getExternalStorageDirectory()
             .getAbsolutePath()
@@ -80,11 +80,13 @@ public class Map extends Activity {
 
     private boolean isTrackingPosition = false;
     private boolean onRetainCalled;
-    private int mWidth;
-    private int mHeight;
+    private int mWidth = 1;
+    private int mHeight = 1;
     private RelativeLayout mapLayout;
     private MapView mapView = null;
     private BasicMapComponent mapComponent = null;
+    private MemoryCache cache_memory = null;
+    private AndroidFileSystemCache cache_fs = null;
 
     private final double lat = 46.517815; // X: 152'210
     private final double lng = 6.562805; // Y: 532'790
@@ -102,9 +104,11 @@ public class Map extends Activity {
         mapLayout = ((RelativeLayout) findViewById(R.id.map));
 
         // Width and Height
-        Display display = getWindowManager().getDefaultDisplay();
-        mWidth = display.getWidth();
-        mHeight = display.getHeight();
+//        Display display = getWindowManager().getDefaultDisplay();
+//        mWidth = display.getWidth();
+//        mHeight = display.getHeight();
+        mWidth = 480;
+        mHeight = 690;
 
         // Set default map
         setMapComponent(new SwisstopoComponent(new WgsPoint(lng, lat), mWidth, mHeight, ZOOM),
@@ -247,9 +251,6 @@ public class Map extends Activity {
     @Override
     public boolean onMenuItemSelected(final int featureId, final MenuItem item) {
         int zoom = mapComponent.getZoom();
-//         mapComponent.stopMapping();
-//         mapView.clean();
-//         System.gc();
 
         MENU_CURRENT = item.getItemId();
         switch (MENU_CURRENT) {
@@ -289,12 +290,15 @@ public class Map extends Activity {
         final Object savedMapComponent = getLastNonConfigurationInstance();
         if (savedMapComponent == null) {
             bmc.setMap(gm);
-            final MemoryCache mc = new MemoryCache(SCREENCACHE);
-            final AndroidFileSystemCache fs = new AndroidFileSystemCache(getApplicationContext(),
-                    APP, FSCACHEDIR, FSCACHESIZE);
-            bmc.setNetworkCache(new CachingChain(new Cache[] { mc, fs }));
-            bmc.setPanningStrategy(new EventDrivenPanning());
-            // bmc.setPanningStrategy(new ThreadDrivenPanning());
+            
+            // Caching
+            cache_memory = new MemoryCache(SCREENCACHE);
+            cache_fs = new AndroidFileSystemCache(getApplicationContext(), APP, FSCACHEDIR,
+                    FSCACHESIZE);
+            bmc.setNetworkCache(new CachingChain(new Cache[] { cache_memory, cache_fs }));
+
+            // bmc.setPanningStrategy(new EventDrivenPanning());
+            bmc.setPanningStrategy(new ThreadDrivenPanning());
             bmc.setControlKeysHandler(new AndroidKeysHandler());
             bmc.startMapping();
             bmc.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
@@ -306,6 +310,7 @@ public class Map extends Activity {
 
     private void setMapView() {
         if (mapView != null) {
+            // mapView.clean();
             mapLayout.removeView(mapView);
         }
         mapView = new MapView(getApplicationContext(), mapComponent);

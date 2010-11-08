@@ -18,11 +18,12 @@ public class C2CMapComponent extends BasicMapComponent {
     private static final long DOUBLETAP_DELTA = 500; // ms
     private static final int DOUBLETAP_RADIUS = 50; // px
     private static final int DOUBLETAP_PAN = 2; // px
+    
+    private static final int[] lastpanx = new int[2];
+    private static final int[] lastpany = new int[2];
 
     private int lastposx = 0;
     private int lastposy = 0;
-    private int[] lastpanx = new int[2];
-    private int[] lastpany = new int[2];
     private long lasttouch;
 
     public C2CMapComponent(WgsPoint middlePoint, int width, int height, int zoom) {
@@ -70,9 +71,6 @@ public class C2CMapComponent extends BasicMapComponent {
         int panx = lastpanx[0] + lastpanx[1];
         int pany = lastpany[0] + lastpany[1];
 
-        // Initiate Easing
-        mHandler.sendMessageDelayed(mHandler.obtainMessage(MOVE, panx, pany), DELAY);
-
         // Double Tap ZoomIn
         long now = System.currentTimeMillis();
         if (now - lasttouch <= DOUBLETAP_DELTA && Math.abs(lastposx - x) < DOUBLETAP_RADIUS
@@ -80,6 +78,10 @@ public class C2CMapComponent extends BasicMapComponent {
                 && Math.abs(pany) < DOUBLETAP_PAN) {
             panMap(x - (getWidth() / 2), y - (getHeight() / 2));
             zoomIn();
+        }
+        // Initiate Easing
+        else {
+            mHandler.sendMessageDelayed(mHandler.obtainMessage(MOVE, panx, pany), DELAY);
         }
         lasttouch = now;
         lastposx = x;
