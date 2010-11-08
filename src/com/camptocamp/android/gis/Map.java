@@ -93,7 +93,9 @@ public class Map extends Activity {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.setLogger(new AndroidLogger(APP));
-        // Log.enableAll();
+        Log.enableAll();
+        // Debug.startMethodTracing("Map");
+
         onRetainCalled = false;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
@@ -176,6 +178,8 @@ public class Map extends Activity {
         // .createImage("/res/drawable/marker.png"), new WgsPoint(6.562794,
         // 46.517705)));
         // 6.562794, 46.517705
+
+        // Debug.stopMethodTracing();
     }
 
     @Override
@@ -243,7 +247,9 @@ public class Map extends Activity {
     @Override
     public boolean onMenuItemSelected(final int featureId, final MenuItem item) {
         int zoom = mapComponent.getZoom();
-        mapComponent.stopMapping();
+//         mapComponent.stopMapping();
+//         mapView.clean();
+//         System.gc();
 
         MENU_CURRENT = item.getItemId();
         switch (MENU_CURRENT) {
@@ -300,7 +306,6 @@ public class Map extends Activity {
 
     private void setMapView() {
         if (mapView != null) {
-            mapView.clean();
             mapLayout.removeView(mapView);
         }
         mapView = new MapView(getApplicationContext(), mapComponent);
