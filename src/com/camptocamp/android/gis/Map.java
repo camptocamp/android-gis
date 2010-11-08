@@ -1,5 +1,6 @@
 package com.camptocamp.android.gis;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.TextUtils;
 import android.view.Display;
 import android.view.Menu;
@@ -25,6 +27,7 @@ import android.widget.ZoomControls;
 
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.android.MapView;
+import com.nutiteq.cache.AndroidFileSystemCache;
 import com.nutiteq.cache.Cache;
 import com.nutiteq.cache.CachingChain;
 import com.nutiteq.cache.MemoryCache;
@@ -49,8 +52,13 @@ public class Map extends Activity {
     public static final String D = "C2C:";
     public static final String APP = "c2c-android-gis";
     public static final int ZOOM = 14;
+    private static final String PKG = "com.camptocamp.android.gis";
     // An image is ~25kB => 1MB = 40 cached images
-    private static final int SCREENCACHE = 1024 * 1024; // Bytes
+    private static final int SCREENCACHE = 32 * 1024; // Bytes
+    private static final int FSCACHESIZE = 32 * 1024 * 1024; // Bytes
+    private static final File FSCACHEDIR = new File(Environment.getExternalStorageDirectory()
+            .getAbsolutePath()
+            + "/Android/data/" + PKG);
     private static final String TAG = D + "Map";
 
     public static final String ACTION_GOTO = "action_goto";
@@ -66,7 +74,6 @@ public class Map extends Activity {
     private static final int MENU_MAP_ST_ORTHO = 1;
     private static final int MENU_MAP_OSM = 2;
     private static final int MENU_MAP_WMS = 3;
-    protected static final String PKG = "com.camptocamp.android.gis";
     private static final String PLACEHOLDER = "placeholder";
 
     private List<String> mSelectedLayers = new ArrayList<String>();
@@ -181,20 +188,22 @@ public class Map extends Activity {
         Intent intent = getIntent();
         // Goto Place
         if (ACTION_GOTO.equals(intent.getAction())) {
-            
+
             ((TextView) findViewById(R.id.search_query))
                     .setText(intent.getStringExtra(EXTRA_LABEL));
 
+            // Get positions in pixels
             int minx = intent.getIntExtra(EXTRA_MINX, 0);
             int miny = intent.getIntExtra(EXTRA_MINY, 0);
             int maxx = intent.getIntExtra(EXTRA_MAXX, 0);
             int maxy = intent.getIntExtra(EXTRA_MAXY, 0);
 
-            SwisstopoMap map = (SwisstopoMap) mapComponent.getMap();
+            // Positionning the map according to bbox
+            GeoMap map = mapComponent.getMap();
             WgsPoint min = map.mapPosToWgs(new MapPos(minx, miny, ZOOM)).toWgsPoint();
             WgsPoint max = map.mapPosToWgs(new MapPos(maxx, maxy, ZOOM)).toWgsPoint();
             mapComponent.setBoundingBox(new WgsBoundingBox(min, max));
-            
+
         } else if (ACTION_SEARCH.equals(intent.getAction())) {
 
             ((TextView) findViewById(R.id.search_query))
@@ -234,6 +243,7 @@ public class Map extends Activity {
     @Override
     public boolean onMenuItemSelected(final int featureId, final MenuItem item) {
         int zoom = mapComponent.getZoom();
+        mapComponent.stopMapping();
 
         MENU_CURRENT = item.getItemId();
         switch (MENU_CURRENT) {
@@ -274,9 +284,9 @@ public class Map extends Activity {
         if (savedMapComponent == null) {
             bmc.setMap(gm);
             final MemoryCache mc = new MemoryCache(SCREENCACHE);
-            // final RmsCache rc = new RmsCache("ML_NETWORK_CACHE", 64 * 1024,
-            // 5);
-            bmc.setNetworkCache(new CachingChain(new Cache[] { mc }));
+            final AndroidFileSystemCache fs = new AndroidFileSystemCache(getApplicationContext(),
+                    APP, FSCACHEDIR, FSCACHESIZE);
+            bmc.setNetworkCache(new CachingChain(new Cache[] { mc, fs }));
             bmc.setPanningStrategy(new EventDrivenPanning());
             // bmc.setPanningStrategy(new ThreadDrivenPanning());
             bmc.setControlKeysHandler(new AndroidKeysHandler());
@@ -290,6 +300,7 @@ public class Map extends Activity {
 
     private void setMapView() {
         if (mapView != null) {
+            mapView.clean();
             mapLayout.removeView(mapView);
         }
         mapView = new MapView(getApplicationContext(), mapComponent);
