@@ -1,0 +1,40 @@
+--- /home/jbaubort/Bureau/SIG Android/maps_lib_src/maps_lib/src/com/nutiteq/utils/Utils.java	2010-05-10 10:22:04.000000000 +0200
++++ src/com/nutiteq/utils/Utils.java	2010-11-09 15:57:15.000000000 +0100
+@@ -184,13 +184,15 @@
+     throw new IllegalArgumentException("Do not know the log2 from " + x);
+   }
+ 
+-  public static Image resizeImageAndCopyPrevious(final int newWidth, final int newHeight, final Image resized) {
++  public static Image resizeImageAndCopyPrevious(final int newWidth, final int newHeight, Image resized) {
+     // TODO jaanus : if new is smaller can optimize with
+     // createImage(Image image, int x, int y, int width, int height, int
+     // transform)
+     final Image result = Image.createImage(newWidth, newHeight);
+     final Graphics g = result.getGraphics();
+     g.drawImage(resized, (newWidth - resized.getWidth()) / 2, (newHeight - resized.getHeight()) / 2, Graphics.TOP | Graphics.LEFT);
++    resized.getBitmap().recycle();
++//    resized = result;
+     return result;
+   }
+--- maps_lib/src/com/nutiteq/BasicMapComponent.java  2010-11-09 10:32:42.000000000 +0100
++++ maps_lib-patched/src/com/nutiteq/BasicMapComponent.java  2010-11-09 10:32:21.000000000 +0100
+@@ -1963,10 +1988,18 @@
+     if (!mappingStarted) {
+       return;
+     }
++    
++    if (screenBuffer != null) {
++        screenBuffer.getBitmap().recycle();
++        screenBuffer = null;
++    }
++    screenBufferGraphics = null;
+ 
+     mappingStarted = false;
+ 
+-    panning.quit();
++    if (panning != null) {
++        panning.quit();
++    }
+ 
+     if (locationSource != null) {
+       locationSource.quit();
