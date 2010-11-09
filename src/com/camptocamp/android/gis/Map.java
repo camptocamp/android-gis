@@ -44,6 +44,7 @@ import com.nutiteq.log.Log;
 import com.nutiteq.maps.GeoMap;
 import com.nutiteq.maps.OpenStreetMap;
 import com.nutiteq.maps.SimpleWMSMap;
+import com.nutiteq.ui.NightModeImageProcessor;
 import com.nutiteq.ui.ThreadDrivenPanning;
 import com.nutiteq.utils.Utils;
 
@@ -290,15 +291,17 @@ public class Map extends Activity {
         final Object savedMapComponent = getLastNonConfigurationInstance();
         if (savedMapComponent == null) {
             bmc.setMap(gm);
+            // bmc.setImageProcessor(new NightModeImageProcessor());
 
             // Caching
-            if (cache_memory != null) {
-                cache_memory.deinitialize();
-            }
+            // if (cache_memory != null) {
+            // cache_memory.deinitialize();
+            // }
             cache_memory = new MemoryCache(SCREENCACHE);
-            cache_fs = new AndroidFileSystemCache(getApplicationContext(), APP, FSCACHEDIR,
-                    FSCACHESIZE);
-            bmc.setNetworkCache(new CachingChain(new Cache[] { cache_memory, cache_fs }));
+            // cache_fs = new AndroidFileSystemCache(getApplicationContext(),
+            // APP, FSCACHEDIR,
+            // FSCACHESIZE);
+            bmc.setNetworkCache(new CachingChain(new Cache[] { cache_memory }));
 
             // bmc.setPanningStrategy(new EventDrivenPanning());
             bmc.setPanningStrategy(new ThreadDrivenPanning());
