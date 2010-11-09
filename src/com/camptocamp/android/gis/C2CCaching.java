@@ -27,7 +27,7 @@ public class C2CCaching extends CachingChain {
 
     public byte[] get(final String cacheKey) {
         if (cacheLevels[0].contains(cacheKey)) {
-            Log.v("Caching", "cache from memory cache=" + cacheLevels[0].get(cacheKey));
+            Log.v("Caching", "cache from memory");
             return cacheLevels[0].get(cacheKey);
         } else if (cacheLevels[1].contains(cacheKey)) {
             Log.v("Caching", "cache from fs");

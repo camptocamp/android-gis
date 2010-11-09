@@ -65,6 +65,10 @@ public class C2CMapComponent extends BasicMapComponent {
         posx = 0;
         posy = 0;
         current = 0f;
+        lastpanx[0] = 0;
+        lastpanx[1] = 0;
+        lastpany[0] = 0;
+        lastpany[1] = 0;
     }
 
     @Override

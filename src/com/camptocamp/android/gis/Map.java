@@ -235,22 +235,25 @@ public class Map extends Activity {
     @Override
     public boolean onMenuItemSelected(final int featureId, final MenuItem item) {
         int zoom = mapComponent.getZoom();
+        WgsPoint pt = new WgsPoint(lng, lat);
+        if (mapComponent != null) {
+            pt = mapComponent.getMiddlePoint();
+            mapComponent.stopMapping();
+            mapComponent = null;
+        }
 
         MENU_CURRENT = item.getItemId();
         switch (MENU_CURRENT) {
         case MENU_MAP_ST_PIXEL:
-            setMapComponent(new SwisstopoComponent(mapComponent.getMiddlePoint(), mWidth, mHeight,
-                    zoom), new SwisstopoMap(getString(R.string.url_pixel),
-                    getString(R.string.vendor_swisstopo), zoom));
+            setMapComponent(new SwisstopoComponent(pt, mWidth, mHeight, zoom), new SwisstopoMap(
+                    getString(R.string.url_pixel), getString(R.string.vendor_swisstopo), zoom));
             break;
         case MENU_MAP_ST_ORTHO:
-            setMapComponent(new SwisstopoComponent(mapComponent.getMiddlePoint(), mWidth, mHeight,
-                    zoom), new SwisstopoMap(getString(R.string.url_ortho),
-                    getString(R.string.vendor_swisstopo), zoom));
+            setMapComponent(new SwisstopoComponent(pt, mWidth, mHeight, zoom), new SwisstopoMap(
+                    getString(R.string.url_ortho), getString(R.string.vendor_swisstopo), zoom));
             break;
         case MENU_MAP_OSM:
-            setMapComponent(new C2CMapComponent(mapComponent.getMiddlePoint(), mWidth, mHeight,
-                    zoom), OpenStreetMap.MAPNIK);
+            setMapComponent(new C2CMapComponent(pt, mWidth, mHeight, zoom), OpenStreetMap.MAPNIK);
             break;
         case MENU_MAP_WMS:
             SimpleWMSMap wms = new SimpleWMSMap(
@@ -258,13 +261,11 @@ public class Map extends Activity {
                     0, 18, "bluemarble,cities,countries", "image/jpeg", "default", "GetMap",
                     getString(R.string.vendor_wms));
             wms.setWidthHeightRatio(2.0);
-            setMapComponent(new C2CMapComponent(mapComponent.getMiddlePoint(), mWidth, mHeight, 3),
-                    wms);
+            setMapComponent(new C2CMapComponent(pt, mWidth, mHeight, 3), wms);
             break;
         default:
-            setMapComponent(new SwisstopoComponent(new WgsPoint(lng, lat), mWidth, mHeight, ZOOM),
-                    new SwisstopoMap(getString(R.string.url_pixel),
-                            getString(R.string.vendor_swisstopo), zoom));
+            setMapComponent(new SwisstopoComponent(pt, mWidth, mHeight, ZOOM), new SwisstopoMap(
+                    getString(R.string.url_pixel), getString(R.string.vendor_swisstopo), zoom));
         }
         setMapView();
         return true;
