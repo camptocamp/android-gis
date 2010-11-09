@@ -13,7 +13,7 @@
      final Graphics g = result.getGraphics();
      g.drawImage(resized, (newWidth - resized.getWidth()) / 2, (newHeight - resized.getHeight()) / 2, Graphics.TOP | Graphics.LEFT);
 +    resized.getBitmap().recycle();
-+//    resized = result;
++    resized = null;
      return result;
    }
 --- maps_lib/src/com/nutiteq/BasicMapComponent.java  2010-11-09 10:32:42.000000000 +0100
@@ -38,3 +38,32 @@
  
      if (locationSource != null) {
        locationSource.quit();
+--- maps_lib/src/com/nutiteq/components/MapTile.java	2010-11-09 16:46:02.000000000 +0100
++++ maps_lib-patched/src/com/nutiteq/components/MapTile.java	2010-11-09 16:44:24.000000000 +0100
+@@ -124,7 +124,7 @@
+      * Not part of public API
+      */
+     public void setImagesData(final byte[][] data) {
+-        if (data == null || data.length == 0 || data[0].length == 0) {
++        if (data == null || data.length == 0 || data[0] == null || data[0].length == 0) {
+             failCount++;
+             Log.error("Could not retrieve " + getIDString());
+             requestor.tileRetrieved(this);
+@@ -170,12 +170,16 @@
+                     }
+                 }
+                 imageGraphics.drawImage(tmp, 0, 0, Graphics.TOP | Graphics.LEFT);
++                tmp.getBitmap().recycle();
++                tmp = null;
+             }
+ 
+             if (overlayData != null) {
+                 for (int i = 0; i < overlayData.length; i++) {
+-                    final Image tmp = Image.createImage(overlayData[i], 0, overlayData[i].length);
++                    Image tmp = Image.createImage(overlayData[i], 0, overlayData[i].length);
+                     imageGraphics.drawImage(tmp, 0, 0, Graphics.TOP | Graphics.LEFT);
++                    tmp.getBitmap().recycle();
++                    tmp = null;
+                 }
+             }
+             return tileImage;

@@ -1,7 +1,10 @@
 package com.camptocamp.android.gis;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.microedition.lcdui.Image;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -30,6 +33,7 @@ import com.nutiteq.components.PlaceIcon;
 import com.nutiteq.components.WgsBoundingBox;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.controls.AndroidKeysHandler;
+import com.nutiteq.controls.OnScreenZoomControls;
 import com.nutiteq.location.LocationSource;
 import com.nutiteq.location.NutiteqLocationMarker;
 import com.nutiteq.location.providers.AndroidGPSProvider;
@@ -38,6 +42,7 @@ import com.nutiteq.log.Log;
 import com.nutiteq.maps.GeoMap;
 import com.nutiteq.maps.OpenStreetMap;
 import com.nutiteq.maps.SimpleWMSMap;
+import com.nutiteq.ui.DefaultZoomIndicator;
 import com.nutiteq.ui.ThreadDrivenPanning;
 import com.nutiteq.utils.Utils;
 
@@ -280,6 +285,7 @@ public class Map extends Activity {
             bmc.setNetworkCache(new C2CCaching(getApplicationContext()));
             bmc.setPanningStrategy(new ThreadDrivenPanning());
             bmc.setControlKeysHandler(new AndroidKeysHandler());
+//            bmc.setZoomLevelIndicator(new DefaultZoomIndicator(14, 26));
             bmc.startMapping();
             bmc.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
             mapComponent = bmc;
