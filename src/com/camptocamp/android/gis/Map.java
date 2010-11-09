@@ -1,6 +1,5 @@
 package com.camptocamp.android.gis;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +11,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.text.TextUtils;
 import android.view.Display;
 import android.view.Menu;
@@ -27,10 +25,6 @@ import android.widget.ZoomControls;
 
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.android.MapView;
-import com.nutiteq.cache.AndroidFileSystemCache;
-import com.nutiteq.cache.Cache;
-import com.nutiteq.cache.CachingChain;
-import com.nutiteq.cache.MemoryCache;
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.PlaceIcon;
 import com.nutiteq.components.WgsBoundingBox;
@@ -44,7 +38,6 @@ import com.nutiteq.log.Log;
 import com.nutiteq.maps.GeoMap;
 import com.nutiteq.maps.OpenStreetMap;
 import com.nutiteq.maps.SimpleWMSMap;
-import com.nutiteq.ui.NightModeImageProcessor;
 import com.nutiteq.ui.ThreadDrivenPanning;
 import com.nutiteq.utils.Utils;
 
@@ -53,13 +46,7 @@ public class Map extends Activity {
     public static final String D = "C2C:";
     public static final String APP = "c2c-android-gis";
     public static final int ZOOM = 14;
-    private static final String PKG = "com.camptocamp.android.gis";
-    // An image is ~25kB => 1MB = 40 cached images
-    private static final int SCREENCACHE = 1024 * 1024; // Bytes
-    private static final int FSCACHESIZE = 32 * 1024 * 1024; // Bytes
-    private static final File FSCACHEDIR = new File(Environment.getExternalStorageDirectory()
-            .getAbsolutePath()
-            + "/Android/data/" + PKG);
+    public static final String PKG = "com.camptocamp.android.gis";
     private static final String TAG = D + "Map";
 
     public static final String ACTION_GOTO = "action_goto";
@@ -86,8 +73,6 @@ public class Map extends Activity {
     private RelativeLayout mapLayout;
     private MapView mapView = null;
     private BasicMapComponent mapComponent = null;
-    private MemoryCache cache_memory = null;
-    private AndroidFileSystemCache cache_fs = null;
 
     private final double lat = 46.517815; // X: 152'210
     private final double lng = 6.562805; // Y: 532'790
@@ -229,8 +214,6 @@ public class Map extends Activity {
         if (!onRetainCalled) {
             mapComponent.stopMapping();
             mapComponent = null;
-            cache_memory = null;
-            cache_fs = null;
         }
     }
 
@@ -292,18 +275,8 @@ public class Map extends Activity {
         if (savedMapComponent == null) {
             bmc.setMap(gm);
             // bmc.setImageProcessor(new NightModeImageProcessor());
-
-            // Caching
-            // if (cache_memory != null) {
-            // cache_memory.deinitialize();
-            // }
-            cache_memory = new MemoryCache(SCREENCACHE);
-            // cache_fs = new AndroidFileSystemCache(getApplicationContext(),
-            // APP, FSCACHEDIR,
-            // FSCACHESIZE);
-            bmc.setNetworkCache(new CachingChain(new Cache[] { cache_memory }));
-
             // bmc.setPanningStrategy(new EventDrivenPanning());
+            bmc.setNetworkCache(new C2CCaching(getApplicationContext()));
             bmc.setPanningStrategy(new ThreadDrivenPanning());
             bmc.setControlKeysHandler(new AndroidKeysHandler());
             bmc.startMapping();

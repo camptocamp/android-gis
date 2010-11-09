@@ -18,7 +18,7 @@ public class C2CMapComponent extends BasicMapComponent {
     private static final long DOUBLETAP_DELTA = 500; // ms
     private static final int DOUBLETAP_RADIUS = 50; // px
     private static final int DOUBLETAP_PAN = 2; // px
-    
+
     private final int[] lastpanx = new int[2];
     private final int[] lastpany = new int[2];
 
@@ -35,13 +35,16 @@ public class C2CMapComponent extends BasicMapComponent {
         int zoom = getZoom();
         MapPos pos = getInternalMiddlePoint();
 
+        int quartx = getWidth() / 4;
+        int quarty = getHeight() / 4;
+
         // Don't pan outside of map size
-        if ((pos.getX() > displayedMap.getMapWidth(zoom) && panX > 0)
-                || (pos.getX() < 0 && panX < 0)) {
+        if ((pos.getX() > displayedMap.getMapWidth(zoom) - quartx && panX > 0)
+                || (pos.getX() < quartx && panX < 0)) {
             panX = 0;
         }
-        if ((pos.getY() > displayedMap.getMapHeight(zoom) && panY > 0)
-                || (pos.getY() < 0 && panY < 0)) {
+        if ((pos.getY() > displayedMap.getMapHeight(zoom) - quarty && panY > 0)
+                || (pos.getY() < quarty && panY < 0)) {
             panY = 0;
         }
 
