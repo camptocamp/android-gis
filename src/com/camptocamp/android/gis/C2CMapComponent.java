@@ -88,7 +88,7 @@ public class C2CMapComponent extends BasicMapComponent {
         }
         // Initiate Easing
         else {
-            mHandler.sendMessageDelayed(mHandler.obtainMessage(MOVE, panx, pany), DELAY);
+            mHandler.sendMessageDelayed(Message.obtain(mHandler, MOVE, panx, pany), DELAY);
         }
         lasttouch = now;
         lastposx = x;
@@ -114,8 +114,8 @@ public class C2CMapComponent extends BasicMapComponent {
                 posx += x;
                 posy += y;
                 current += 0.1;
-                mHandler
-                        .sendMessageDelayed(mHandler.obtainMessage(MOVE, msg.arg1, msg.arg2), DELAY);
+                mHandler.sendMessageDelayed(Message.obtain(mHandler, MOVE, msg.arg1, msg.arg2),
+                        DELAY);
             }
         }
     };

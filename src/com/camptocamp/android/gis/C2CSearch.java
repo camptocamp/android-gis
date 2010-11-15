@@ -2,10 +2,22 @@ package com.camptocamp.android.gis;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 
 public class C2CSearch extends ContentProvider {
+
+    protected Context context;
+
+    public C2CSearch() {
+        super();
+    }
+
+    public C2CSearch(Context ctxt) {
+        super();
+        context = ctxt;
+    }
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,

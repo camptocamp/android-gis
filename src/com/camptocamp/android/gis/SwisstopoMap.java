@@ -11,7 +11,7 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
 
     // private static final String TAG = Map.D + "SwisstopoMap";
     private static final int MIN_ZOOM = 14;
-    private static final int MAX_ZOOM = 26;
+    private static final int MAX_ZOOM = 24;
     private static final int TILESIZE = 256;
     private static final String EXT = ".jpeg";
     private double y_shift;
@@ -30,8 +30,8 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
     protected static double MAX_Y = 350000;
 
     // Swisstopo resolutions
-    public static final HashMap<Integer, Double> resolutions = new HashMap<Integer, Double>() {
-        private static final long serialVersionUID = -1961062331663888031L;
+    public final HashMap<Integer, Double> resolutions = new HashMap<Integer, Double>() {
+        private static final long serialVersionUID = 1L;
         {
             put(14, 650.0);
             put(15, 500.0);
@@ -44,8 +44,8 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
             put(22, 2.5);
             put(23, 2.0);
             put(24, 1.5);
-            put(25, 1.0);
-            put(26, 0.5);
+//            put(25, 1.0);
+//            put(26, 0.5);
         }
     };
 

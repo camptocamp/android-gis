@@ -12,7 +12,7 @@ public class SwisstopoOverlay extends C2COverlay {
     public SwisstopoOverlay(final String baseUrl) {
         this.baseUrl = baseUrl;
         layers_all = new HashMap<String, String>() {
-            private static final long serialVersionUID = -341470925482792417L;
+            private static final long serialVersionUID = 1L;
             {
                 put(
                         "o_cycling",

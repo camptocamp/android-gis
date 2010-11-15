@@ -1,5 +1,23 @@
---- maps_lib/src/com/mgmaps/cache/ScreenCache.java	2010-11-09 10:32:42.000000000 +0100
-+++ maps_lib-patched/src/com/mgmaps/cache/ScreenCache.java	2010-11-09 10:32:21.000000000 +0100
+--- /home/jbaubort/Bureau/SIG Android/maps_lib_src/maps_lib/src/com/mgmaps/cache/ScreenCache.java	2010-11-09 10:32:42.000000000 +0100
++++ src/com/mgmaps/cache/ScreenCache.java	2010-11-15 11:36:21.000000000 +0100
+@@ -3,6 +3,8 @@
+  */
+ package com.mgmaps.cache;
+ 
++import java.util.Vector;
++
+ import javax.microedition.lcdui.Graphics;
+ import javax.microedition.lcdui.Image;
+ 
+@@ -57,7 +59,7 @@
+      *            maximum number of tiles stored
+      */
+     private ScreenCache(final int n) {// BattleTac code: Modified to private by
+-                                      // Krisztian Schaffer, 2010.03.01
++        // Krisztian Schaffer, 2010.03.01
+         resize(n);
+     }
+ 
 @@ -122,7 +124,7 @@
       */
      public int find(final MapTile t) {
@@ -9,13 +27,14 @@
                  return i;
              }
          }
-@@ -184,10 +186,12 @@
+@@ -184,10 +186,15 @@
              if (!valid[i]) {
                  continue;
              }
 +            // if found, do not remove it
              if (tiles[i].equals(t)) {
                  found = i;
++                break;
              } else if (!tiles[i].isVisible(mp, displayedMap, screenCenterX, screenCenterY)) {
 -                // if found, do not remove it
 +                // Clean stuff in memory
@@ -25,7 +44,7 @@
                  valid[i] = false;
                  tiles[i] = null;
                  images[i] = null;
-@@ -210,10 +214,30 @@
+@@ -210,10 +217,48 @@
      public void setImageProcessor(final ImageProcessor processor) {
          imageProcessor = processor;
          for (int i = 0; i < size; i++) {
@@ -35,4 +54,42 @@
              valid[i] = false;
              tiles[i] = null;
              images[i] = null;
-
+         }
+     }
++
+     // BattleTac code ends
++
++    public Vector<MapTile> getTiles() {
++        Vector<MapTile> tls = new Vector<MapTile>();
++        for (int i = 0; i < size; i++) {
++            if (valid[i] && tiles[i] != null) {
++                tls.add(tiles[i]);
++            }
++        }
++        return tls;
++    }
++
++    public void renewTileImages() {
++        for (int i = 0; i < size; i++) {
++            if (valid[i] && tiles[i] != null) {
++                images[i] = tiles[i].getImage();
++            }
++        }
++    }
++
++    public void deinitialize() {
++        for (int i = 0; i < tiles.length; i++) {
++            if (tiles[i] != null) {
++                tiles[i].getImage().getBitmap().recycle();
++            }
++        }
++        for (int i = 0; i < images.length; i++) {
++            if (images[i] != null) {
++                images[i].getBitmap().recycle();
++            }
++        }
++        tiles = null;
++        images = null;
++        valid = null;
++    }
+ }

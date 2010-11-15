@@ -21,8 +21,8 @@ public class SwisstopoComponent extends C2CMapComponent {
         tileMapBounds = displayedMap.getTileMapBounds(middlePoint.getZoom());
 
         // Zoom buffer according to map resolution
-        double ratio = SwisstopoMap.resolutions.get(z1)
-                / SwisstopoMap.resolutions.get(middlePoint.getZoom());
+        double ratio = ((SwisstopoMap) displayedMap).resolutions.get(z1)
+                / ((SwisstopoMap) displayedMap).resolutions.get(middlePoint.getZoom());
 
         createZoomBufferAndUpdateScreen(Math.log(ratio) / Math.log(2), true, false);
 
@@ -39,8 +39,8 @@ public class SwisstopoComponent extends C2CMapComponent {
         tileMapBounds = displayedMap.getTileMapBounds(middlePoint.getZoom());
 
         // Zoom buffer according to map resolution
-        double ratio = SwisstopoMap.resolutions.get(middlePoint.getZoom())
-                / SwisstopoMap.resolutions.get(z1);
+        double ratio = ((SwisstopoMap) displayedMap).resolutions.get(middlePoint.getZoom())
+                / ((SwisstopoMap) displayedMap).resolutions.get(z1);
 
         createZoomBufferAndUpdateScreen(Math.log(ratio) / Math.log(2), true, true);
     }

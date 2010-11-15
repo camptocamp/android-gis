@@ -1,5 +1,5 @@
---- /home/jbaubort/Bureau/SIG Android/maps_lib_src/maps_lib/src/com/nutiteq/utils/Utils.java	2010-05-10 10:22:04.000000000 +0200
-+++ src/com/nutiteq/utils/Utils.java	2010-11-09 15:57:15.000000000 +0100
+--- maps_lib/src/com/nutiteq/utils/Utils.java	2010-05-10 10:22:04.000000000 +0200
++++ maps_lib-patched/src/com/nutiteq/utils/Utils.java	2010-11-09 15:57:15.000000000 +0100
 @@ -184,13 +184,15 @@
      throw new IllegalArgumentException("Do not know the log2 from " + x);
    }
@@ -28,6 +28,7 @@
 +        screenBuffer = null;
 +    }
 +    screenBufferGraphics = null;
++    screenCache.deinitialize();
  
      mappingStarted = false;
  
@@ -67,3 +68,61 @@
                  }
              }
              return tileImage;
+--- maps_lib/src/com/nutiteq/components/ImageBuffer.java	2009-10-28 16:28:34.000000000 +0100
++++ maps_lib-patched/src/com/nutiteq/components/ImageBuffer.java	2010-11-15 10:15:24.000000000 +0100
+@@ -48,6 +48,11 @@
+   }
+ 
+   public void clean() {
++    for (int i = 0; i < bufferImages.length; i++) {
++        if (bufferImages[i] != null) {
++            bufferImages[i].getBitmap().recycle();
++        }
++    }
+     bufferImages = null;
+     bufferGraphics = null;
+   }
+
+--- maps_lib/src/com/nutiteq/cache/MemoryCache.java	2010-11-15 12:14:33.000000000 +0100
++++ maps_lib-patched/src/com/nutiteq/cache/MemoryCache.java	2010-11-15 12:13:01.000000000 +0100
+@@ -15,7 +15,7 @@
+  * </p>
+  */
+ public class MemoryCache implements Cache {
+-    private final Hashtable cache;
++    private Hashtable<String, CacheItem> cache;
+     private final int maxSize;
+     private CacheItem mru;
+     private CacheItem lru;
+@@ -29,7 +29,7 @@
+      */
+     public MemoryCache(final int cacheSize) {
+         maxSize = cacheSize;
+-        cache = new Hashtable();
++        cache = new Hashtable<String, CacheItem>();
+     }
+ 
+     public void initialize() {
+@@ -37,7 +37,12 @@
+     }
+ 
+     public void deinitialize() {
+-
++        if (cache != null) {
++            cache.clear();
++        }
++        cache = null;
++        mru = null;
++        lru = null;
+     }
+ 
+     public byte[] get(final String cacheId) {
+@@ -139,7 +144,7 @@
+     }
+ 
+     protected int getActualElementsSize() {
+-        final Enumeration e = cache.elements();
++        final Enumeration<CacheItem> e = cache.elements();
+         int result = 0;
+         while (e.hasMoreElements()) {
+             final CacheItem item = (CacheItem) e.nextElement();

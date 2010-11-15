@@ -25,6 +25,7 @@ import android.widget.ZoomControls;
 
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.android.MapView;
+import com.nutiteq.cache.Cache;
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.PlaceIcon;
 import com.nutiteq.components.WgsBoundingBox;
@@ -50,7 +51,6 @@ public class Map extends Activity {
     private static final String TAG = D + "Map";
 
     public static final String ACTION_GOTO = "action_goto";
-    public static final String ACTION_SEARCH = "action_search";
     public static final String EXTRA_LABEL = "extra_label";
     public static final String EXTRA_MINX = "extra_minx"; // MapPos (px)
     public static final String EXTRA_MINY = "extra_miny";
@@ -67,12 +67,14 @@ public class Map extends Activity {
     private List<String> mSelectedLayers = new ArrayList<String>();
 
     private boolean isTrackingPosition = false;
-    private boolean onRetainCalled;
+    // private boolean onRetainCalled = false;
     private int mWidth = 1;
     private int mHeight = 1;
+    private Context ctxt;
     private RelativeLayout mapLayout;
     private MapView mapView = null;
     private BasicMapComponent mapComponent = null;
+    private C2CCaching cache = null;
 
     private final double lat = 46.517815; // X: 152'210
     private final double lng = 6.562805; // Y: 532'790
@@ -80,11 +82,11 @@ public class Map extends Activity {
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ctxt = getApplicationContext();
         Log.setLogger(new AndroidLogger(APP));
         Log.enableAll();
         // Debug.startMethodTracing("Map");
 
-        onRetainCalled = false;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
         mapLayout = ((RelativeLayout) findViewById(R.id.map));
@@ -192,14 +194,10 @@ public class Map extends Activity {
 
             // Positionning the map according to bbox
             GeoMap map = mapComponent.getMap();
+            mapComponent.setZoom(map.getMinZoom()); // Hackish
             WgsPoint min = map.mapPosToWgs(new MapPos(minx, miny, ZOOM)).toWgsPoint();
             WgsPoint max = map.mapPosToWgs(new MapPos(maxx, maxy, ZOOM)).toWgsPoint();
             mapComponent.setBoundingBox(new WgsBoundingBox(min, max));
-
-        } else if (ACTION_SEARCH.equals(intent.getAction())) {
-
-            ((TextView) findViewById(R.id.search_query))
-                    .setText(intent.getStringExtra(EXTRA_LABEL));
 
         }
     }
@@ -207,21 +205,19 @@ public class Map extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mapView != null) {
-            mapView.clean();
-            mapView = null;
-        }
-        if (!onRetainCalled) {
-            mapComponent.stopMapping();
-            mapComponent = null;
-        }
+        mSelectedLayers.clear();
+        mapView.clean();
+        mapView = null;
+        mapComponent.stopMapping();
+        mapComponent = null;
+        cleanCache();
     }
 
-    @Override
-    public Object onRetainNonConfigurationInstance() {
-        onRetainCalled = true;
-        return mapComponent;
-    }
+    // @Override
+    // public Object onRetainNonConfigurationInstance() {
+    // onRetainCalled = true;
+    // return mapComponent;
+    // }
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
@@ -272,21 +268,23 @@ public class Map extends Activity {
     }
 
     private void setMapComponent(final BasicMapComponent bmc, final GeoMap gm) {
-        final Object savedMapComponent = getLastNonConfigurationInstance();
-        if (savedMapComponent == null) {
-            bmc.setMap(gm);
-            // bmc.setImageProcessor(new NightModeImageProcessor());
-            // bmc.setPanningStrategy(new EventDrivenPanning());
-            bmc.setNetworkCache(new C2CCaching(getApplicationContext()));
-            bmc.setPanningStrategy(new ThreadDrivenPanning());
-            bmc.setControlKeysHandler(new AndroidKeysHandler());
-//            bmc.setZoomLevelIndicator(new DefaultZoomIndicator(14, 26));
-            bmc.startMapping();
-            bmc.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
-            mapComponent = bmc;
-        } else {
-            mapComponent = (BasicMapComponent) savedMapComponent;
-        }
+        // final Object savedMapComponent = getLastNonConfigurationInstance();
+        // if (savedMapComponent == null) {
+        bmc.setMap(gm);
+        // bmc.setImageProcessor(new NightModeImageProcessor());
+        // bmc.setPanningStrategy(new EventDrivenPanning());
+        cleanCache();
+        cache = new C2CCaching(ctxt);
+        bmc.setNetworkCache(cache);
+        bmc.setPanningStrategy(new ThreadDrivenPanning());
+        bmc.setControlKeysHandler(new AndroidKeysHandler());
+        // bmc.setZoomLevelIndicator(new DefaultZoomIndicator(14, 26));
+        bmc.startMapping();
+        bmc.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
+        mapComponent = bmc;
+        // } else {
+        // mapComponent = (BasicMapComponent) savedMapComponent;
+        // }
     }
 
     private void setMapView() {
@@ -294,7 +292,7 @@ public class Map extends Activity {
             // mapView.clean();
             mapLayout.removeView(mapView);
         }
-        mapView = new MapView(getApplicationContext(), mapComponent);
+        mapView = new MapView(ctxt, mapComponent);
         mapLayout.addView(mapView);
         mapLayout.bringChildToFront((View) findViewById(R.id.zoom));
         mapView.setClickable(true);
@@ -361,6 +359,16 @@ public class Map extends Activity {
                 Toast.makeText(Map.this, R.string.toast_overlay_removed, Toast.LENGTH_SHORT).show();
             }
             mapComponent.refreshTileOverlay();
+        }
+    }
+
+    private void cleanCache() {
+        if (cache != null) {
+            final Cache[] cl = cache.getCacheLevels();
+            for (int i = 0; i < cl.length; i++) {
+                cl[i].deinitialize();
+            }
+            cache = null;
         }
     }
 }

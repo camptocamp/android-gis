@@ -13,6 +13,8 @@ import com.nutiteq.cache.MemoryCache;
 
 public class C2CCaching extends CachingChain {
 
+    private static final String TAG = Map.D + "C2CCaching";
+
     // An image is ~25kB => 1MB = 40 cached images
     private static final int SCREENCACHE = 1024 * 1024; // Bytes
     private static final int FSCACHESIZE = 1024 * 1024; // Bytes
@@ -27,12 +29,16 @@ public class C2CCaching extends CachingChain {
 
     public byte[] get(final String cacheKey) {
         if (cacheLevels[0].contains(cacheKey)) {
-            Log.v("Caching", "cache from memory");
+            Log.v(TAG, "cache from memory");
             return cacheLevels[0].get(cacheKey);
         } else if (cacheLevels[1].contains(cacheKey)) {
-            Log.v("Caching", "cache from fs");
+            Log.v(TAG, "cache from fs");
             return cacheLevels[1].get(cacheKey);
         }
         return null;
+    }
+    
+    public Cache[] getCacheLevels(){
+        return cacheLevels;
     }
 }
