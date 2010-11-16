@@ -1,5 +1,5 @@
 --- /home/jbaubort/Bureau/SIG Android/maps_lib_src/maps_lib/src/com/mgmaps/cache/ScreenCache.java	2010-11-09 10:32:42.000000000 +0100
-+++ src/com/mgmaps/cache/ScreenCache.java	2010-11-15 11:36:21.000000000 +0100
++++ src/com/mgmaps/cache/ScreenCache.java	2010-11-15 16:45:46.000000000 +0100
 @@ -3,6 +3,8 @@
   */
  package com.mgmaps.cache;
@@ -18,7 +18,15 @@
          resize(n);
      }
  
-@@ -122,7 +124,7 @@
+@@ -106,6 +108,7 @@
+         if (images[i] == null) {
+             // TODO jaanus : why does this sometimes happen with streamed tiles?
+             Log.debug(">>>>>>>>>>>>>>>>>>>>>>> SC: null image!");
++            valid[i] = false;
+             images[i] = tiles[i].getMap().getMissingTileImage();
+         }
+         final int left = tiles[i].getX() - centerCopy.getX() + screenCenterX;
+@@ -122,7 +125,7 @@
       */
      public int find(final MapTile t) {
          for (int i = 0; i < size; i++) {
@@ -27,7 +35,7 @@
                  return i;
              }
          }
-@@ -184,10 +186,15 @@
+@@ -184,10 +187,15 @@
              if (!valid[i]) {
                  continue;
              }
@@ -44,7 +52,7 @@
                  valid[i] = false;
                  tiles[i] = null;
                  images[i] = null;
-@@ -210,10 +217,48 @@
+@@ -210,10 +218,48 @@
      public void setImageProcessor(final ImageProcessor processor) {
          imageProcessor = processor;
          for (int i = 0; i < size; i++) {

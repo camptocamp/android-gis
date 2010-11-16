@@ -84,7 +84,7 @@
    }
 
 --- maps_lib/src/com/nutiteq/cache/MemoryCache.java	2010-11-15 12:14:33.000000000 +0100
-+++ maps_lib-patched/src/com/nutiteq/cache/MemoryCache.java	2010-11-15 12:13:01.000000000 +0100
++++ maps_lib-patched/src/com/nutiteq/cache/MemoryCache.java	2010-11-16 12:10:25.000000000 +0100
 @@ -15,7 +15,7 @@
   * </p>
   */
@@ -117,7 +117,17 @@
      }
  
      public byte[] get(final String cacheId) {
-@@ -139,7 +144,7 @@
+@@ -122,6 +127,9 @@
+     }
+ 
+     public boolean contains(final String cacheKey) {
++        if (cache == null) {
++            return false;
++        }
+         return cache.containsKey(cacheKey);
+     }
+ 
+@@ -139,7 +147,7 @@
      }
  
      protected int getActualElementsSize() {

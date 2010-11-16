@@ -17,6 +17,7 @@
     <string name="menu_swisstopo_ortho">swisstopo Aerial imagery</string>
     <string name="menu_osm">OpenStreetMap</string>
     <string name="menu_wms_example">WMS example</string>
+    <string name="menu_prefs">Options</string>
     
     <string name="toast_gps_start">GPS tracking started !</string>
     <string name="toast_gps_stop">GPS tracking stopped !</string>

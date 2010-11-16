@@ -62,6 +62,7 @@ public class Map extends Activity {
     private static final int MENU_MAP_ST_ORTHO = 1;
     private static final int MENU_MAP_OSM = 2;
     private static final int MENU_MAP_WMS = 3;
+    private static final int MENU_PREFS = 4;
     private static final String PLACEHOLDER = "placeholder";
 
     private List<String> mSelectedLayers = new ArrayList<String>();
@@ -208,7 +209,9 @@ public class Map extends Activity {
         mSelectedLayers.clear();
         mapView.clean();
         mapView = null;
-        mapComponent.stopMapping();
+        if (mapComponent != null) {
+            mapComponent.stopMapping();
+        }
         mapComponent = null;
         cleanCache();
     }
@@ -225,14 +228,16 @@ public class Map extends Activity {
         menu.add(0, MENU_MAP_ST_ORTHO, 1, R.string.menu_swisstopo_ortho);
         menu.add(1, MENU_MAP_OSM, 2, R.string.menu_osm);
         menu.add(2, MENU_MAP_WMS, 3, R.string.menu_wms_example);
+        menu.add(2, MENU_PREFS, 4, R.string.menu_prefs);
         return true;
     }
 
     @Override
     public boolean onMenuItemSelected(final int featureId, final MenuItem item) {
-        int zoom = mapComponent.getZoom();
+        int zoom = ZOOM;
         WgsPoint pt = new WgsPoint(lng, lat);
         if (mapComponent != null) {
+            zoom = mapComponent.getZoom();
             pt = mapComponent.getMiddlePoint();
             mapComponent.stopMapping();
             mapComponent = null;
@@ -259,6 +264,10 @@ public class Map extends Activity {
             wms.setWidthHeightRatio(2.0);
             setMapComponent(new C2CMapComponent(pt, mWidth, mHeight, 3), wms);
             break;
+
+        case MENU_PREFS:
+            startActivity(new Intent(Map.this, Prefs.class));
+            return true;
         default:
             setMapComponent(new SwisstopoComponent(pt, mWidth, mHeight, ZOOM), new SwisstopoMap(
                     getString(R.string.url_pixel), getString(R.string.vendor_swisstopo), zoom));
