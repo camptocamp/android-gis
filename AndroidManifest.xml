@@ -41,9 +41,14 @@
         </activity>
         
         <provider
-            android:name="SwisstopoSearch"
-	        android:authorities="com.camptocamp.android.gis.C2CSearch"
-	        android:syncable="false" />
+            android:name="OpenaddressesSearch"
+            android:authorities="com.camptocamp.android.gis.C2CSearch"
+            android:syncable="false" />
+        
+<!--        <provider-->
+<!--            android:name="SwisstopoSearch"-->
+<!--            android:authorities="com.camptocamp.android.gis.C2CSearch"-->
+<!--            android:syncable="false" />-->
             
         <meta-data
             android:name="android.app.default_searchable"

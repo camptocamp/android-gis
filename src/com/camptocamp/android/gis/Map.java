@@ -26,7 +26,6 @@ import android.widget.ZoomControls;
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.android.MapView;
 import com.nutiteq.cache.Cache;
-import com.nutiteq.components.MapPos;
 import com.nutiteq.components.PlaceIcon;
 import com.nutiteq.components.WgsBoundingBox;
 import com.nutiteq.components.WgsPoint;
@@ -99,7 +98,7 @@ public class Map extends Activity {
 
         // Set default map
         setMapComponent(new SwisstopoComponent(new WgsPoint(lng, lat), mWidth, mHeight, ZOOM),
-                new SwisstopoMap(getString(R.string.url_pixel),
+                new SwisstopoMap(getString(R.string.st_url_pixel),
                         getString(R.string.vendor_swisstopo), ZOOM));
         setMapView();
 
@@ -147,7 +146,7 @@ public class Map extends Activity {
                 if (MENU_CURRENT == MENU_MAP_ST_PIXEL || MENU_CURRENT == MENU_MAP_ST_ORTHO) {
                     setOverlay(new SwisstopoOverlay(getString(R.string.overlay_swisstopo_data)));
                 } else if (MENU_CURRENT == MENU_MAP_OSM) {
-                    setOverlay(new OsmOverlay(getString(R.string.overlay_osm_contours)));
+                    setOverlay(new OsmOverlay(getString(R.string.osm_overlay_contours)));
                 } else {
                     Toast.makeText(Map.this, R.string.toast_no_layer, Toast.LENGTH_SHORT).show();
                 }
@@ -188,16 +187,16 @@ public class Map extends Activity {
                     .setText(intent.getStringExtra(EXTRA_LABEL));
 
             // Get positions in pixels
-            int minx = intent.getIntExtra(EXTRA_MINX, 0);
-            int miny = intent.getIntExtra(EXTRA_MINY, 0);
-            int maxx = intent.getIntExtra(EXTRA_MAXX, 0);
-            int maxy = intent.getIntExtra(EXTRA_MAXY, 0);
+            double minx = intent.getDoubleExtra(EXTRA_MINX, 0);
+            double miny = intent.getDoubleExtra(EXTRA_MINY, 0);
+            double maxx = intent.getDoubleExtra(EXTRA_MAXX, 0);
+            double maxy = intent.getDoubleExtra(EXTRA_MAXY, 0);
 
             // Positionning the map according to bbox
             GeoMap map = mapComponent.getMap();
             mapComponent.setZoom(map.getMinZoom()); // Hackish
-            WgsPoint min = map.mapPosToWgs(new MapPos(minx, miny, ZOOM)).toWgsPoint();
-            WgsPoint max = map.mapPosToWgs(new MapPos(maxx, maxy, ZOOM)).toWgsPoint();
+            WgsPoint min = new WgsPoint(minx, miny);
+            WgsPoint max = new WgsPoint(maxx, maxy);
             mapComponent.setBoundingBox(new WgsBoundingBox(min, max));
 
         }
@@ -247,11 +246,11 @@ public class Map extends Activity {
         switch (MENU_CURRENT) {
         case MENU_MAP_ST_PIXEL:
             setMapComponent(new SwisstopoComponent(pt, mWidth, mHeight, zoom), new SwisstopoMap(
-                    getString(R.string.url_pixel), getString(R.string.vendor_swisstopo), zoom));
+                    getString(R.string.st_url_pixel), getString(R.string.vendor_swisstopo), zoom));
             break;
         case MENU_MAP_ST_ORTHO:
             setMapComponent(new SwisstopoComponent(pt, mWidth, mHeight, zoom), new SwisstopoMap(
-                    getString(R.string.url_ortho), getString(R.string.vendor_swisstopo), zoom));
+                    getString(R.string.st_url_ortho), getString(R.string.vendor_swisstopo), zoom));
             break;
         case MENU_MAP_OSM:
             setMapComponent(new C2CMapComponent(pt, mWidth, mHeight, zoom), OpenStreetMap.MAPNIK);
@@ -270,7 +269,7 @@ public class Map extends Activity {
             return true;
         default:
             setMapComponent(new SwisstopoComponent(pt, mWidth, mHeight, ZOOM), new SwisstopoMap(
-                    getString(R.string.url_pixel), getString(R.string.vendor_swisstopo), zoom));
+                    getString(R.string.st_url_pixel), getString(R.string.vendor_swisstopo), zoom));
         }
         setMapView();
         return true;

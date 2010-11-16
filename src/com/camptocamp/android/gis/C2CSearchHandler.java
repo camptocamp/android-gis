@@ -28,7 +28,8 @@ public class C2CSearchHandler extends Activity {
         // Handle search query (just send the query)
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            C2CSearch search = new SwisstopoSearch(getApplicationContext());
+//            C2CSearch search = new SwisstopoSearch(getApplicationContext());
+            C2CSearch search = new OpenaddressesSearch(getApplicationContext());
             final Cursor c = search.query(Uri.parse("content://" + Map.PKG
                     + ".C2CSearch/search_suggest_query/" + query + "?limit=50"), null, null, null,
                     null);
@@ -59,11 +60,10 @@ public class C2CSearchHandler extends Activity {
             newintent.putExtra(Map.EXTRA_LABEL, json.getString("label"));
 
             // Bbox
-            SwisstopoMap m = new SwisstopoMap("", "", Map.ZOOM);
-            newintent.putExtra(Map.EXTRA_MINX, (int) Math.round(m.CHxtoPIX(a.getDouble(0))));
-            newintent.putExtra(Map.EXTRA_MINY, (int) Math.round(m.CHytoPIX(a.getDouble(1))));
-            newintent.putExtra(Map.EXTRA_MAXX, (int) Math.round(m.CHxtoPIX(a.getDouble(2))));
-            newintent.putExtra(Map.EXTRA_MAXY, (int) Math.round(m.CHytoPIX(a.getDouble(3))));
+            newintent.putExtra(Map.EXTRA_MINX, a.getDouble(0));
+            newintent.putExtra(Map.EXTRA_MINY, a.getDouble(1));
+            newintent.putExtra(Map.EXTRA_MAXX, a.getDouble(2));
+            newintent.putExtra(Map.EXTRA_MAXY, a.getDouble(3));
 
         } catch (JSONException e) {
             e.printStackTrace();

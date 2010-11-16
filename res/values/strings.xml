@@ -25,7 +25,9 @@
     <string name="toast_overlay_added">Overlay added !</string>
     <string name="toast_overlay_removed">Overlay removed !</string>
     
-    <string name="overlay_osm_contours">http://map.stephane-brunner.ch/contours/</string>
+    <string name="osm_overlay_contours">http://map.stephane-brunner.ch/contours/</string>
+    <string name="osm_search_url">http://openaddresses.org/addresses/?limit=50&amp;attrs=street,city,country&amp;no_geom=true&amp;query=%s</string>
+<!--&amp;box=%s&amp;epsg=%s</string>-->
     
 <!--    <string name=""></string>-->
 </resources>

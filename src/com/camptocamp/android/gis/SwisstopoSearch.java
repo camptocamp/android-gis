@@ -1,16 +1,7 @@
 package com.camptocamp.android.gis;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.net.URI;
 import java.net.URLEncoder;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,7 +14,8 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.util.Log;
 
-import com.nutiteq.utils.IOUtils;
+import com.nutiteq.components.MapPos;
+import com.nutiteq.components.WgsPoint;
 
 public class SwisstopoSearch extends C2CSearch {
 
@@ -58,35 +50,9 @@ public class SwisstopoSearch extends C2CSearch {
         if (!SearchManager.SUGGEST_URI_PATH_QUERY.equals(query)) {
             // Get search results as JSON
             Context ctxt = (context == null) ? getContext() : context;
-            String url = String.format(ctxt.getString(R.string.url_search), System
+            String url = String.format(ctxt.getString(R.string.st_url_search), System
                     .currentTimeMillis(), query);
-
-            HttpEntity entity = null;
-            InputStream is = null;
-            Writer w = new StringWriter();
-            HttpGet method = null;
-            byte[] data;
-            try {
-                DefaultHttpClient client = new DefaultHttpClient();
-                method = new HttpGet(new URI(url));
-                HttpResponse response = client.execute(method);
-                entity = response.getEntity();
-                is = entity.getContent();
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                data = IOUtils.readFully(is);
-                if (method != null) {
-                    method.abort();
-                }
-                if (entity != null) {
-                    try {
-                        entity.consumeContent();
-                    } catch (IOException e) {
-                    }
-                }
-                IOUtils.closeStream(is);
-            }
+            byte[] data = getData(url);
 
             // Parse JSON
             try {
@@ -96,7 +62,7 @@ public class SwisstopoSearch extends C2CSearch {
                     JSONObject elem = results.getJSONObject(i);
 
                     // Base data
-                    String id = elem.getString("id");
+                    Integer id = elem.getInt("id");
                     String label = elem.getString("label");
                     String service = elem.getString("service");
 
@@ -108,19 +74,27 @@ public class SwisstopoSearch extends C2CSearch {
                         icon = R.drawable.search;
                     }
 
+                    // Transform bbox to WGS point
+                    JSONArray bbox = elem.getJSONArray("bbox");
+                    SwisstopoMap m = new SwisstopoMap("", "", Map.ZOOM);
+                    Log.v(TAG, "bbox=" + bbox.toString());
+                    WgsPoint min = m.mapPosToWgs(
+                            new MapPos((int) Math.round(m.CHxtoPIX(bbox.getDouble(0))), (int) Math
+                                    .round(m.CHytoPIX(bbox.getDouble(1))), Map.ZOOM)).toWgsPoint();
+                    WgsPoint max = m.mapPosToWgs(
+                            new MapPos((int) Math.round(m.CHxtoPIX(bbox.getDouble(2))), (int) Math
+                                    .round(m.CHytoPIX(bbox.getDouble(3))), Map.ZOOM)).toWgsPoint();
+                    bbox = new JSONArray("[" + min.getLon() + ", " + min.getLat() + ", "
+                            + max.getLon() + ", " + max.getLat() + "]");
+                    elem.put("bbox", bbox);
+
                     answer.addRow(new Object[] { id, label, icon, elem.toString() });
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-            } finally {
-                try {
-                    w.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
         } else {
-            Log.v(TAG, "Invalid query");
+            Log.v(TAG, "Invalid query=" + query);
         }
         return answer;
     }

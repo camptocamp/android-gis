@@ -1,10 +1,21 @@
 package com.camptocamp.android.gis;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+
+import com.nutiteq.utils.IOUtils;
 
 public class C2CSearch extends ContentProvider {
 
@@ -17,6 +28,36 @@ public class C2CSearch extends ContentProvider {
     public C2CSearch(Context ctxt) {
         super();
         context = ctxt;
+    }
+
+    protected byte[] getData(String url) {
+        HttpEntity entity = null;
+        InputStream is = null;
+        HttpGet method = null;
+        byte[] data = null;
+        try {
+            DefaultHttpClient client = new DefaultHttpClient();
+            method = new HttpGet(new URI(url));
+            HttpResponse response = client.execute(method);
+            entity = response.getEntity();
+            is = entity.getContent();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // TODO: Check this
+            data = IOUtils.readFully(is);
+            if (method != null) {
+                method.abort();
+            }
+            if (entity != null) {
+                try {
+                    entity.consumeContent();
+                } catch (IOException e) {
+                }
+            }
+            IOUtils.closeStream(is);
+        }
+        return data;
     }
 
     @Override
