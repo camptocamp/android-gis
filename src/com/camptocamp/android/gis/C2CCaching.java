@@ -23,11 +23,11 @@ public class C2CCaching extends CachingChain {
             .getAbsolutePath()
             + "/Android/data/" + Map.PKG);
 
-    public C2CCaching(Context ctxt) {
+    public C2CCaching(final Context ctxt) {
         super(createCacheLevels(ctxt));
     }
 
-    private static Cache[] createCacheLevels(Context ctxt) {
+    private static Cache[] createCacheLevels(final Context ctxt) {
         Cache[] cl = null;
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctxt);
         if (prefs.getBoolean(Prefs.KEY_FS_CACHING, Prefs.DEFAULT_FS_CACHING)) {

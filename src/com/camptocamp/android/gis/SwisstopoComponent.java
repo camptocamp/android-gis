@@ -8,6 +8,7 @@ public class SwisstopoComponent extends C2CMapComponent {
 
     public SwisstopoComponent(WgsPoint middlePoint, int width, int height, int zoom) {
         super(middlePoint, width, height, zoom);
+        setZoomLevelIndicator(new C2CZoomIndicator(SwisstopoMap.MIN_ZOOM, SwisstopoMap.MAX_ZOOM));
     }
 
     @Override

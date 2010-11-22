@@ -17,7 +17,7 @@ import android.net.Uri;
 
 import com.nutiteq.utils.IOUtils;
 
-public class C2CSearch extends ContentProvider {
+public abstract class C2CSearch extends ContentProvider {
 
     protected Context context;
 

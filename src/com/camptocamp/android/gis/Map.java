@@ -37,8 +37,7 @@ import com.nutiteq.log.AndroidLogger;
 import com.nutiteq.log.Log;
 import com.nutiteq.maps.GeoMap;
 import com.nutiteq.maps.OpenStreetMap;
-import com.nutiteq.maps.SimpleWMSMap;
-import com.nutiteq.ui.ThreadDrivenPanning;
+import com.nutiteq.ui.EventDrivenPanning;
 import com.nutiteq.utils.Utils;
 
 public class Map extends Activity {
@@ -56,18 +55,18 @@ public class Map extends Activity {
     public static final String EXTRA_MAXX = "extra_maxx";
     public static final String EXTRA_MAXY = "extra_maxy";
 
-    private int MENU_CURRENT = MENU_MAP_ST_PIXEL;
+    private int mCurrentMenu = MENU_MAP_ST_PIXEL;
     private static final int MENU_MAP_ST_PIXEL = 0;
     private static final int MENU_MAP_ST_ORTHO = 1;
     private static final int MENU_MAP_OSM = 2;
-    private static final int MENU_MAP_WMS = 3;
+    // private static final int MENU_MAP_WMS = 3;
     private static final int MENU_PREFS = 4;
     private static final String PLACEHOLDER = "placeholder";
 
     private List<String> mSelectedLayers = new ArrayList<String>();
 
     private boolean isTrackingPosition = false;
-    // private boolean onRetainCalled = false;
+    private boolean onRetainCalled = false;
     private int mWidth = 1;
     private int mHeight = 1;
     private Context ctxt;
@@ -87,6 +86,7 @@ public class Map extends Activity {
         Log.enableAll();
         // Debug.startMethodTracing("Map");
 
+        onRetainCalled = false;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
         mapLayout = ((RelativeLayout) findViewById(R.id.map));
@@ -143,9 +143,9 @@ public class Map extends Activity {
             @Override
             public void onClick(View v) {
                 // Layers only for Swisstopo maps (FIXME: Be generic)
-                if (MENU_CURRENT == MENU_MAP_ST_PIXEL || MENU_CURRENT == MENU_MAP_ST_ORTHO) {
+                if (mCurrentMenu == MENU_MAP_ST_PIXEL || mCurrentMenu == MENU_MAP_ST_ORTHO) {
                     setOverlay(new SwisstopoOverlay(getString(R.string.overlay_swisstopo_data)));
-                } else if (MENU_CURRENT == MENU_MAP_OSM) {
+                } else if (mCurrentMenu == MENU_MAP_OSM) {
                     setOverlay(new OsmOverlay(getString(R.string.osm_overlay_contours)));
                 } else {
                     Toast.makeText(Map.this, R.string.toast_no_layer, Toast.LENGTH_SHORT).show();
@@ -206,44 +206,53 @@ public class Map extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         mSelectedLayers.clear();
-        mapView.clean();
-        mapView = null;
-        if (mapComponent != null) {
-            mapComponent.stopMapping();
+        if (mapView != null) {
+            mapView.clean();
+            mapView = null;
         }
-        mapComponent = null;
-        cleanCache();
+        if (!onRetainCalled) {
+            android.util.Log.v(TAG, "onDestroy(): clean mapComponent");
+            if (mapComponent != null) {
+                mapComponent.stopMapping();
+                mapComponent = null;
+            }
+        }
+        cleanCaches();
     }
 
-    // @Override
-    // public Object onRetainNonConfigurationInstance() {
-    // onRetainCalled = true;
-    // return mapComponent;
-    // }
+    @Override
+    public Object onRetainNonConfigurationInstance() {
+        onRetainCalled = true;
+        return mapComponent;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
-        menu.add(0, MENU_MAP_ST_PIXEL, 0, R.string.menu_swisstopo_pixel);
-        menu.add(0, MENU_MAP_ST_ORTHO, 1, R.string.menu_swisstopo_ortho);
-        menu.add(1, MENU_MAP_OSM, 2, R.string.menu_osm);
-        menu.add(2, MENU_MAP_WMS, 3, R.string.menu_wms_example);
-        menu.add(2, MENU_PREFS, 4, R.string.menu_prefs);
+        menu.add(0, MENU_MAP_ST_PIXEL, 0, R.string.menu_swisstopo_pixel).setIcon(
+                android.R.drawable.ic_menu_mapmode);
+        menu.add(0, MENU_MAP_ST_ORTHO, 1, R.string.menu_swisstopo_ortho).setIcon(
+                android.R.drawable.ic_menu_mapmode);
+        menu.add(1, MENU_MAP_OSM, 2, R.string.menu_osm).setIcon(android.R.drawable.ic_menu_mapmode);
+        // menu.add(2, MENU_MAP_WMS, 3, R.string.menu_wms_example).setIcon(
+        // android.R.drawable.ic_menu_mapmode);
+        menu.add(2, MENU_PREFS, 4, R.string.menu_prefs).setIcon(
+                android.R.drawable.ic_menu_preferences);
         return true;
     }
 
     @Override
     public boolean onMenuItemSelected(final int featureId, final MenuItem item) {
+        mCurrentMenu = item.getItemId();
         int zoom = ZOOM;
         WgsPoint pt = new WgsPoint(lng, lat);
-        if (mapComponent != null) {
+        if (mapComponent != null && mCurrentMenu != MENU_PREFS) {
             zoom = mapComponent.getZoom();
             pt = mapComponent.getMiddlePoint();
             mapComponent.stopMapping();
             mapComponent = null;
+            cleanCaches();
         }
-
-        MENU_CURRENT = item.getItemId();
-        switch (MENU_CURRENT) {
+        switch (mCurrentMenu) {
         case MENU_MAP_ST_PIXEL:
             setMapComponent(new SwisstopoComponent(pt, mWidth, mHeight, zoom), new SwisstopoMap(
                     getString(R.string.st_url_pixel), getString(R.string.vendor_swisstopo), zoom));
@@ -255,14 +264,16 @@ public class Map extends Activity {
         case MENU_MAP_OSM:
             setMapComponent(new C2CMapComponent(pt, mWidth, mHeight, zoom), OpenStreetMap.MAPNIK);
             break;
-        case MENU_MAP_WMS:
-            SimpleWMSMap wms = new SimpleWMSMap(
-                    "http://iceds.ge.ucl.ac.uk/cgi-bin/icedswms?VERSION=1.1.1&SRS=EPSG:4326", 256,
-                    0, 18, "bluemarble,cities,countries", "image/jpeg", "default", "GetMap",
-                    getString(R.string.vendor_wms));
-            wms.setWidthHeightRatio(2.0);
-            setMapComponent(new C2CMapComponent(pt, mWidth, mHeight, 3), wms);
-            break;
+        // case MENU_MAP_WMS:
+        // SimpleWMSMap wms = new SimpleWMSMap(
+        // "http://iceds.ge.ucl.ac.uk/cgi-bin/icedswms?VERSION=1.1.1&SRS=EPSG:4326",
+        // 256,
+        // 0, 18, "bluemarble,cities,countries", "image/jpeg", "default",
+        // "GetMap",
+        // getString(R.string.vendor_wms));
+        // wms.setWidthHeightRatio(2.0);
+        // setMapComponent(new C2CMapComponent(pt, mWidth, mHeight, 3), wms);
+        // break;
 
         case MENU_PREFS:
             startActivity(new Intent(Map.this, Prefs.class));
@@ -276,33 +287,32 @@ public class Map extends Activity {
     }
 
     private void setMapComponent(final BasicMapComponent bmc, final GeoMap gm) {
-        // final Object savedMapComponent = getLastNonConfigurationInstance();
-        // if (savedMapComponent == null) {
-        bmc.setMap(gm);
-        // bmc.setImageProcessor(new NightModeImageProcessor());
-        // bmc.setPanningStrategy(new EventDrivenPanning());
-        cleanCache();
-        cache = new C2CCaching(ctxt);
-        bmc.setNetworkCache(cache);
-        bmc.setPanningStrategy(new ThreadDrivenPanning());
-        bmc.setControlKeysHandler(new AndroidKeysHandler());
-        // bmc.setZoomLevelIndicator(new DefaultZoomIndicator(14, 26));
-        bmc.startMapping();
-        bmc.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
-        mapComponent = bmc;
-        // } else {
-        // mapComponent = (BasicMapComponent) savedMapComponent;
-        // }
+        final Object savedMapComponent = getLastNonConfigurationInstance();
+        if (savedMapComponent == null) {
+            bmc.setMap(gm);
+            cleanCaches();
+            cache = new C2CCaching(ctxt);
+            bmc.setNetworkCache(cache);
+            // bmc.setImageProcessor(new NightModeImageProcessor());
+            // bmc.setPanningStrategy(new ThreadDrivenPanning());
+            bmc.setPanningStrategy(new EventDrivenPanning());
+            bmc.setControlKeysHandler(new AndroidKeysHandler());
+            bmc.startMapping();
+            bmc.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
+            mapComponent = bmc;
+        } else {
+            mapComponent = (BasicMapComponent) savedMapComponent;
+        }
     }
 
     private void setMapView() {
         if (mapView != null) {
-            // mapView.clean();
+            mapView.clean();
             mapLayout.removeView(mapView);
+            mapView = null;
         }
         mapView = new MapView(ctxt, mapComponent);
         mapLayout.addView(mapView);
-        mapLayout.bringChildToFront((View) findViewById(R.id.zoom));
         mapView.setClickable(true);
         mapView.setEnabled(true);
     }
@@ -370,7 +380,7 @@ public class Map extends Activity {
         }
     }
 
-    private void cleanCache() {
+    private void cleanCaches() {
         if (cache != null) {
             final Cache[] cl = cache.getCacheLevels();
             for (int i = 0; i < cl.length; i++) {

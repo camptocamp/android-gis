@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical"
     android:background="#ffffffff">
-    <!-- Dummy view to prevent EditText having the focus -->
-    <LinearLayout 
-	    android:focusable="true" android:focusableInTouchMode="true"
-	    android:layout_width="0px" android:layout_height="0px"/>
     <LinearLayout
+        android:id="@+id/menu_bar"
         android:layout_width="fill_parent"
         android:layout_height="48dip"
         android:background="@android:drawable/status_bar_item_background">
@@ -58,14 +54,13 @@
 	<RelativeLayout
 	    android:id="@+id/map"
 	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_weight="1">
-	    <ZoomControls
-	        android:id="@+id/zoom"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_marginLeft="5dip"
-	        android:layout_alignParentBottom="true"
-	        android:gravity="center_horizontal" />
+	    android:layout_height="fill_parent"
+	    android:layout_below="@+id/menu_bar">
     </RelativeLayout>
-</LinearLayout>
+    <ZoomControls
+        android:id="@+id/zoom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="5dip" />
+</RelativeLayout>

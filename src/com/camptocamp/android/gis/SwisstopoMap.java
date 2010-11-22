@@ -10,8 +10,8 @@ import com.nutiteq.maps.UnstreamedMap;
 public class SwisstopoMap extends CH1903 implements UnstreamedMap {
 
     // private static final String TAG = Map.D + "SwisstopoMap";
-    private static final int MIN_ZOOM = 14;
-    private static final int MAX_ZOOM = 24;
+    protected static final int MIN_ZOOM = 14;
+    protected static final int MAX_ZOOM = 24;
     private static final int TILESIZE = 256;
     private static final String EXT = ".jpeg";
     private double y_shift;

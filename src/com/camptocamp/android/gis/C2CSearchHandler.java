@@ -28,8 +28,11 @@ public class C2CSearchHandler extends Activity {
         // Handle search query (just send the query)
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-//            C2CSearch search = new SwisstopoSearch(getApplicationContext());
-            C2CSearch search = new OpenaddressesSearch(getApplicationContext());
+
+            C2CSearch search = new SwisstopoSearch(getApplicationContext());
+            // C2CSearch search = new
+            // OpenaddressesSearch(getApplicationContext());
+
             final Cursor c = search.query(Uri.parse("content://" + Map.PKG
                     + ".C2CSearch/search_suggest_query/" + query + "?limit=50"), null, null, null,
                     null);

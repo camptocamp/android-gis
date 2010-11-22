@@ -28,6 +28,7 @@ public class C2CMapComponent extends BasicMapComponent {
 
     public C2CMapComponent(WgsPoint middlePoint, int width, int height, int zoom) {
         super(KEY, VDR, Map.APP, width, height, middlePoint, zoom);
+        setZoomLevelIndicator(new C2CZoomIndicator(0, 18));
     }
 
     @Override
