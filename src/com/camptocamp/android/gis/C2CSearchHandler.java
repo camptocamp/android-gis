@@ -37,14 +37,19 @@ public class C2CSearchHandler extends Activity {
                     + ".C2CSearch/search_suggest_query/" + query + "?limit=50"), null, null, null,
                     null);
             if (c != null && c.getCount() > 0) {
-                Builder d = new Builder(C2CSearchHandler.this);
-                d.setCursor(c, new OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        showResultActivity(c.getString(3));
-                    }
-                }, SearchManager.SUGGEST_COLUMN_TEXT_1);
-                d.create().show();
+                if (c.getCount() == 1) {
+                    c.moveToFirst();
+                    showResultActivity(c.getString(3));
+                } else {
+                    Builder d = new Builder(C2CSearchHandler.this);
+                    d.setCursor(c, new OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            showResultActivity(c.getString(3));
+                        }
+                    }, SearchManager.SUGGEST_COLUMN_TEXT_1);
+                    d.create().show();
+                }
             }
         }
         // Handle suggestions query (just send geo data)
