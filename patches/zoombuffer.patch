@@ -84,11 +84,9 @@
    private KmlServicesHandler kmlServicesHandler;
    private com.nutiteq.cache.Cache networkCache;
 @@ -192,10 +192,10 @@
-   private LocationSource locationSource;
    private GeoMap[] tileSearchStrategy;
  
--  private final LicenseKeyCheck licenseKeyCheck;
-+//  private final LicenseKeyCheck licenseKeyCheck;
+   private final LicenseKeyCheck licenseKeyCheck;
  
    private boolean paintingScreen;
 -  private TileMapBounds tileMapBounds;
