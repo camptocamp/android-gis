@@ -3,15 +3,18 @@
     <string name="app_name">android-gis</string>
     
     <string name="search_label">Location Search</string>   
-    <string name="search_description">Search a location from Swisstopo database</string>    
+    <string name="search_description">Search a location from Swisstopo database</string>   
+    <string name="search_bar_hint">Search location</string> 
     
     <string name="vendor_swisstopo">geodata © swisstopo</string>
     <string name="vendor_wms">© UCL</string>
     
     <string name="dialog_layer_title">Choose layer(s):</string>
-    <string name="search_bar_hint">Search location</string>
+    <string name="dialog_fs_cache_remove">Do you want to remove the cache ?</string>
     
     <string name="btn_apply">Apply</string>
+    <string name="btn_yes">Yes</string>
+    <string name="btn_no">No</string>
     
     <string name="menu_swisstopo_pixel">swisstopo Color map</string>
     <string name="menu_swisstopo_ortho">swisstopo Aerial imagery</string>
@@ -19,11 +22,15 @@
     <string name="menu_wms_example">WMS example</string>
     <string name="menu_prefs">Options</string>
     
+    <string name="prefs_fscacheremove">Remove cache files</string>
+    
     <string name="toast_gps_start">GPS tracking started !</string>
     <string name="toast_gps_stop">GPS tracking stopped !</string>
     <string name="toast_no_layer">No layer available!</string>
     <string name="toast_overlay_added">Overlay added !</string>
     <string name="toast_overlay_removed">Overlay removed !</string>
+    <string name="toast_fscacheremove">Cache removed !</string>
+    <string name="toast_fscacheremove_error">Error removing cache !</string>
     
     <string name="osm_overlay_contours">http://map.stephane-brunner.ch/contours/</string>
     <string name="osm_search_url">http://openaddresses.org/addresses/?limit=50&amp;attrs=street,city,country&amp;no_geom=true&amp;query=%s</string>

@@ -15,6 +15,9 @@
             android:dependency="fscaching"
             android:dialogLayout="@layout/prefs_size"
             android:dialogTitle="Size" />
+        <Preference
+	        android:key="fscachingremove"
+	        android:title="@string/prefs_fscacheremove" />
     </PreferenceCategory>
 
 </PreferenceScreen>
