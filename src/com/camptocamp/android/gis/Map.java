@@ -30,6 +30,8 @@ import com.nutiteq.components.PlaceIcon;
 import com.nutiteq.components.WgsBoundingBox;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.controls.AndroidKeysHandler;
+import com.nutiteq.listeners.DelayedMapListener;
+import com.nutiteq.listeners.MapListener;
 import com.nutiteq.location.LocationSource;
 import com.nutiteq.location.NutiteqLocationMarker;
 import com.nutiteq.location.providers.AndroidGPSProvider;
@@ -66,7 +68,7 @@ public class Map extends Activity {
     private List<String> mSelectedLayers = new ArrayList<String>();
 
     private boolean isTrackingPosition = false;
-    private boolean onRetainCalled = false;
+    // private boolean onRetainCalled = false;
     private int mWidth = 1;
     private int mHeight = 1;
     private Context ctxt;
@@ -86,7 +88,7 @@ public class Map extends Activity {
         Log.enableAll();
         // Debug.startMethodTracing("Map");
 
-        onRetainCalled = false;
+        // onRetainCalled = false;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
         mapLayout = ((RelativeLayout) findViewById(R.id.map));
@@ -210,21 +212,21 @@ public class Map extends Activity {
             mapView.clean();
             mapView = null;
         }
-        if (!onRetainCalled) {
-            android.util.Log.v(TAG, "onDestroy(): clean mapComponent");
-            if (mapComponent != null) {
-                mapComponent.stopMapping();
-                mapComponent = null;
-            }
+        // if (!onRetainCalled) {
+        android.util.Log.v(TAG, "onDestroy(): clean mapComponent");
+        if (mapComponent != null) {
+            mapComponent.stopMapping();
+            mapComponent = null;
         }
+        // }
         cleanCaches();
     }
 
-    @Override
-    public Object onRetainNonConfigurationInstance() {
-        onRetainCalled = true;
-        return mapComponent;
-    }
+    // @Override
+    // public Object onRetainNonConfigurationInstance() {
+    // onRetainCalled = true;
+    // return mapComponent;
+    // }
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {

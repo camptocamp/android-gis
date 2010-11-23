@@ -36,19 +36,25 @@ public class C2CSearchHandler extends Activity {
             final Cursor c = search.query(Uri.parse("content://" + Map.PKG
                     + ".C2CSearch/search_suggest_query/" + query + "?limit=50"), null, null, null,
                     null);
-            if (c != null && c.getCount() > 0) {
-                if (c.getCount() == 1) {
-                    c.moveToFirst();
-                    showResultActivity(c.getString(3));
+            if (c != null) {
+                if (c.getCount() > 0) {
+                    if (c.getCount() == 1) {
+                        c.moveToFirst();
+                        showResultActivity(c.getString(3));
+                        c.close();
+                    } else {
+                        Builder d = new Builder(C2CSearchHandler.this);
+                        d.setCursor(c, new OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                showResultActivity(c.getString(3));
+                                c.close();
+                            }
+                        }, SearchManager.SUGGEST_COLUMN_TEXT_1);
+                        d.create().show();
+                    }
                 } else {
-                    Builder d = new Builder(C2CSearchHandler.this);
-                    d.setCursor(c, new OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            showResultActivity(c.getString(3));
-                        }
-                    }, SearchManager.SUGGEST_COLUMN_TEXT_1);
-                    d.create().show();
+                    finish();
                 }
             }
         }
