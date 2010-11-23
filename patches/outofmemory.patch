@@ -76,6 +76,20 @@
      return size;
    }
  
+@@ -143,12 +143,11 @@ public class MemoryCache implements Cache {
+ 
+     // TEST METHODS
+     protected int getCalculatedSize() {
+-        final Enumeration<CacheItem> e = cache.elements();
+         return size;
+     }
+ 
+     protected int getActualElementsSize() {
+-        final Enumeration e = cache.elements();
++        final Enumeration<CacheItem> e = cache.elements();
+         int result = 0;
+         while (e.hasMoreElements()) {
+             final CacheItem item = (CacheItem) e.nextElement();
 --- src/com/nutiteq/components/ImageBuffer.java
 +++ src/com/nutiteq/components/ImageBuffer.java
 @@ -48,6 +48,11 @@ public class ImageBuffer {

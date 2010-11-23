@@ -49,11 +49,6 @@
    }
  
 +  public void deinitialize() {
-+    for (int i = 0; i < tiles.length; i++) {
-+      if (tiles[i] != null) {
-+        tiles[i].getImage().getBitmap().recycle();
-+      }
-+    }
 +    for (int i = 0; i < images.length; i++) {
 +      if (images[i] != null) {
 +        images[i].getBitmap().recycle();
