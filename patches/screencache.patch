@@ -1,103 +1,46 @@
---- src/com/mgmaps/cache/ScreenCache.java	2010-11-09 10:32:42.000000000 +0100
-+++ src/com/mgmaps/cache/ScreenCache.java	2010-11-15 16:45:46.000000000 +0100
-@@ -3,6 +3,8 @@
-  */
- package com.mgmaps.cache;
- 
-+import java.util.Vector;
-+
- import javax.microedition.lcdui.Graphics;
- import javax.microedition.lcdui.Image;
- 
-@@ -57,7 +59,7 @@
-      *            maximum number of tiles stored
-      */
-     private ScreenCache(final int n) {// BattleTac code: Modified to private by
--                                      // Krisztian Schaffer, 2010.03.01
-+        // Krisztian Schaffer, 2010.03.01
-         resize(n);
+--- src/com/mgmaps/cache/ScreenCache.java
++++ src/com/mgmaps/cache/ScreenCache.java
+@@ -105,6 +105,7 @@ public class ScreenCache {
+     if (images[i] == null) {
+       //TODO jaanus : why does this sometimes happen with streamed tiles?
+       Log.debug(">>>>>>>>>>>>>>>>>>>>>>> SC: null image!");
++      valid[i] = false; //FIXME
+       images[i] = tiles[i].getMap().getMissingTileImage();
      }
- 
-@@ -106,6 +108,7 @@
-         if (images[i] == null) {
-             // TODO jaanus : why does this sometimes happen with streamed tiles?
-             Log.debug(">>>>>>>>>>>>>>>>>>>>>>> SC: null image!");
-+            valid[i] = false;
-             images[i] = tiles[i].getMap().getMissingTileImage();
-         }
-         final int left = tiles[i].getX() - centerCopy.getX() + screenCenterX;
-@@ -122,7 +125,7 @@
-      */
-     public int find(final MapTile t) {
-         for (int i = 0; i < size; i++) {
--            if (valid[i] && tiles[i].equals(t)) {
-+            if (valid[i] && tiles[i] != null && tiles[i].equals(t)) {
-                 return i;
-             }
-         }
-@@ -184,10 +187,15 @@
-             if (!valid[i]) {
-                 continue;
-             }
-+            // if found, do not remove it
-             if (tiles[i].equals(t)) {
-                 found = i;
-+                break;
-             } else if (!tiles[i].isVisible(mp, displayedMap, screenCenterX, screenCenterY)) {
--                // if found, do not remove it
-+                // Clean stuff in memory
-+                if (images[i] != null) {
-+                    images[i].getBitmap().recycle();
-+                }
-                 valid[i] = false;
-                 tiles[i] = null;
-                 images[i] = null;
-@@ -210,10 +218,48 @@
-     public void setImageProcessor(final ImageProcessor processor) {
-         imageProcessor = processor;
-         for (int i = 0; i < size; i++) {
-+            if (images[i] != null) {
-+                images[i].getBitmap().recycle();
-+            }
-             valid[i] = false;
-             tiles[i] = null;
-             images[i] = null;
-         }
+     final int left = tiles[i].getX() - centerCopy.getX() + screenCenterX;
+@@ -121,7 +122,7 @@ public class ScreenCache {
+    */
+   public int find(final MapTile t) {
+     for (int i = 0; i < size; i++) {
+-      if (valid[i] && tiles[i].equals(t)) {
++      if (valid[i] && tiles[i] != null && tiles[i].equals(t)) {
+         return i;
+       }
      }
-+
-     // BattleTac code ends
-+
-+    public Vector<MapTile> getTiles() {
-+        Vector<MapTile> tls = new Vector<MapTile>();
-+        for (int i = 0; i < size; i++) {
-+            if (valid[i] && tiles[i] != null) {
-+                tls.add(tiles[i]);
-+            }
+@@ -181,10 +182,15 @@ public class ScreenCache {
+       if (!valid[i]) {
+         continue;
+       }
++      // if found, do not remove it
+       if (tiles[i].equals(t)) {
+         found = i;
++        break;
+       } else if (!tiles[i].isVisible(mp, displayedMap, screenCenterX, screenCenterY)) {
+-        // if found, do not remove it
++        // Clean stuff in memory
++        if (images[i] != null) {
++            images[i].getBitmap().recycle();
 +        }
-+        return tls;
-+    }
-+
-+    public void renewTileImages() {
-+        for (int i = 0; i < size; i++) {
-+            if (valid[i] && tiles[i] != null) {
-+                images[i] = tiles[i].getImage();
-+            }
-+        }
-+    }
-+
-+    public void deinitialize() {
-+        for (int i = 0; i < tiles.length; i++) {
-+            if (tiles[i] != null) {
-+                tiles[i].getImage().getBitmap().recycle();
-+            }
-+        }
-+        for (int i = 0; i < images.length; i++) {
-+            if (images[i] != null) {
-+                images[i].getBitmap().recycle();
-+            }
-+        }
-+        tiles = null;
-+        images = null;
-+        valid = null;
-+    }
- }
+         valid[i] = false;
+         tiles[i] = null;
+         images[i] = null;
+@@ -206,6 +212,9 @@ public class ScreenCache {
+   public void setImageProcessor(final ImageProcessor processor) {
+     imageProcessor = processor;
+     for (int i = 0; i < size; i++) {
++      if (images[i] != null) {
++        images[i].getBitmap().recycle();
++      }
+       valid[i] = false;
+       tiles[i] = null;
+       images[i] = null;

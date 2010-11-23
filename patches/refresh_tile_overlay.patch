@@ -15,15 +15,15 @@
    //BattleTac code ends
 +
 +	public Vector<MapTile> getTiles() {
-+		Vector<MapTile> tls = new Vector<MapTile>();  
++		Vector<MapTile> tls = new Vector<MapTile>();
 +		for(int i=0; i < size; i++) {
 +			if( valid[i] && tiles[i] != null ) {
 +				tls.add(tiles[i]);
 +			}
 +		}
-+		return tls; 
++		return tls;
 +	}
-+	
++
 +	public void renewTileImages() {
 +		for(int i=0; i < size; i++) {
 +			if( valid[i] && tiles[i] != null ) {
@@ -38,10 +38,10 @@
  
      }
    }
-+  
++
 +  public void refreshTileOverlay() {
 +	  Vector<MapTile> cachedTiles = screenCache.getTiles();
-+	  
++
 +	  final MapTileOverlay overlay = displayedMap.getTileOverlay();
 +
 +      if (overlay != null ) {
