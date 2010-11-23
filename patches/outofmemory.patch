@@ -1,6 +1,127 @@
---- src/com/nutiteq/utils/Utils.java	2010-05-10 10:22:04.000000000 +0200
-+++ src/com/nutiteq/utils/Utils.java	2010-11-09 15:57:15.000000000 +0100
-@@ -184,13 +184,15 @@
+--- src/com/nutiteq/BasicMapComponent.java
++++ src/com/nutiteq/BasicMapComponent.java
+@@ -1964,10 +1964,19 @@ public class BasicMapComponent extends BaseMapComponent implements MapTilesReque
+       return;
+     }
+ 
+-    mappingStarted = false;
+-
+-    panning.quit();
+-
++    if (screenBuffer != null) {
++        screenBuffer.getBitmap().recycle();
++        screenBuffer = null;
++    }
++    screenBufferGraphics = null;
++    screenCache.deinitialize();
++
++    mappingStarted = false;
++
++    if (panning != null) {
++        panning.quit();
++    }
++
+     if (locationSource != null) {
+       locationSource.quit();
+     }
+--- src/com/nutiteq/cache/MemoryCache.java
++++ src/com/nutiteq/cache/MemoryCache.java
+@@ -15,7 +15,7 @@ import java.util.Hashtable;
+  * </p>
+  */
+ public class MemoryCache implements Cache {
+-  private final Hashtable cache;
++  private Hashtable<String, CacheItem> cache;
+   private final int maxSize;
+   private CacheItem mru;
+   private CacheItem lru;
+@@ -29,7 +29,7 @@ public class MemoryCache implements Cache {
+    */
+   public MemoryCache(final int cacheSize) {
+     maxSize = cacheSize;
+-    cache = new Hashtable();
++    cache = new Hashtable<String, CacheItem>();
+   }
+ 
+   public void initialize() {
+@@ -37,7 +37,12 @@ public class MemoryCache implements Cache {
+   }
+ 
+   public void deinitialize() {
+-
++    if (cache != null) {
++        cache.clear();
++    }
++    cache = null;
++    mru = null;
++    lru = null;
+   }
+ 
+   public byte[] get(final String cacheId) {
+@@ -120,6 +125,9 @@ public class MemoryCache implements Cache {
+   }
+ 
+   public boolean contains(final String cacheKey) {
++    if (cache == null) {
++        return false;
++    }
+     return cache.containsKey(cacheKey);
+   }
+ 
+@@ -133,6 +141,7 @@ public class MemoryCache implements Cache {
+ 
+   //TEST METHODS
+   protected int getCalculatedSize() {
++    final Enumeration<CacheItem> e = cache.elements();
+     return size;
+   }
+ 
+--- src/com/nutiteq/components/ImageBuffer.java
++++ src/com/nutiteq/components/ImageBuffer.java
+@@ -48,6 +48,11 @@ public class ImageBuffer {
+   }
+ 
+   public void clean() {
++    for (int i = 0; i < bufferImages.length; i++) {
++      if (bufferImages[i] != null) {
++        bufferImages[i].getBitmap().recycle();
++      }
++    }
+     bufferImages = null;
+     bufferGraphics = null;
+   }
+--- src/com/nutiteq/components/MapTile.java
++++ src/com/nutiteq/components/MapTile.java
+@@ -123,7 +123,7 @@ public class MapTile {
+    * Not part of public API
+    */
+   public void setImagesData(final byte[][] data) {
+-    if (data == null || data.length == 0 || data[0].length == 0) {
++    if (data == null || data.length == 0 || data[0] == null || data[0].length == 0) {
+       failCount++;
+       Log.error("Could not retrieve " + getIDString());
+       requestor.tileRetrieved(this);
+@@ -169,12 +169,16 @@ public class MapTile {
+           }
+         }
+         imageGraphics.drawImage(tmp, 0, 0, Graphics.TOP | Graphics.LEFT);
++        tmp.getBitmap().recycle();
++        tmp = null;
+       }
+ 
+       if (overlayData != null) {
+         for (int i = 0; i < overlayData.length; i++) {
+-          final Image tmp = Image.createImage(overlayData[i], 0, overlayData[i].length);
++          Image tmp = Image.createImage(overlayData[i], 0, overlayData[i].length);
+           imageGraphics.drawImage(tmp, 0, 0, Graphics.TOP | Graphics.LEFT);
++          tmp.getBitmap().recycle();
++          tmp = null;
+         }
+       }
+       return tileImage;
+--- src/com/nutiteq/utils/Utils.java
++++ src/com/nutiteq/utils/Utils.java
+@@ -184,13 +184,15 @@ public class Utils {
      throw new IllegalArgumentException("Do not know the log2 from " + x);
    }
  
@@ -16,123 +137,4 @@
 +    resized = null;
      return result;
    }
---- src/com/nutiteq/BasicMapComponent.java  2010-11-09 10:32:42.000000000 +0100
-+++ src/com/nutiteq/BasicMapComponent.java  2010-11-09 10:32:21.000000000 +0100
-@@ -1963,10 +1988,18 @@
-     if (!mappingStarted) {
-       return;
-     }
-+    
-+    if (screenBuffer != null) {
-+        screenBuffer.getBitmap().recycle();
-+        screenBuffer = null;
-+    }
-+    screenBufferGraphics = null;
-+    screenCache.deinitialize();
  
-     mappingStarted = false;
- 
--    panning.quit();
-+    if (panning != null) {
-+        panning.quit();
-+    }
- 
-     if (locationSource != null) {
-       locationSource.quit();
---- src/com/nutiteq/components/MapTile.java	2010-11-09 16:46:02.000000000 +0100
-+++ src/com/nutiteq/components/MapTile.java	2010-11-09 16:44:24.000000000 +0100
-@@ -124,7 +124,7 @@
-      * Not part of public API
-      */
-     public void setImagesData(final byte[][] data) {
--        if (data == null || data.length == 0 || data[0].length == 0) {
-+        if (data == null || data.length == 0 || data[0] == null || data[0].length == 0) {
-             failCount++;
-             Log.error("Could not retrieve " + getIDString());
-             requestor.tileRetrieved(this);
-@@ -170,12 +170,16 @@
-                     }
-                 }
-                 imageGraphics.drawImage(tmp, 0, 0, Graphics.TOP | Graphics.LEFT);
-+                tmp.getBitmap().recycle();
-+                tmp = null;
-             }
- 
-             if (overlayData != null) {
-                 for (int i = 0; i < overlayData.length; i++) {
--                    final Image tmp = Image.createImage(overlayData[i], 0, overlayData[i].length);
-+                    Image tmp = Image.createImage(overlayData[i], 0, overlayData[i].length);
-                     imageGraphics.drawImage(tmp, 0, 0, Graphics.TOP | Graphics.LEFT);
-+                    tmp.getBitmap().recycle();
-+                    tmp = null;
-                 }
-             }
-             return tileImage;
---- src/com/nutiteq/components/ImageBuffer.java	2009-10-28 16:28:34.000000000 +0100
-+++ src/com/nutiteq/components/ImageBuffer.java	2010-11-15 10:15:24.000000000 +0100
-@@ -48,6 +48,11 @@
-   }
- 
-   public void clean() {
-+    for (int i = 0; i < bufferImages.length; i++) {
-+        if (bufferImages[i] != null) {
-+            bufferImages[i].getBitmap().recycle();
-+        }
-+    }
-     bufferImages = null;
-     bufferGraphics = null;
-   }
-
---- src/com/nutiteq/cache/MemoryCache.java	2010-11-15 12:14:33.000000000 +0100
-+++ src/com/nutiteq/cache/MemoryCache.java	2010-11-16 12:10:25.000000000 +0100
-@@ -15,7 +15,7 @@
-  * </p>
-  */
- public class MemoryCache implements Cache {
--    private final Hashtable cache;
-+    private Hashtable<String, CacheItem> cache;
-     private final int maxSize;
-     private CacheItem mru;
-     private CacheItem lru;
-@@ -29,7 +29,7 @@
-      */
-     public MemoryCache(final int cacheSize) {
-         maxSize = cacheSize;
--        cache = new Hashtable();
-+        cache = new Hashtable<String, CacheItem>();
-     }
- 
-     public void initialize() {
-@@ -37,7 +37,12 @@
-     }
- 
-     public void deinitialize() {
--
-+        if (cache != null) {
-+            cache.clear();
-+        }
-+        cache = null;
-+        mru = null;
-+        lru = null;
-     }
- 
-     public byte[] get(final String cacheId) {
-@@ -122,6 +127,9 @@
-     }
- 
-     public boolean contains(final String cacheKey) {
-+        if (cache == null) {
-+            return false;
-+        }
-         return cache.containsKey(cacheKey);
-     }
- 
-@@ -139,7 +147,7 @@
-     }
- 
-     protected int getActualElementsSize() {
--        final Enumeration e = cache.elements();
-+        final Enumeration<CacheItem> e = cache.elements();
-         int result = 0;
-         while (e.hasMoreElements()) {
-             final CacheItem item = (CacheItem) e.nextElement();
