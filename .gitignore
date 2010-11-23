@@ -2,3 +2,4 @@ res/values/swisstopo.xml
 bin
 gen
 scripts
+patches/swisstopo-hack.patch
