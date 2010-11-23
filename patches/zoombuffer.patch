@@ -83,6 +83,15 @@
  
    private KmlServicesHandler kmlServicesHandler;
    private com.nutiteq.cache.Cache networkCache;
+@@ -195,7 +195,7 @@ public class BasicMapComponent extends BaseMapComponent implements MapTilesReque
+   private final LicenseKeyCheck licenseKeyCheck;
+ 
+   private boolean paintingScreen;
+-  private TileMapBounds tileMapBounds;
++  protected TileMapBounds tileMapBounds;
+ 
+   private boolean mappingStarted;
+ 
 @@ -826,7 +826,7 @@ public class BasicMapComponent extends BaseMapComponent implements MapTilesReque
      cleanMapBuffer();
      middlePoint = displayedMap.zoom(middlePoint, 1);
