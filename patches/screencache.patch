@@ -44,3 +44,26 @@
        valid[i] = false;
        tiles[i] = null;
        images[i] = null;
+@@ -61,6 +61,22 @@ public class ScreenCache {
+     resize(n);
+   }
+ 
++  public void deinitialize() {
++    for (int i = 0; i < tiles.length; i++) {
++      if (tiles[i] != null) {
++        tiles[i].getImage().getBitmap().recycle();
++      }
++    }
++    for (int i = 0; i < images.length; i++) {
++      if (images[i] != null) {
++        images[i].getBitmap().recycle();
++      }
++    }
++    tiles = null;
++    images = null;
++    valid = null;
++  }
++
+   /**
+    * Resize the screen cache when switching full screen.
+    * 
