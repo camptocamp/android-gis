@@ -1,4 +1,4 @@
---- /home/jbaubort/Bureau/SIG Android/maps_lib_src/maps_lib/src/com/mgmaps/cache/ScreenCache.java	2010-11-09 10:32:42.000000000 +0100
+--- src/com/mgmaps/cache/ScreenCache.java	2010-11-09 10:32:42.000000000 +0100
 +++ src/com/mgmaps/cache/ScreenCache.java	2010-11-15 16:45:46.000000000 +0100
 @@ -3,6 +3,8 @@
   */

@@ -1,4 +1,4 @@
---- /home/jbaubort/Bureau/SIG Android/maps_lib_src/maps_lib/src/com/mgmaps/utils/Tools.java	2009-11-26 17:40:10.000000000 +0100
+--- src/com/mgmaps/utils/Tools.java	2009-11-26 17:40:10.000000000 +0100
 +++ src/com/mgmaps/utils/Tools.java	2010-10-18 13:59:47.000000000 +0200
 @@ -373,11 +375,11 @@
     *          logarithmic scaling level (1 = scale by 2, 2 = scale by 4, etc.)

@@ -1,4 +1,4 @@
---- /home/jbaubort/Bureau/SIG Android/maps_lib_src/maps_lib/src/com/nutiteq/cache/CachingChain.java	2009-04-05 15:07:26.000000000 +0200
+--- src/com/nutiteq/cache/CachingChain.java	2009-04-05 15:07:26.000000000 +0200
 +++ src/com/nutiteq/cache/CachingChain.java	2010-11-09 13:56:02.000000000 +0100
 @@ -4,7 +4,7 @@
   * Combines different caching levels to one cache.
