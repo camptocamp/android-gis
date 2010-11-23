@@ -1,11 +1,12 @@
 --- src/com/nutiteq/BasicMapComponent.java	2010-07-28 19:35:22.000000000 +0200
 +++ src/com/nutiteq/BasicMapComponent.java	2010-11-09 10:48:45.000000000 +0100
-@@ -243,7 +243,7 @@
+@@ -243,7 +243,8 @@
      startWgs = middlePoint;
      startZoom = zoom;
  
 -    licenseKeyCheck = new LicenseKeyCheck(this, licenseKey, appname, vendor);
 +//    licenseKeyCheck = new LicenseKeyCheck(this, licenseKey, appname, vendor);
++    licenseKeyCheck = null;
    }
  
    private void createScreenCache() {
