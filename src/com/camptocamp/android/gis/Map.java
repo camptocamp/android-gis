@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.location.Criteria;
+import android.location.GpsStatus;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -30,8 +32,6 @@ import com.nutiteq.components.PlaceIcon;
 import com.nutiteq.components.WgsBoundingBox;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.controls.AndroidKeysHandler;
-import com.nutiteq.listeners.DelayedMapListener;
-import com.nutiteq.listeners.MapListener;
 import com.nutiteq.location.LocationSource;
 import com.nutiteq.location.NutiteqLocationMarker;
 import com.nutiteq.location.providers.AndroidGPSProvider;
@@ -68,7 +68,7 @@ public class Map extends Activity {
     private List<String> mSelectedLayers = new ArrayList<String>();
 
     private boolean isTrackingPosition = false;
-    // private boolean onRetainCalled = false;
+    private boolean onRetainCalled = false;
     private int mWidth = 1;
     private int mHeight = 1;
     private Context ctxt;
@@ -88,7 +88,7 @@ public class Map extends Activity {
         Log.enableAll();
         // Debug.startMethodTracing("Map");
 
-        // onRetainCalled = false;
+        onRetainCalled = false;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
         mapLayout = ((RelativeLayout) findViewById(R.id.map));
@@ -125,17 +125,31 @@ public class Map extends Activity {
         locationSource.setLocationMarker(new NutiteqLocationMarker(new PlaceIcon(Utils
                 .createImage("/res/drawable/marker.png"), 8, 8), 0, true));
         final ImageButton btn_gps = (ImageButton) findViewById(R.id.position_track);
+
+        // Hack to get GPS Status
+        locationSource.start();
+        locationSource.quit();
+
         btn_gps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isTrackingPosition) {
-                    Toast.makeText(Map.this, R.string.toast_gps_stop, Toast.LENGTH_SHORT).show();
-                    locationSource.quit();
+                if (locationSource.getStatus() != LocationSource.STATUS_CONNECTION_LOST) {
+                    if (isTrackingPosition) {
+                        Toast.makeText(Map.this, R.string.toast_gps_stop, Toast.LENGTH_SHORT)
+                                .show();
+                        locationSource.quit();
+                    } else {
+                        Toast.makeText(Map.this, R.string.toast_gps_start, Toast.LENGTH_SHORT)
+                                .show();
+                        mapComponent.setLocationSource(locationSource);
+                    }
+                    isTrackingPosition = !isTrackingPosition;
                 } else {
-                    Toast.makeText(Map.this, R.string.toast_gps_start, Toast.LENGTH_SHORT).show();
-                    mapComponent.setLocationSource(locationSource);
+                    Toast.makeText(Map.this, R.string.toast_gps_disabled, Toast.LENGTH_SHORT)
+                            .show();
+                    isTrackingPosition = false;
+                    locationSource.quit();
                 }
-                isTrackingPosition = !isTrackingPosition;
             }
         });
 
@@ -212,21 +226,21 @@ public class Map extends Activity {
             mapView.clean();
             mapView = null;
         }
-        // if (!onRetainCalled) {
-        android.util.Log.v(TAG, "onDestroy(): clean mapComponent");
-        if (mapComponent != null) {
-            mapComponent.stopMapping();
-            mapComponent = null;
+        if (!onRetainCalled) {
+            android.util.Log.v(TAG, "onDestroy(): clean mapComponent");
+            if (mapComponent != null) {
+                mapComponent.stopMapping();
+                mapComponent = null;
+            }
+            cleanCaches();
         }
-        // }
-        cleanCaches();
     }
 
-    // @Override
-    // public Object onRetainNonConfigurationInstance() {
-    // onRetainCalled = true;
-    // return mapComponent;
-    // }
+    @Override
+    public Object onRetainNonConfigurationInstance() {
+        onRetainCalled = true;
+        return mapComponent;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {

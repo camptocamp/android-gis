@@ -26,6 +26,7 @@
     
     <string name="toast_gps_start">GPS tracking started !</string>
     <string name="toast_gps_stop">GPS tracking stopped !</string>
+    <string name="toast_gps_disabled">GPS is disabled in preferences !</string>
     <string name="toast_no_layer">No layer available!</string>
     <string name="toast_overlay_added">Overlay added !</string>
     <string name="toast_overlay_removed">Overlay removed !</string>
