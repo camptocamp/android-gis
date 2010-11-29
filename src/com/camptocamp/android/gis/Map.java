@@ -1,5 +1,6 @@
 package com.camptocamp.android.gis;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,10 +10,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.location.Criteria;
-import android.location.GpsStatus;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.Display;
 import android.view.Menu;
@@ -32,7 +32,6 @@ import com.nutiteq.components.PlaceIcon;
 import com.nutiteq.components.WgsBoundingBox;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.controls.AndroidKeysHandler;
-import com.nutiteq.location.LocationSource;
 import com.nutiteq.location.NutiteqLocationMarker;
 import com.nutiteq.location.providers.AndroidGPSProvider;
 import com.nutiteq.log.AndroidLogger;
@@ -120,36 +119,26 @@ public class Map extends Activity {
         // GPS Location tracking
         // FIXME: Implements CellId/Wifi provider and automatic choice of best
         // data available
-        final LocationManager locmanager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        final LocationSource locationSource = new AndroidGPSProvider(locmanager, 1000L);
+        final AndroidGPSProvider locationSource = new C2CGpsProvider(Map.this);
         locationSource.setLocationMarker(new NutiteqLocationMarker(new PlaceIcon(Utils
                 .createImage("/res/drawable/marker.png"), 8, 8), 0, true));
         final ImageButton btn_gps = (ImageButton) findViewById(R.id.position_track);
 
-        // Hack to get GPS Status
-        locationSource.start();
-        locationSource.quit();
+        // Hack to get GPS Status (calls LocationListener.onProviderDisabled)
+        // locationSource.start();
+        // locationSource.quit();
 
         btn_gps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (locationSource.getStatus() != LocationSource.STATUS_CONNECTION_LOST) {
-                    if (isTrackingPosition) {
-                        Toast.makeText(Map.this, R.string.toast_gps_stop, Toast.LENGTH_SHORT)
-                                .show();
-                        locationSource.quit();
-                    } else {
-                        Toast.makeText(Map.this, R.string.toast_gps_start, Toast.LENGTH_SHORT)
-                                .show();
-                        mapComponent.setLocationSource(locationSource);
-                    }
-                    isTrackingPosition = !isTrackingPosition;
-                } else {
-                    Toast.makeText(Map.this, R.string.toast_gps_disabled, Toast.LENGTH_SHORT)
-                            .show();
-                    isTrackingPosition = false;
+                if (isTrackingPosition) {
+                    Toast.makeText(Map.this, R.string.toast_gps_stop, Toast.LENGTH_SHORT).show();
                     locationSource.quit();
+                } else {
+                    Toast.makeText(Map.this, R.string.toast_gps_start, Toast.LENGTH_SHORT).show();
+                    mapComponent.setLocationSource(locationSource);
                 }
+                isTrackingPosition = !isTrackingPosition;
             }
         });
 
@@ -210,7 +199,7 @@ public class Map extends Activity {
 
             // Positionning the map according to bbox
             GeoMap map = mapComponent.getMap();
-            mapComponent.setZoom(map.getMinZoom()); // Hackish
+            mapComponent.setZoom(map.getMinZoom());
             WgsPoint min = new WgsPoint(minx, miny);
             WgsPoint max = new WgsPoint(maxx, maxy);
             mapComponent.setBoundingBox(new WgsBoundingBox(min, max));
@@ -403,6 +392,29 @@ public class Map extends Activity {
                 cl[i].deinitialize();
             }
             cache = null;
+        }
+    }
+
+    /**
+     * GPS custom provider
+     */
+    private static class C2CGpsProvider extends AndroidGPSProvider {
+
+        private WeakReference<Map> mActivity;
+
+        public C2CGpsProvider(Map a) {
+            super((LocationManager) a.getSystemService(Context.LOCATION_SERVICE), 1000L);
+            mActivity = new WeakReference<Map>(a);
+        }
+
+        @Override
+        public void onProviderDisabled(final String provider) {
+            final Map a = mActivity.get();
+            if (a != null) {
+                a.isTrackingPosition = false;
+                a.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                Toast.makeText(a, R.string.toast_gps_disabled, Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }
