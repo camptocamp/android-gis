@@ -1,0 +1,102 @@
+--- /home/jbaubort/Bureau/SIG Android/maps_lib_src/maps_lib/src/com/nutiteq/cache/MemoryCache.java	2010-11-23 10:44:36.000000000 +0100
++++ src/com/nutiteq/cache/MemoryCache.java	2010-11-30 15:04:26.000000000 +0100
+@@ -15,7 +15,7 @@
+  * </p>
+  */
+ public class MemoryCache implements Cache {
+-  private final Hashtable cache;
++  private Hashtable<String, CacheItem> cache;
+   private final int maxSize;
+   private CacheItem mru;
+   private CacheItem lru;
+@@ -29,7 +29,7 @@
+    */
+   public MemoryCache(final int cacheSize) {
+     maxSize = cacheSize;
+-    cache = new Hashtable();
++    cache = new Hashtable<String, CacheItem>();
+   }
+ 
+   public void initialize() {
+@@ -57,13 +62,14 @@
+       if (result.next != null) {
+         result.next.previous = result.previous;
+       }
+-
+-      result.previous.next = result.next;
++      if(result.previous != null){
++        result.previous.next = result.next;
++      }
+ 
+       // Add myself back in to the front.
+-      mru.previous = result;
+-      result.previous = null;
+-      result.next = mru;
++      mru.next = result;
++      result.previous = mru;
++      result.next = null;
+       mru = result;
+     }
+ 
+@@ -77,10 +83,11 @@
+ 
+     final byte[] existing = get(cacheId);
+     if (existing != null) {
+-      // The key has already been used.  By calling get() we already promoted
+-      // it to the MRU spot.  However, if the data has changed, we need to
++      // The key has already been used. By calling get() we already
++      // promoted
++      // it to the MRU spot. However, if the data has changed, we need to
+       // update it in the hash table.
+-      //TODO jaanus : check also data content?
++      // TODO jaanus : check also data content?
+       if (existing.length != data.length) {
+         final CacheItem i = (CacheItem) cache.get(cacheId);
+         i.data = data;
+@@ -97,7 +104,7 @@
+         // then cache is empty
+         lru = item;
+       } else {
+-        mru.previous = item;
++        mru.next = item;
+       }
+ 
+       mru = item;
+@@ -107,19 +114,24 @@
+     }
+ 
+     while (size > maxSize) {
++      android.util.Log.v("MemoryCache", "size=" + size + ", MaxSize=" + maxSize);
+       // Kick out the least recently used element.
+       cache.remove(lru.key);
+       size -= lru.data.length;
+ 
+-      if (lru.previous != null) {
+-        lru.previous.next = null;
++      if (lru.next != null) {
++        lru.next.previous = null;
++        lru = lru.next;
++      } else {
++        lru = null;
+       }
+-
+-      lru = lru.previous;
+     }
+   }
+ 
+   public boolean contains(final String cacheKey) {
++    if (cache == null) {
++      return false;
++    }
+     return cache.containsKey(cacheKey);
+   }
+ 
+@@ -137,7 +149,7 @@
+   }
+ 
+   protected int getActualElementsSize() {
+-    final Enumeration e = cache.elements();
++    final Enumeration<CacheItem> e = cache.elements();
+     int result = 0;
+     while (e.hasMoreElements()) {
+       final CacheItem item = (CacheItem) e.nextElement();
