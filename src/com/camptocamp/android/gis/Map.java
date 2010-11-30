@@ -38,7 +38,7 @@ import com.nutiteq.log.AndroidLogger;
 import com.nutiteq.log.Log;
 import com.nutiteq.maps.GeoMap;
 import com.nutiteq.maps.OpenStreetMap;
-import com.nutiteq.ui.EventDrivenPanning;
+import com.nutiteq.ui.ThreadDrivenPanning;
 import com.nutiteq.utils.Utils;
 
 public class Map extends Activity {
@@ -296,14 +296,19 @@ public class Map extends Activity {
         if (savedMapComponent == null) {
             bmc.setMap(gm);
             cleanCaches();
+            // if (cache == null) {
             cache = new C2CCaching(ctxt);
+            // } else {
+            // cache.initialize();
+            // }
             bmc.setNetworkCache(cache);
             // bmc.setImageProcessor(new NightModeImageProcessor());
-            // bmc.setPanningStrategy(new ThreadDrivenPanning());
-            bmc.setPanningStrategy(new EventDrivenPanning());
+            bmc.setPanningStrategy(new ThreadDrivenPanning());
             bmc.setControlKeysHandler(new AndroidKeysHandler());
             bmc.startMapping();
             bmc.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
+            // bmc.setDownloadCounter(new NutiteqDownloadCounter());
+            // bmc.setDownloadDisplay(new NutiteqDownloadDisplay());
             mapComponent = bmc;
         } else {
             mapComponent = (BasicMapComponent) savedMapComponent;
@@ -392,6 +397,7 @@ public class Map extends Activity {
                 cl[i].deinitialize();
             }
             cache = null;
+            // System.gc();
         }
     }
 

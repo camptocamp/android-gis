@@ -1,0 +1,18 @@
+--- /home/jbaubort/Bureau/SIG Android/maps_lib_src/maps_lib/android/src/com/nutiteq/location/providers/AndroidGPSProvider.java	2009-06-29 17:14:32.000000000 +0200
++++ src/com/nutiteq/location/providers/AndroidGPSProvider.java	2010-11-29 14:26:30.000000000 +0100
+@@ -2,6 +2,7 @@
+ 
+ import android.location.Location;
+ import android.location.LocationManager;
++import android.location.LocationProvider;
+ import android.os.Bundle;
+ 
+ import com.nutiteq.components.WgsPoint;
+@@ -88,6 +89,7 @@
+   }
+ 
+   public void start() {
++    onLocationChanged(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
+     locationManager.requestLocationUpdates(provider, updateInterval, 1L, this);
+   }
+ 
