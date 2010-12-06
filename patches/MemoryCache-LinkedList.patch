@@ -1,25 +1,30 @@
 --- /home/jbaubort/Bureau/SIG Android/maps_lib_src/maps_lib/src/com/nutiteq/cache/MemoryCache.java	2010-11-23 10:44:36.000000000 +0100
-+++ src/com/nutiteq/cache/MemoryCache.java	2010-11-30 16:05:02.000000000 +0100
-@@ -1,7 +1,7 @@
++++ src/com/nutiteq/cache/MemoryCache.java	2010-12-06 11:29:08.000000000 +0100
+@@ -1,7 +1,10 @@
  package com.nutiteq.cache;
  
 -import java.util.Enumeration;
 -import java.util.Hashtable;
++import java.util.Collection;
 +import java.util.Iterator;
 +import java.util.LinkedHashMap;
++import java.util.Map;
++import java.util.Map.Entry;
  
  /**
   * <p>
-@@ -15,21 +15,19 @@
+@@ -15,21 +18,29 @@
   * </p>
   */
  public class MemoryCache implements Cache {
 -  private final Hashtable cache;
-+  private LinkedHashMap<String, CacheItem> cache;
-   private final int maxSize;
+-  private final int maxSize;
 -  private CacheItem mru;
 -  private CacheItem lru;
++  private LinkedHashMap<String, byte[]> cache;
    private int size;
++  private static final float loadFactor = 0.9f;
++  private static final int imageAvgSize = 25600; // Bytes
  
    /**
     * Create a new MemoryCache instance.
@@ -28,14 +33,25 @@
 -   *          cache size in bytes.
 +   *            cache size in bytes.
     */
-   public MemoryCache(final int cacheSize) {
-     maxSize = cacheSize;
+-  public MemoryCache(final int cacheSize) {
+-    maxSize = cacheSize;
 -    cache = new Hashtable();
-+    cache = new LinkedHashMap<String, CacheItem>(40, 0.75f, true);
++  public MemoryCache(final int cs) {
++    final int cacheSize = (int) Math.ceil(cs / imageAvgSize / loadFactor) + 1;
++    cache = new LinkedHashMap<String, byte[]>(cacheSize, loadFactor, true) {
++      private static final long serialVersionUID = 1;
++      @Override protected boolean removeEldestEntry (Map.Entry<String, byte[]> eldest) {
++        if (size() > cacheSize) {
++          size -= eldest.getValue().length;
++          return true;
++        }
++        return false;
++      }
++    };
    }
  
    public void initialize() {
-@@ -37,7 +35,10 @@
+@@ -37,89 +48,28 @@
    }
  
    public void deinitialize() {
@@ -47,10 +63,12 @@
    }
  
    public byte[] get(final String cacheId) {
-@@ -47,26 +48,6 @@
-       return null;
-     }
- 
+-    final CacheItem result = (CacheItem) cache.get(cacheId);
+-
+-    if (result == null) {
+-      return null;
+-    }
+-
 -    //make it the most recently used entry
 -    if (mru != result) { //not already the MRU
 -      if (lru == result) { // I'm the least recently used
@@ -71,31 +89,32 @@
 -      mru = result;
 -    }
 -
-     return result.data;
+-    return result.data;
++    return (byte[]) cache.get(cacheId);
    }
  
-@@ -77,49 +58,38 @@
- 
-     final byte[] existing = get(cacheId);
-     if (existing != null) {
+   public void cache(final String cacheId, final byte[] data, final int cacheLevel) {
+     if ((cacheLevel & CACHE_LEVEL_MEMORY) != CACHE_LEVEL_MEMORY || data == null || data.length == 0) {
+       return;
+     }
+-
+-    final byte[] existing = get(cacheId);
+-    if (existing != null) {
 -      // The key has already been used.  By calling get() we already promoted
 -      // it to the MRU spot.  However, if the data has changed, we need to
 -      // update it in the hash table.
 -      //TODO jaanus : check also data content?
-       if (existing.length != data.length) {
-         final CacheItem i = (CacheItem) cache.get(cacheId);
-         i.data = data;
-+        size -= existing.length;
-+        size += data.length;
-       }
-     } else {
-       // cache miss
-       final CacheItem item = new CacheItem();
-       item.key = cacheId;
-       item.data = data;
+-      if (existing.length != data.length) {
+-        final CacheItem i = (CacheItem) cache.get(cacheId);
+-        i.data = data;
+-      }
+-    } else {
+-      // cache miss
+-      final CacheItem item = new CacheItem();
+-      item.key = cacheId;
+-      item.data = data;
 -      item.next = mru;
-+      item.next = null;
-       item.previous = null;
+-      item.previous = null;
 -
 -      if (cache.size() == 0) {
 -        // then cache is empty
@@ -105,11 +124,11 @@
 -      }
 -
 -      mru = item;
-       cache.put(cacheId, item);
+-      cache.put(cacheId, item);
 -
-       size += data.length;
-     }
- 
+-      size += data.length;
+-    }
+-
 -    while (size > maxSize) {
 -      // Kick out the least recently used element.
 -      cache.remove(lru.key);
@@ -118,16 +137,11 @@
 -      if (lru.previous != null) {
 -        lru.previous.next = null;
 -      }
-+    // Clean old cache
-+    if (size > maxSize) {
-+       for (final Iterator<CacheItem> i = cache.values().iterator(); i.hasNext();) {
-+         CacheItem c = (CacheItem) i.next();
-+         size -= c.data.length;
-+         cache.remove(c);
-+       }
- 
+-
 -      lru = lru.previous;
-     }
+-    }
++    size += data.length;
++    cache.put(cacheId, data);
    }
  
    public boolean contains(final String cacheKey) {
@@ -137,7 +151,7 @@
      return cache.containsKey(cacheKey);
    }
  
-@@ -131,23 +101,24 @@
+@@ -131,23 +81,31 @@
      return contains(cacheKey);
    }
  
@@ -147,30 +161,32 @@
      return size;
    }
  
--  protected int getActualElementsSize() {
+   protected int getActualElementsSize() {
 -    final Enumeration e = cache.elements();
--    int result = 0;
++    final Collection<byte[]> e = (Collection<byte[]>) cache.values();
++    final Iterator<byte[]> i = e.iterator();
+     int result = 0;
 -    while (e.hasMoreElements()) {
 -      final CacheItem item = (CacheItem) e.nextElement();
 -      result += item.data.length;
--    }
++    while (i.hasNext()) {
++        final byte[] item = i.next();
++        result += item.length;
+     }
 -
--    return result;
--  }
-+  // protected int getActualElementsSize() {
-+  // final Enumeration<CacheItem> e = cache.elements();
-+  // int result = 0;
-+  // while (e.hasMoreElements()) {
-+  // final CacheItem item = (CacheItem) e.nextElement();
-+  // result += item.data.length;
-+  // }
-+  //
-+  // return result;
-+  // }
+     return result;
+   }
  
    protected CacheItem getMRU() {
 -    return mru;
-+    return null;
-+      // return mru;
++    CacheItem ci = new CacheItem();
++    Iterator<Entry<String, byte[]>> i = cache.entrySet().iterator();
++    Entry<String, byte[]> e = null;
++    while(i.hasNext()){
++        e = i.next();
++    }
++    ci.key = e.getKey();
++    ci.data = e.getValue();
++    return ci;
    }
  }
