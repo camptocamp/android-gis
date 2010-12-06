@@ -5,6 +5,7 @@ import android.os.Message;
 import android.view.animation.DecelerateInterpolator;
 
 import com.nutiteq.BasicMapComponent;
+import com.nutiteq.cache.Cache;
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.WgsPoint;
 
@@ -96,6 +97,10 @@ public class C2CMapComponent extends BasicMapComponent {
         lastposy = y;
 
         // FIXME: Get missing overlay tiles
+    }
+
+    public Cache getCache() {
+        return networkCache;
     }
 
     // Easing Handler and variables

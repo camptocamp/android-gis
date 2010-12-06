@@ -73,8 +73,7 @@ public class Map extends Activity {
     private Context ctxt;
     private RelativeLayout mapLayout;
     private MapView mapView = null;
-    private BasicMapComponent mapComponent = null;
-    private C2CCaching cache = null;
+    private C2CMapComponent mapComponent = null;
 
     private final double lat = 46.517815; // X: 152'210
     private final double lng = 6.562805; // Y: 532'790
@@ -221,7 +220,6 @@ public class Map extends Activity {
                 mapComponent.stopMapping();
                 mapComponent = null;
             }
-            cleanCaches();
         }
     }
 
@@ -255,7 +253,6 @@ public class Map extends Activity {
             pt = mapComponent.getMiddlePoint();
             mapComponent.stopMapping();
             mapComponent = null;
-            cleanCaches();
         }
         switch (mCurrentMenu) {
         case MENU_MAP_ST_PIXEL:
@@ -291,17 +288,12 @@ public class Map extends Activity {
         return true;
     }
 
-    private void setMapComponent(final BasicMapComponent bmc, final GeoMap gm) {
+    private void setMapComponent(final C2CMapComponent bmc, final GeoMap gm) {
         final Object savedMapComponent = getLastNonConfigurationInstance();
         if (savedMapComponent == null) {
-            bmc.setMap(gm);
             cleanCaches();
-            // if (cache == null) {
-            cache = new C2CCaching(ctxt);
-            // } else {
-            // cache.initialize();
-            // }
-            bmc.setNetworkCache(cache);
+            bmc.setMap(gm);
+            bmc.setNetworkCache(new C2CCaching(ctxt));
             // bmc.setImageProcessor(new NightModeImageProcessor());
             bmc.setPanningStrategy(new ThreadDrivenPanning());
             bmc.setControlKeysHandler(new AndroidKeysHandler());
@@ -311,7 +303,7 @@ public class Map extends Activity {
             // bmc.setDownloadDisplay(new NutiteqDownloadDisplay());
             mapComponent = bmc;
         } else {
-            mapComponent = (BasicMapComponent) savedMapComponent;
+            mapComponent = (C2CMapComponent) savedMapComponent;
         }
     }
 
@@ -391,13 +383,16 @@ public class Map extends Activity {
     }
 
     private void cleanCaches() {
-        if (cache != null) {
-            final Cache[] cl = cache.getCacheLevels();
-            for (int i = 0; i < cl.length; i++) {
-                cl[i].deinitialize();
+        if (mapComponent != null) {
+            C2CCaching cache = (C2CCaching) mapComponent.getCache();
+            if (cache != null) {
+                final Cache[] cl = cache.getCacheLevels();
+                for (int i = 0; i < cl.length; i++) {
+                    cl[i].deinitialize();
+                }
+                cache = null;
+                // System.gc();
             }
-            cache = null;
-            // System.gc();
         }
     }
 

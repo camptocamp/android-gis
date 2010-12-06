@@ -1,6 +1,7 @@
 package com.camptocamp.android.gis;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -27,15 +28,24 @@ public class C2CCaching extends CachingChain {
         super(createCacheLevels(ctxt));
     }
 
-    private static Cache[] createCacheLevels(final Context ctxt) {
+    private static Cache[] createCacheLevels(final Context c) {
         Cache[] cl = null;
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctxt);
-        if (prefs.getBoolean(Prefs.KEY_FS_CACHING, Prefs.DEFAULT_FS_CACHING)) {
-            int size = prefs.getInt(Prefs.KEY_FS_CACHING_SIZE, Prefs.DEFAULT_FS_CACHING_SIZE);
-            Log.v(TAG, "fs caching on, size=" + size);
-            cl = new Cache[] { new MemoryCache(MEMORYCACHE),
-                    new AndroidFileSystemCache(ctxt, Map.APP, FSCACHEDIR, size) };
-        } else {
+        
+        // MemoryCache + FsCache
+        WeakReference<Context> weakCtxt = new WeakReference<Context>(c);
+        Context ctxt = weakCtxt.get();
+        if (ctxt != null) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctxt);
+            if (prefs.getBoolean(Prefs.KEY_FS_CACHING, Prefs.DEFAULT_FS_CACHING)) {
+                int size = prefs.getInt(Prefs.KEY_FS_CACHING_SIZE, Prefs.DEFAULT_FS_CACHING_SIZE);
+                Log.v(TAG, "fs caching on, size=" + size);
+                cl = new Cache[] { new MemoryCache(MEMORYCACHE),
+                        new AndroidFileSystemCache(ctxt, Map.APP, FSCACHEDIR, size) };
+            }
+        }
+
+        // MemoryCache only
+        if (cl == null) {
             Log.v(TAG, "fs caching off");
             cl = new Cache[] { new MemoryCache(MEMORYCACHE) };
         }
