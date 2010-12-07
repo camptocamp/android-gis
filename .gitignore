@@ -3,3 +3,4 @@ bin
 gen
 scripts
 patches/swisstopo-hack.patch
+.settings
