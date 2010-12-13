@@ -1,6 +1,5 @@
 package com.camptocamp.android.gis;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,9 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.Display;
 import android.view.Menu;
@@ -60,13 +57,11 @@ public class Map extends Activity {
     private static final int MENU_MAP_ST_PIXEL = 0;
     private static final int MENU_MAP_ST_ORTHO = 1;
     private static final int MENU_MAP_OSM = 2;
-    // private static final int MENU_MAP_WMS = 3;
-    private static final int MENU_PREFS = 4;
+    private static final int MENU_PREFS = 3;
     private static final String PLACEHOLDER = "placeholder";
 
     private List<String> mSelectedLayers = new ArrayList<String>();
 
-    private boolean isTrackingPosition = false;
     private boolean onRetainCalled = false;
     private int mWidth = 1;
     private int mHeight = 1;
@@ -74,6 +69,8 @@ public class Map extends Activity {
     private RelativeLayout mapLayout;
     private MapView mapView = null;
     private C2CMapComponent mapComponent = null;
+    private String search_query = "";
+    public boolean isTrackingPosition = false;
 
     private final double lat = 46.517815; // X: 152'210
     private final double lng = 6.562805; // Y: 532'790
@@ -84,7 +81,6 @@ public class Map extends Activity {
         ctxt = getApplicationContext();
         Log.setLogger(new AndroidLogger(APP));
         Log.enableAll();
-        // Debug.startMethodTracing("Map");
 
         onRetainCalled = false;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -123,10 +119,6 @@ public class Map extends Activity {
                 .createImage("/res/drawable/marker.png"), 8, 8), 0, true));
         final ImageButton btn_gps = (ImageButton) findViewById(R.id.position_track);
 
-        // Hack to get GPS Status (calls LocationListener.onProviderDisabled)
-        // locationSource.start();
-        // locationSource.quit();
-
         btn_gps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -161,19 +153,11 @@ public class Map extends Activity {
         findViewById(R.id.search_bar).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onSearchRequested();
+                startSearch(search_query, false, null, false);
             }
         });
 
         handleIntent();
-
-        // Markers
-        // mapComponent.addPlace(new Place(1, "PSE - EPFL", Utils
-        // .createImage("/res/drawable/marker.png"), new WgsPoint(6.562794,
-        // 46.517705)));
-        // 6.562794, 46.517705
-
-        // Debug.stopMethodTracing();
     }
 
     @Override
@@ -187,8 +171,8 @@ public class Map extends Activity {
         // Goto Place
         if (ACTION_GOTO.equals(intent.getAction())) {
 
-            ((TextView) findViewById(R.id.search_query))
-                    .setText(intent.getStringExtra(EXTRA_LABEL));
+            search_query = intent.getStringExtra(EXTRA_LABEL);
+            ((TextView) findViewById(R.id.search_query)).setText(search_query);
 
             // Get positions in pixels
             double minx = intent.getDoubleExtra(EXTRA_MINX, 0);
@@ -224,6 +208,12 @@ public class Map extends Activity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        System.gc();
+    }
+
+    @Override
     public Object onRetainNonConfigurationInstance() {
         onRetainCalled = true;
         return mapComponent;
@@ -236,8 +226,6 @@ public class Map extends Activity {
         menu.add(0, MENU_MAP_ST_ORTHO, 1, R.string.menu_swisstopo_ortho).setIcon(
                 android.R.drawable.ic_menu_mapmode);
         menu.add(1, MENU_MAP_OSM, 2, R.string.menu_osm).setIcon(android.R.drawable.ic_menu_mapmode);
-        // menu.add(2, MENU_MAP_WMS, 3, R.string.menu_wms_example).setIcon(
-        // android.R.drawable.ic_menu_mapmode);
         menu.add(2, MENU_PREFS, 4, R.string.menu_prefs).setIcon(
                 android.R.drawable.ic_menu_preferences);
         return true;
@@ -266,17 +254,6 @@ public class Map extends Activity {
         case MENU_MAP_OSM:
             setMapComponent(new C2CMapComponent(pt, mWidth, mHeight, zoom), OpenStreetMap.MAPNIK);
             break;
-        // case MENU_MAP_WMS:
-        // SimpleWMSMap wms = new SimpleWMSMap(
-        // "http://iceds.ge.ucl.ac.uk/cgi-bin/icedswms?VERSION=1.1.1&SRS=EPSG:4326",
-        // 256,
-        // 0, 18, "bluemarble,cities,countries", "image/jpeg", "default",
-        // "GetMap",
-        // getString(R.string.vendor_wms));
-        // wms.setWidthHeightRatio(2.0);
-        // setMapComponent(new C2CMapComponent(pt, mWidth, mHeight, 3), wms);
-        // break;
-
         case MENU_PREFS:
             startActivity(new Intent(Map.this, Prefs.class));
             return true;
@@ -391,30 +368,7 @@ public class Map extends Activity {
                     cl[i].deinitialize();
                 }
                 cache = null;
-                // System.gc();
-            }
-        }
-    }
-
-    /**
-     * GPS custom provider
-     */
-    private static class C2CGpsProvider extends AndroidGPSProvider {
-
-        private WeakReference<Map> mActivity;
-
-        public C2CGpsProvider(Map a) {
-            super((LocationManager) a.getSystemService(Context.LOCATION_SERVICE), 1000L);
-            mActivity = new WeakReference<Map>(a);
-        }
-
-        @Override
-        public void onProviderDisabled(final String provider) {
-            final Map a = mActivity.get();
-            if (a != null) {
-                a.isTrackingPosition = false;
-                a.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                Toast.makeText(a, R.string.toast_gps_disabled, Toast.LENGTH_SHORT).show();
+                System.gc();
             }
         }
     }
