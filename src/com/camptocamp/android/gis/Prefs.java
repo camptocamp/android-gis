@@ -13,6 +13,8 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.StatFs;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
@@ -30,8 +32,8 @@ public class Prefs extends PreferenceActivity implements OnSharedPreferenceChang
     public final static String KEY_FS_CACHING = "fscaching";
     public final static boolean DEFAULT_FS_CACHING = false;
 
-    public final static String KEY_FS_CACHING_SIZE = "fscaching_size";
-    public final static int DEFAULT_FS_CACHING_SIZE = 1024 * 1024; // 1MB
+    public final static String KEY_FS_CACHING_SIZE = "fscachingsize";
+    public final static int DEFAULT_FS_CACHING_SIZE = 0; // Bytes
 
     public final static String KEY_FS_CACHING_REMOVE = "fscachingremove";
 
@@ -49,6 +51,24 @@ public class Prefs extends PreferenceActivity implements OnSharedPreferenceChang
                         return true;
                     }
                 });
+
+        // Check sdcard availability
+        String state = Environment.getExternalStorageState();
+        if (!Environment.MEDIA_MOUNTED.equals(state)
+                || Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            ((Preference) ps.findPreference(KEY_FS_CACHING)).setEnabled(false);
+            ((Preference) ps.findPreference(KEY_FS_CACHING_REMOVE)).setEnabled(false);
+            ((Preference) ps.findPreference(KEY_FS_CACHING_SIZE)).setEnabled(false);
+        }
+
+        // Summaries
+        StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
+        long avail = (long) stat.getBlockSize() * (long) stat.getAvailableBlocks();
+        long total = Math.round(avail / 1024 / 1024);
+        long current = Math.round(ps.getSharedPreferences().getLong(KEY_FS_CACHING_SIZE,
+                DEFAULT_FS_CACHING_SIZE) / 1024 / 1024);
+        ((Preference) ps.findPreference(KEY_FS_CACHING_SIZE)).setSummary(current + " / " + total
+                + " MB");
     }
 
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
