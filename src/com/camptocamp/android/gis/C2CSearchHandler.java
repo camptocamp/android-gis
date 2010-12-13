@@ -14,6 +14,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 public class C2CSearchHandler extends Activity {
 
@@ -54,6 +55,9 @@ public class C2CSearchHandler extends Activity {
                         d.create().show();
                     }
                 } else {
+                    Toast
+                            .makeText(getApplicationContext(), "FIXME: No result!",
+                                    Toast.LENGTH_SHORT).show();
                     finish();
                 }
             }

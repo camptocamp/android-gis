@@ -21,23 +21,6 @@
          return i;
        }
      }
-@@ -181,10 +182,15 @@ public class ScreenCache {
-       if (!valid[i]) {
-         continue;
-       }
-+      // if found, do not remove it
-       if (tiles[i].equals(t)) {
-         found = i;
-+        break;
-       } else if (!tiles[i].isVisible(mp, displayedMap, screenCenterX, screenCenterY)) {
--        // if found, do not remove it
-+        // Clean stuff in memory
-+        if (images[i] != null) {
-+            images[i].getBitmap().recycle();
-+        }
-         valid[i] = false;
-         tiles[i] = null;
-         images[i] = null;
 @@ -206,6 +212,9 @@ public class ScreenCache {
    public void setImageProcessor(final ImageProcessor processor) {
      imageProcessor = processor;
