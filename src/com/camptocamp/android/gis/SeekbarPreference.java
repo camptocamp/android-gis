@@ -57,6 +57,7 @@ public class SeekbarPreference extends DialogPreference implements OnSeekBarChan
 
         // Save value in SharedPrefs
         Editor edit = mPrefs.edit();
+        // FIXME: Limit is then 2113929215 Bytes = 2047 MB
         edit.putInt(Prefs.KEY_FS_CACHING_SIZE, progress * 1024 * 1024);
         edit.commit();
     }

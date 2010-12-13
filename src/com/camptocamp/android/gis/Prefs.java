@@ -62,18 +62,23 @@ public class Prefs extends PreferenceActivity implements OnSharedPreferenceChang
         }
 
         // Summaries
-        StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
-        long avail = (long) stat.getBlockSize() * (long) stat.getAvailableBlocks();
-        long total = Math.round(avail / 1024 / 1024);
-        long current = Math.round(ps.getSharedPreferences().getLong(KEY_FS_CACHING_SIZE,
-                DEFAULT_FS_CACHING_SIZE) / 1024 / 1024);
-        ((Preference) ps.findPreference(KEY_FS_CACHING_SIZE)).setSummary(current + " / " + total
-                + " MB");
+        setCachingSizeSummary();
     }
 
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-        // if (KEY_FS_CACHING.equals(key)) {
-        // }
+        if (KEY_FS_CACHING_SIZE.equals(key)) {
+            setCachingSizeSummary();
+        }
+    }
+
+    public void setCachingSizeSummary() {
+        StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
+        long avail = (long) stat.getBlockSize() * (long) stat.getAvailableBlocks();
+        long total = Math.round(avail / 1024 / 1024);
+        int current = Math.round(ps.getSharedPreferences().getInt(KEY_FS_CACHING_SIZE,
+                DEFAULT_FS_CACHING_SIZE) / 1024 / 1024);
+        ((Preference) ps.findPreference(KEY_FS_CACHING_SIZE)).setSummary(current + " / " + total
+                + " MB");
     }
 
     private void removeFsCache() {
