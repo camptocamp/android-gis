@@ -35,6 +35,8 @@ import com.nutiteq.log.AndroidLogger;
 import com.nutiteq.log.Log;
 import com.nutiteq.maps.GeoMap;
 import com.nutiteq.maps.OpenStreetMap;
+import com.nutiteq.net.NutiteqDownloadCounter;
+import com.nutiteq.ui.NutiteqDownloadDisplay;
 import com.nutiteq.ui.ThreadDrivenPanning;
 import com.nutiteq.utils.Utils;
 
@@ -215,6 +217,7 @@ public class Map extends Activity {
 
     @Override
     public Object onRetainNonConfigurationInstance() {
+        android.util.Log.v(TAG, "onRetainNonConfigurationInstance");
         onRetainCalled = true;
         return mapComponent;
     }
@@ -274,12 +277,13 @@ public class Map extends Activity {
             // bmc.setImageProcessor(new NightModeImageProcessor());
             bmc.setPanningStrategy(new ThreadDrivenPanning());
             bmc.setControlKeysHandler(new AndroidKeysHandler());
+            bmc.setDownloadCounter(new C2CDownloadCounter());
+            bmc.setDownloadDisplay(new NutiteqDownloadDisplay());
             bmc.startMapping();
             bmc.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
-            // bmc.setDownloadCounter(new NutiteqDownloadCounter());
-            // bmc.setDownloadDisplay(new NutiteqDownloadDisplay());
             mapComponent = bmc;
         } else {
+            android.util.Log.v(TAG, "using savedMapComponent");
             mapComponent = (C2CMapComponent) savedMapComponent;
         }
     }

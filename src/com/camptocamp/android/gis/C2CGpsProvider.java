@@ -12,16 +12,16 @@ import com.nutiteq.location.providers.AndroidGPSProvider;
 
 public class C2CGpsProvider extends AndroidGPSProvider {
 
-    private WeakReference<Map> mActivity;
+    private WeakReference<Map> mMap;
 
     public C2CGpsProvider(Map a) {
         super((LocationManager) a.getSystemService(Context.LOCATION_SERVICE), 1000L);
-        mActivity = new WeakReference<Map>(a);
+        mMap = new WeakReference<Map>(a);
     }
 
     @Override
     public void onProviderDisabled(final String provider) {
-        final Map a = mActivity.get();
+        final Map a = mMap.get();
         if (a != null) {
             a.isTrackingPosition = false;
             a.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
