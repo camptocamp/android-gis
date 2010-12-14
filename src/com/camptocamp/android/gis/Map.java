@@ -226,7 +226,7 @@ public class Map extends Activity {
         menu.add(0, MENU_MAP_ST_ORTHO, 1, R.string.menu_swisstopo_ortho).setIcon(
                 android.R.drawable.ic_menu_mapmode);
         menu.add(1, MENU_MAP_OSM, 2, R.string.menu_osm).setIcon(android.R.drawable.ic_menu_mapmode);
-        menu.add(2, MENU_PREFS, 4, R.string.menu_prefs).setIcon(
+        menu.add(2, MENU_PREFS, 3, R.string.menu_prefs).setIcon(
                 android.R.drawable.ic_menu_preferences);
         return true;
     }
@@ -236,7 +236,7 @@ public class Map extends Activity {
         mCurrentMenu = item.getItemId();
         int zoom = ZOOM;
         WgsPoint pt = new WgsPoint(lng, lat);
-        if (mapComponent != null && mCurrentMenu != MENU_PREFS) {
+        if (mapComponent != null && mCurrentMenu > 0 && mCurrentMenu <= MENU_MAP_OSM) {
             zoom = mapComponent.getZoom();
             pt = mapComponent.getMiddlePoint();
             mapComponent.stopMapping();
@@ -290,7 +290,7 @@ public class Map extends Activity {
             mapLayout.removeView(mapView);
             mapView = null;
         }
-        mapView = new MapView(ctxt, mapComponent);
+        mapView = new C2CMapView(ctxt, mapComponent);
         mapLayout.addView(mapView);
         mapView.setClickable(true);
         mapView.setEnabled(true);
