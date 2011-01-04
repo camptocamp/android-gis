@@ -34,8 +34,10 @@ public class C2CMapView extends MapView {
                     && event.getPointerCount() >= 2) {
                 // Start gesture
                 mGestureInProgress = true;
+                mAmoutZoomed = 0;
                 mTopFingerBeginY = event.getY(0);
                 mBottomFingerBeginY = event.getY(1);
+                Log.v(TAG, "start multitouch");
             } else {
                 // Normal touch action
                 final int x = (int) event.getX();
@@ -57,9 +59,11 @@ public class C2CMapView extends MapView {
             Log.v(TAG, "cur Zoom=" + mapComponent.getZoom());
             Log.v(TAG, "new Zoom=" + (mapComponent.getZoom() + (int) Math.round(mAmoutZoomed)));
             // Gesture action is finished
+            Log.v(TAG, "stop multitouch");
             mGestureInProgress = false;
             // mapComponent.setZoom(mapComponent.getZoom() + (int)
             // Math.round(mAmoutZoomed));
+            // mapComponent.createZoomBufferAndUpdateScreen2(0, false);
         } else {
             // Gesture is in progress
             mTopFingerBeginY = mTopFingerCurrY;
@@ -67,16 +71,14 @@ public class C2CMapView extends MapView {
             mTopFingerCurrY = event.getY(0);
             mBottomFingerCurrY = event.getY(1);
 
-            // Do some zooming action
+            // // Do some zooming calculation
             // double factor = 0.1;
             // if (mTopFingerBeginY < mBottomFingerBeginY) {
             // // Top is Top (pointer_1)
             // if (mTopFingerBeginY > mTopFingerCurrY) {
-            // Log.v(TAG, "diff=" + (mTopFingerBeginY - mTopFingerCurrY));
             // mapComponent.zoomIn2(factor);
             // mAmoutZoomed += factor;
             // } else {
-            // Log.v(TAG, "diff=" + (mTopFingerCurrY - mTopFingerBeginY));
             // mapComponent.zoomOut2(factor);
             // mAmoutZoomed -= factor;
             // }
@@ -90,6 +92,7 @@ public class C2CMapView extends MapView {
             // mAmoutZoomed -= factor;
             // }
             // }
+            // Log.v(TAG, "diff=" + factor);
         }
 
         return true;
