@@ -2,6 +2,8 @@ package com.camptocamp.android.gis;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -105,26 +107,37 @@ public class Prefs extends PreferenceActivity implements OnSharedPreferenceChang
         protected Void doInBackground(Void... unused) {
             final Activity a = mActivity.get();
             if (a != null) {
+                // Remove images on db and sdcard
                 CacheIndexDatabaseHelper db = new CacheIndexDatabaseHelper(a, Map.APP);
                 db.open();
-
-                // Remove files on sdcard
-                final String ext = C2CCaching.FSCACHEDIR.getPath() + "/";
-                Cursor c = db.database.rawQuery("select resource_path from cache_index", null);
+                final Cursor c = db.database.query(CacheIndexDatabaseHelper.CACHE_INDEX_TABLE,
+                        new String[] { CacheIndexDatabaseHelper.KEY_RESOURCE_PATH,
+                                CacheIndexDatabaseHelper.KEY_RESOURCE_SIZE }, null, null, null,
+                        null, null);
+                final List<String> removedFiles = new ArrayList<String>();
                 while (c.moveToNext()) {
-                    File f = new File(ext + c.getString(0));
-                    if (!f.delete()) {
-                        Log.e(TAG, "error while deleting " + f.getPath());
-                    }
+                    removedFiles.add(c.getString(0));
                 }
                 c.close();
-
-                // Remove Database entries
-                db.database.rawQuery("delete from cache_index", null);
-
+                db.deleteFilesFromIndex(removedFiles);
                 db.close();
             }
+
+            // Remove remaining directories and files on sdcard
+            deleteAll(new File(C2CCaching.FSCACHEDIR.getPath()));
+
             return null;
+        }
+
+        private void deleteAll(File path) {
+            if (path.isDirectory()) {
+                for (File child : path.listFiles()) {
+                    deleteAll(child);
+                }
+            }
+            if (!path.delete()) {
+                Log.e(TAG, "error deleting " + path.getPath());
+            }
         }
 
         protected void onPostExecute(Void unused) {
@@ -135,7 +148,6 @@ public class Prefs extends PreferenceActivity implements OnSharedPreferenceChang
             Toast.makeText(Prefs.this, R.string.toast_fscacheremove_error, Toast.LENGTH_SHORT)
                     .show();
         }
-
     }
 
 }

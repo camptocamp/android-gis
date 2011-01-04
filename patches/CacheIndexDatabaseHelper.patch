@@ -1,6 +1,15 @@
 --- src/com/nutiteq/cache/CacheIndexDatabaseHelper.java	2009-06-07 17:39:20.000000000 +0200
-+++ src/com/nutiteq/cache/CacheIndexDatabaseHelper.java	2010-11-22 15:30:56.000000000 +0100
-@@ -20,7 +20,7 @@
++++ src/com/nutiteq/cache/CacheIndexDatabaseHelper.java	2011-01-04 10:05:41.000000000 +0100
+@@ -12,7 +12,7 @@
+ 
+ public class CacheIndexDatabaseHelper {
+   private static final int DATABASE_VERSION = 1;
+-  private static final String CACHE_INDEX_TABLE = "cache_index";
++  public static final String CACHE_INDEX_TABLE = "cache_index";
+   private static final String CREATE_CACHE_INDEX_TABLE = "CREATE TABLE "
+       + CACHE_INDEX_TABLE
+       + " (id INTEGER PRIMARY KEY AUTOINCREMENT, cache_key TEXT NOT NULL, "
+@@ -20,12 +20,12 @@
    private final Context ctx;
    private DatabaseHelper databaseHelper;
    private final String databaseName;
@@ -9,3 +18,19 @@
  
    private static final String KEY_ID = "id";
    private static final String KEY_CACHE_KEY = "cache_key";
+-  private static final String KEY_RESOURCE_PATH = "resource_path";
+-  private static final String KEY_RESOURCE_SIZE = "resource_size";
++  public static final String KEY_RESOURCE_PATH = "resource_path";
++  public static final String KEY_RESOURCE_SIZE = "resource_size";
+   private static final String KEY_USED_TIMESTAMP = "used_timestamp";
+ 
+   private static final String LOG_TAG = "CacheIndexDatabaseHelper";
+@@ -111,7 +111,7 @@
+     return removedFiles;
+   }
+ 
+-  private void deleteFilesFromIndex(final List<String> removedFiles) {
++  public void deleteFilesFromIndex(final List<String> removedFiles) {
+     final String[] files = removedFiles.toArray(new String[removedFiles.size()]);
+     final StringBuffer whereClause = new StringBuffer();
+     for (int i = 0; i < files.length; i++) {
