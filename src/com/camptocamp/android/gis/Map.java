@@ -61,6 +61,7 @@ public class Map extends Activity {
     private static final int MENU_MAP_OSM = 2;
     private static final int MENU_PREFS = 3;
     private static final String PLACEHOLDER = "placeholder";
+    private static final String OSM_MAPNIK_URL = "http://tile.openstreetmap.org/";
 
     private List<String> mSelectedLayers = new ArrayList<String>();
 
@@ -97,11 +98,6 @@ public class Map extends Activity {
         // Set default map
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctxt);
         selectMap(Integer.parseInt(prefs.getString(Prefs.KEY_PROVIDER, Prefs.DEFAULT_PROVIDER)));
-        // setMapComponent(new SwisstopoComponent(new WgsPoint(lng, lat),
-        // mWidth, mHeight, ZOOM),
-        // new SwisstopoMap(getString(R.string.st_url_pixel),
-        // getString(R.string.vendor_swisstopo), ZOOM));
-        // setMapView();
 
         // Zoom
         final ZoomControls zoomControls = (ZoomControls) findViewById(R.id.zoom);
@@ -119,7 +115,8 @@ public class Map extends Activity {
         // GPS Location tracking
         final C2CGpsProvider locationSource = new C2CGpsProvider(Map.this);
         locationSource.setLocationMarker(new NutiteqLocationMarker(new PlaceIcon(Utils
-                .createImage("/res/drawable/marker.png"), 8, 8), 0, true));
+                .createImage("/res/drawable/marker.png"), 8, 8), new PlaceIcon(Utils
+                .createImage("/res/drawable/marker_offline.png"), 8, 8), 0, true));
         final ImageButton btn_gps = (ImageButton) findViewById(R.id.position_track);
 
         btn_gps.setOnClickListener(new View.OnClickListener() {
@@ -287,7 +284,8 @@ public class Map extends Activity {
                     getString(R.string.st_url_ortho), getString(R.string.vendor_swisstopo), zoom));
             break;
         case MENU_MAP_OSM:
-            setMapComponent(new C2CMapComponent(pt, mWidth, mHeight, zoom), OpenStreetMap.MAPNIK);
+            setMapComponent(new C2CMapComponent(pt, mWidth, mHeight, zoom), new OpenStreetMap(
+                    OSM_MAPNIK_URL, OpenStreetMap.TILE_SIZE, OpenStreetMap.MIN_ZOOM, 18));
             break;
         default:
             setMapComponent(new SwisstopoComponent(pt, mWidth, mHeight, ZOOM), new SwisstopoMap(

@@ -1,7 +1,7 @@
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
     
-    <PreferenceCategory android:title="Map Provider">
+    <PreferenceCategory android:title="General">
         <ListPreference 
             android:key="provider"
             android:title="Map"
@@ -11,7 +11,7 @@
             android:defaultValue="0" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Caching">
+    <PreferenceCategory android:title="Cache">
         <CheckBoxPreference
             android:key="fscaching"
             android:title="Filesystem Caching"

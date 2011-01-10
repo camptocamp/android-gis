@@ -19,8 +19,9 @@ import com.nutiteq.location.LocationSource;
 
 public class C2CGpsProvider implements LocationSource, android.location.LocationListener {
 
-    private static final String TAG = Map.D + "C2CGpsProvider";
-    private static final int TWO_MINUTES = 1000 * 60 * 2;
+    private static final String TAG = "C2CGpsProvider";
+    private static final int DT_GPS = 1000 * 60 * 2; // 2mn
+    private static final int DT_NETWORK = 1000 * 60 * 5; // 5mn
     private static final long UP_IDLE = 5000L;
     private static final long UP_ACTIVE = 1000L;
     private static final float UP_DIST = 5F;
@@ -45,7 +46,6 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
         Log.v(TAG, "loc=" + loc.getLatitude() + ", " + loc.getLongitude() + ", "
                 + loc.getAccuracy() + ", " + loc.getProvider());
         if (loc != null && isBetterLocation(loc)) {
-            Log.v(TAG, "location set");
             marker.setLocation(new WgsPoint(loc.getLongitude(), loc.getLatitude()));
             // Network location no more needed as primary source
             if (LocationManager.GPS_PROVIDER.equals(loc.getProvider()) && location != null) {
@@ -57,6 +57,7 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
             }
             location = loc;
         }
+        status = STATUS_CONNECTED;
     }
 
     @Override
@@ -67,7 +68,8 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
     @Override
     public void onProviderDisabled(final String provider) {
         final Map a = mMap.get();
-        if (a != null) {
+        // GPS provider is disabled
+        if (a != null && LocationManager.GPS_PROVIDER.equals(provider)) {
             // TODO: allow location from cellid/wifi only
             a.isTrackingPosition = false;
             a.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
@@ -126,6 +128,9 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
     @Override
     public void quit() {
         manager.removeUpdates(this);
+        // if (marker != null) {
+        // marker.quit();
+        // }
     }
 
     @Override
@@ -142,14 +147,26 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
         if (location == null) {
             return true;
         }
+
+        // Check if the location is new or old
         long timeDelta = loc.getTime() - location.getTime();
-        boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
-        boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
+        boolean isSignificantlyNewer;
+        boolean isSignificantlyOlder;
+        if (LocationManager.GPS_PROVIDER.equals(loc.getProvider())) {
+            isSignificantlyNewer = timeDelta > DT_GPS;
+            isSignificantlyOlder = timeDelta < -DT_GPS;
+        } else {
+            isSignificantlyNewer = timeDelta > DT_NETWORK;
+            isSignificantlyOlder = timeDelta < -DT_NETWORK;
+        }
         boolean isNewer = timeDelta > 0;
 
+        // Difference is significante
         if (isSignificantlyNewer) {
+            Log.v(TAG, "isSignificantlyNewer");
             return true;
         } else if (isSignificantlyOlder) {
+            Log.v(TAG, "isSignificantlyOlder");
             return false;
         }
 
@@ -162,10 +179,13 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
 
         // Determine location quality
         if (isMoreAccurate) {
+            Log.v(TAG, "isMoreAccurate");
             return true;
         } else if (isNewer && !isLessAccurate) {
+            Log.v(TAG, "isNewer");
             return true;
         } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
+            Log.v(TAG, "isNewer && isFromSameProvider");
             return true;
         }
 
