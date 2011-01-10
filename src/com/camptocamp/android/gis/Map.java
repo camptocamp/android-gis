@@ -115,7 +115,7 @@ public class Map extends Activity {
         // GPS Location tracking
         // FIXME: Implements CellId/Wifi provider and automatic choice of best
         // data available
-        final AndroidGPSProvider locationSource = new C2CGpsProvider(Map.this);
+        final C2CGpsProvider locationSource = new C2CGpsProvider(Map.this);
         locationSource.setLocationMarker(new NutiteqLocationMarker(new PlaceIcon(Utils
                 .createImage("/res/drawable/marker.png"), 8, 8), 0, true));
         final ImageButton btn_gps = (ImageButton) findViewById(R.id.position_track);
