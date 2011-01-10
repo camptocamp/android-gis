@@ -76,14 +76,18 @@ public class SwisstopoSearch extends C2CSearch {
 
                     // Transform bbox to WGS point
                     JSONArray bbox = elem.getJSONArray("bbox");
-                    SwisstopoMap m = new SwisstopoMap("", "", Map.ZOOM);
+                    SwisstopoMap m = new SwisstopoMap("", "", SwisstopoComponent.ZOOM);
                     Log.v(TAG, "bbox=" + bbox.toString());
-                    WgsPoint min = m.mapPosToWgs(
-                            new MapPos((int) Math.round(m.CHxtoPIX(bbox.getDouble(0))), (int) Math
-                                    .round(m.CHytoPIX(bbox.getDouble(1))), Map.ZOOM)).toWgsPoint();
-                    WgsPoint max = m.mapPosToWgs(
-                            new MapPos((int) Math.round(m.CHxtoPIX(bbox.getDouble(2))), (int) Math
-                                    .round(m.CHytoPIX(bbox.getDouble(3))), Map.ZOOM)).toWgsPoint();
+                    WgsPoint min = m
+                            .mapPosToWgs(
+                                    new MapPos((int) Math.round(m.CHxtoPIX(bbox.getDouble(0))),
+                                            (int) Math.round(m.CHytoPIX(bbox.getDouble(1))),
+                                            SwisstopoComponent.ZOOM)).toWgsPoint();
+                    WgsPoint max = m
+                            .mapPosToWgs(
+                                    new MapPos((int) Math.round(m.CHxtoPIX(bbox.getDouble(2))),
+                                            (int) Math.round(m.CHytoPIX(bbox.getDouble(3))),
+                                            SwisstopoComponent.ZOOM)).toWgsPoint();
                     bbox = new JSONArray("[" + min.getLon() + ", " + min.getLat() + ", "
                             + max.getLon() + ", " + max.getLat() + "]");
                     elem.put("bbox", bbox);

@@ -19,6 +19,7 @@ public class C2CMapComponent extends BasicMapComponent {
     private static final long DOUBLETAP_DELTA = 500; // ms
     private static final int DOUBLETAP_RADIUS = 50; // px
     private static final int DOUBLETAP_PAN = 2; // px
+    private static final int ZOOM = 7;
 
     private final int[] lastpanx = new int[2];
     private final int[] lastpany = new int[2];
@@ -28,7 +29,7 @@ public class C2CMapComponent extends BasicMapComponent {
     private long lasttouch;
 
     public C2CMapComponent(WgsPoint middlePoint, int width, int height, int zoom) {
-        super(KEY, VDR, Map.APP, width, height, middlePoint, zoom);
+        super(KEY, VDR, Map.APP, width, height, middlePoint, (zoom != -1 ? zoom : ZOOM));
         setZoomLevelIndicator(new C2CZoomIndicator(0, 18));
     }
 

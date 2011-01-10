@@ -44,7 +44,6 @@ public class Map extends Activity {
 
     public static final String D = "C2C:";
     public static final String APP = "c2c-android-gis";
-    public static final int ZOOM = 14;
     public static final String PKG = "com.camptocamp.android.gis";
     private static final String TAG = D + "Map";
 
@@ -75,8 +74,8 @@ public class Map extends Activity {
     private String search_query = "";
     public boolean isTrackingPosition = false;
 
-    private final double lat = 46.517815; // X: 152'210
-    private final double lng = 6.562805; // Y: 532'790
+    private final double lat = 46.858423; // X: 190'000
+    private final double lng = 8.225458; // Y: 660'000
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -264,7 +263,7 @@ public class Map extends Activity {
     }
 
     private void selectMap(int provider_id) {
-        int zoom = ZOOM;
+        int zoom = -1;
         WgsPoint pt = new WgsPoint(lng, lat);
         // Reset mapcomponent
         if (mapComponent != null) {
@@ -288,7 +287,7 @@ public class Map extends Activity {
                     OSM_MAPNIK_URL, OpenStreetMap.TILE_SIZE, OpenStreetMap.MIN_ZOOM, 18));
             break;
         default:
-            setMapComponent(new SwisstopoComponent(pt, mWidth, mHeight, ZOOM), new SwisstopoMap(
+            setMapComponent(new SwisstopoComponent(pt, mWidth, mHeight, zoom), new SwisstopoMap(
                     getString(R.string.st_url_pixel), getString(R.string.vendor_swisstopo), zoom));
         }
         setMapView();
