@@ -59,6 +59,7 @@ public class Map extends Activity {
     private static final int MENU_MAP_ST_ORTHO = 1;
     private static final int MENU_MAP_OSM = 2;
     private static final int MENU_PREFS = 3;
+    private static final int MENU_RECORD = 4;
     private static final String PLACEHOLDER = "placeholder";
     private static final String OSM_MAPNIK_URL = "http://tile.openstreetmap.org/";
 
@@ -70,7 +71,7 @@ public class Map extends Activity {
     private Context ctxt;
     private RelativeLayout mapLayout;
     private MapView mapView = null;
-    private C2CMapComponent mapComponent = null;
+    public C2CMapComponent mapComponent = null;
     private String search_query = "";
     public boolean isTrackingPosition = false;
 
@@ -228,6 +229,8 @@ public class Map extends Activity {
         menu.add(1, MENU_MAP_OSM, 2, R.string.menu_osm).setIcon(android.R.drawable.ic_menu_mapmode);
         menu.add(2, MENU_PREFS, 3, R.string.menu_prefs).setIcon(
                 android.R.drawable.ic_menu_preferences);
+        menu.add(3, MENU_RECORD, 4, R.string.menu_record_start).setIcon(
+                android.R.drawable.ic_media_play);
         return true;
     }
 
@@ -238,6 +241,18 @@ public class Map extends Activity {
             selectMap(mCurrentMenu);
         } else if (mCurrentMenu == MENU_PREFS) {
             startActivity(new Intent(Map.this, Prefs.class));
+        } else if (mCurrentMenu == MENU_RECORD) {
+            // FIXME: clean that
+            C2CGpsProvider pr = (C2CGpsProvider) mapComponent.getLocationSource();
+            if (pr.record) {
+                pr.setRecord(false);
+                item.setTitle(R.string.menu_record_start);
+                item.setIcon(android.R.drawable.ic_media_play);
+            } else {
+                pr.setRecord(true);
+                item.setTitle(R.string.menu_record_stop);
+                item.setIcon(android.R.drawable.ic_media_pause);
+            }
         }
         return true;
     }
@@ -268,6 +283,11 @@ public class Map extends Activity {
         // Reset mapcomponent
         if (mapComponent != null) {
             zoom = mapComponent.getZoom();
+            if (mapComponent instanceof SwisstopoComponent && provider_id == MENU_MAP_OSM) {
+                zoom -= 7;
+            } else if (mapComponent instanceof C2CMapComponent) {
+                zoom += 7;
+            }
             pt = mapComponent.getMiddlePoint();
             mapComponent.stopMapping();
             mapComponent = null;

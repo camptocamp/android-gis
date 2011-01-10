@@ -1,6 +1,8 @@
 package com.camptocamp.android.gis;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
@@ -31,6 +33,9 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
     private Location location = null;
     private WeakReference<Map> mMap;
     private int status = STATUS_CONNECTING;
+    private List<C2CLine> trace = new ArrayList<C2CLine>();
+
+    public boolean record = false;
 
     public C2CGpsProvider(Map a) {
         mMap = new WeakReference<Map>(a);
@@ -40,13 +45,24 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
     /**
      * Herited from android
      */
-
     @Override
     public void onLocationChanged(Location loc) {
         Log.v(TAG, "loc=" + loc.getLatitude() + ", " + loc.getLongitude() + ", "
                 + loc.getAccuracy() + ", " + loc.getProvider());
         if (loc != null && isBetterLocation(loc)) {
+            // Update Marker
             marker.setLocation(new WgsPoint(loc.getLongitude(), loc.getLatitude()));
+            // Update trace
+            if (record) {
+                Map a = mMap.get();
+                if (a != null && location != null) {
+                    C2CLine line = new C2CLine(new WgsPoint[] {
+                            new WgsPoint(location.getLongitude(), location.getLatitude()),
+                            new WgsPoint(loc.getLongitude(), loc.getLatitude()) });
+                    a.mapComponent.addLine(line);
+                    trace.add(line);
+                }
+            }
             // Network location no more needed as primary source
             if (LocationManager.GPS_PROVIDER.equals(loc.getProvider()) && location != null) {
                 manager.removeUpdates(this);
@@ -90,7 +106,6 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
     /**
      * Herited from nutiteq
      */
-
     @Override
     public int getStatus() {
         return status;
@@ -197,5 +212,9 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
             return provider2 == null;
         }
         return provider1.equals(provider2);
+    }
+
+    public void setRecord(boolean rec) {
+        record = rec;
     }
 }
