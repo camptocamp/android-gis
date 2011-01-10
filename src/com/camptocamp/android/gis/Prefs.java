@@ -31,6 +31,9 @@ public class Prefs extends PreferenceActivity implements OnSharedPreferenceChang
     private static final String TAG = Map.D + "Prefs";
     private PreferenceScreen ps;
 
+    public final static String KEY_PROVIDER = "provider";
+    public final static String DEFAULT_PROVIDER = "0";
+
     public final static String KEY_FS_CACHING = "fscaching";
     public final static boolean DEFAULT_FS_CACHING = false;
 

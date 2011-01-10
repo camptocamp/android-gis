@@ -1,5 +1,15 @@
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <PreferenceCategory android:title="Map Provider">
+        <ListPreference 
+            android:key="provider"
+            android:title="Map"
+            android:summary="The defaut map provider"
+            android:entries="@array/providers_name"
+            android:entryValues="@array/providers_value"
+            android:defaultValue="0" />
+    </PreferenceCategory>
 
     <PreferenceCategory android:title="Caching">
         <CheckBoxPreference
