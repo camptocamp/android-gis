@@ -115,8 +115,8 @@ public class Map extends Activity {
         // GPS Location tracking
         final C2CGpsProvider locationSource = new C2CGpsProvider(Map.this);
         locationSource.setLocationMarker(new NutiteqLocationMarker(new PlaceIcon(Utils
-                .createImage("/res/drawable/marker.png"), 8, 8), new PlaceIcon(Utils
-                .createImage("/res/drawable/marker_offline.png"), 8, 8), 0, true));
+                .createImage("/res/drawable/marker.png"), 12, 12), new PlaceIcon(Utils
+                .createImage("/res/drawable/marker_offline.png"), 12, 24), 0, true));
         final ImageButton btn_gps = (ImageButton) findViewById(R.id.position_track);
 
         btn_gps.setOnClickListener(new View.OnClickListener() {
