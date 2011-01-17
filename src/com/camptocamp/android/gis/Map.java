@@ -242,12 +242,22 @@ public class Map extends Activity {
         } else if (mCurrentMenu == MENU_PREFS) {
             startActivity(new Intent(Map.this, Prefs.class));
         } else if (mCurrentMenu == MENU_RECORD) {
-            // FIXME: clean that
-            C2CGpsProvider pr = (C2CGpsProvider) mapComponent.getLocationSource();
+            // Record GPS trace
+            final C2CGpsProvider pr = (C2CGpsProvider) mapComponent.getLocationSource();
             if (pr.record) {
                 pr.setRecord(false);
                 item.setTitle(R.string.menu_record_start);
                 item.setIcon(android.R.drawable.ic_media_play);
+                // Save Traces dialog
+                final AlertDialog.Builder dialog = new AlertDialog.Builder(Map.this);
+                dialog.setMessage(R.string.dialog_save_trace);
+                dialog.setPositiveButton(R.string.btn_yes, new AlertDialog.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        saveTrace(pr);
+                    }
+                });
+                dialog.setNegativeButton(R.string.btn_no, null);
+                dialog.show();
             } else {
                 pr.setRecord(true);
                 item.setTitle(R.string.menu_record_stop);
@@ -255,6 +265,35 @@ public class Map extends Activity {
             }
         }
         return true;
+    }
+
+    protected void saveTrace(C2CGpsProvider pr) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctxt);
+        if (pr.trace.size() > 0) {
+            // Choose format
+            int format = Integer.parseInt(prefs.getString(Prefs.KEY_TRACE_FORMAT,
+                    Prefs.DEFAULT_TRACE_FORMAT));
+            C2CExportTrace export;
+            switch (format) {
+            case 0:
+                export = new ExportGPX();
+                break;
+            case 1:
+                export = new ExportKML();
+                break;
+            default:
+                export = null;
+            }
+            // Export
+            if (export != null && export.export(pr.trace)) {
+                Toast.makeText(ctxt, R.string.toast_trace_saved, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(ctxt, R.string.toast_trace_error, Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(ctxt, R.string.toast_trace_empty, Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     private void setMapComponent(final C2CMapComponent bmc, final GeoMap gm) {
@@ -346,7 +385,7 @@ public class Map extends Activity {
             for (int i = 0; i < len; i++) {
                 layers_states[i] = mSelectedLayers.contains(overlay.layers_all.get(layers_keys[i]));
             }
-            AlertDialog.Builder dialog = new AlertDialog.Builder(Map.this);
+            final AlertDialog.Builder dialog = new AlertDialog.Builder(Map.this);
             dialog.setTitle(R.string.dialog_layer_title);
             dialog.setMultiChoiceItems(layers_names, layers_states,
                     new DialogInterface.OnMultiChoiceClickListener() {

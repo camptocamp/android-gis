@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">android-gis</string>
+    <string name="format_gpx">GPX (GPS eXchange Format)</string>
+    <string name="format_kml">KML (Keyhole Markup Language)</string>
     
     <string name="search_label">Location Search</string>   
     <string name="search_description">Search a location from Swisstopo database</string>   
@@ -11,6 +13,7 @@
     
     <string name="dialog_layer_title">Choose layer(s):</string>
     <string name="dialog_fs_cache_remove">Do you want to remove the cache ?</string>
+    <string name="dialog_save_trace">Do you want save this GPS trace ?</string>
     
     <string name="btn_apply">Apply</string>
     <string name="btn_yes">Yes</string>
@@ -34,23 +37,14 @@
     <string name="toast_overlay_removed">Overlay removed !</string>
     <string name="toast_fscacheremove">Cache removed !</string>
     <string name="toast_fscacheremove_error">Error removing cache !</string>
+    <string name="toast_trace_saved">Trace successfully saved !</string>
+    <string name="toast_trace_empty">Trace is empty !</string>
+    <string name="toast_trace_error">Error exporting trace !</string>
     
     <string name="osm_overlay_contours">http://map.stephane-brunner.ch/contours/</string>
     <string name="osm_search_url">http://openaddresses.org/addresses/?limit=50&amp;attrs=street,city,country&amp;no_geom=true&amp;query=%s</string>
 <!--&amp;box=%s&amp;epsg=%s</string>-->
     
 <!--    <string name=""></string>-->
-
-    <string-array name="providers_name">
-        <item>@string/menu_swisstopo_pixel</item>
-        <item>@string/menu_swisstopo_ortho</item>
-        <item>@string/menu_osm</item>
-    </string-array>
-    
-    <string-array name="providers_value">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </string-array>
 
 </resources>

@@ -34,6 +34,9 @@ public class Prefs extends PreferenceActivity implements OnSharedPreferenceChang
     public final static String KEY_PROVIDER = "provider";
     public final static String DEFAULT_PROVIDER = "0";
 
+    public final static String KEY_TRACE_FORMAT = "trace_format";
+    public final static String DEFAULT_TRACE_FORMAT = "0";
+
     public final static String KEY_FS_CACHING = "fscaching";
     public final static boolean DEFAULT_FS_CACHING = false;
 

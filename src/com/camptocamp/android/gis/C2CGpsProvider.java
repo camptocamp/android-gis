@@ -33,8 +33,8 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
     private Location location = null;
     private WeakReference<Map> mMap;
     private int status = STATUS_CONNECTING;
-    private List<C2CLine> trace = new ArrayList<C2CLine>();
 
+    public List<C2CLine> trace = new ArrayList<C2CLine>();
     public boolean record = false;
 
     public C2CGpsProvider(Map a) {
@@ -53,6 +53,7 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
             // Update Marker
             marker.setLocation(new WgsPoint(loc.getLongitude(), loc.getLatitude()));
             // Update trace
+            // TODO: Cut if signal lost ?
             if (record) {
                 Map a = mMap.get();
                 if (a != null && location != null) {
@@ -159,6 +160,7 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
 
     // http://developer.android.com/guide/topics/location/obtaining-user-location.html#BestEstimate
     private boolean isBetterLocation(Location loc) {
+        // return true; // FIXME: just for dev
         if (location == null) {
             return true;
         }

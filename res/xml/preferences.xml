@@ -1,6 +1,8 @@
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
     
+    <!--  FIXME: Titles/summaries must be string resources FIXME -->
+    
     <PreferenceCategory android:title="General">
         <ListPreference 
             android:key="provider"
@@ -8,6 +10,13 @@
             android:summary="The defaut map provider"
             android:entries="@array/providers_name"
             android:entryValues="@array/providers_value"
+            android:defaultValue="0" />
+        <ListPreference 
+            android:key="trace_format"
+            android:title="Trace format"
+            android:summary="Format used to export GPS traces"
+            android:entries="@array/trace_format_name"
+            android:entryValues="@array/trace_format_value"
             android:defaultValue="0" />
     </PreferenceCategory>
 
