@@ -22,7 +22,7 @@ public class C2CCaching extends CachingChain {
     private static final int MEMORYCACHE = 1024 * 1024; // Bytes
     public static final File FSCACHEDIR = new File(Environment.getExternalStorageDirectory()
             .getAbsolutePath()
-            + "/Android/data/" + Map.PKG);
+            + "/Android/data/" + Map.PKG + "/cache");
 
     public C2CCaching(final Context ctxt) {
         super(createCacheLevels(ctxt));
@@ -30,7 +30,7 @@ public class C2CCaching extends CachingChain {
 
     private static Cache[] createCacheLevels(final Context c) {
         Cache[] cl = null;
-        
+
         // MemoryCache + FsCache
         WeakReference<Context> weakCtxt = new WeakReference<Context>(c);
         Context ctxt = weakCtxt.get();

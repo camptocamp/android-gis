@@ -14,10 +14,10 @@ public class C2CMapView extends MapView {
     private static final String TAG = "C2CMapView";
 
     // Tracking individual fingers
-    private float mTopFingerBeginY;
-    private float mBottomFingerBeginY;
-    private float mTopFingerCurrY;
-    private float mBottomFingerCurrY;
+    // private float mTopFingerBeginY;
+    // private float mBottomFingerBeginY;
+    // private float mTopFingerCurrY;
+    // private float mBottomFingerCurrY;
 
     private boolean mGestureInProgress;
     private double mAmoutZoomed = 0;
@@ -35,8 +35,8 @@ public class C2CMapView extends MapView {
                 // Start gesture
                 mGestureInProgress = true;
                 mAmoutZoomed = 0;
-                mTopFingerBeginY = event.getY(0);
-                mBottomFingerBeginY = event.getY(1);
+//                mTopFingerBeginY = event.getY(0);
+//                mBottomFingerBeginY = event.getY(1);
                 Log.v(TAG, "start multitouch");
             } else {
                 // Normal touch action
@@ -66,10 +66,10 @@ public class C2CMapView extends MapView {
             // mapComponent.createZoomBufferAndUpdateScreen2(0, false);
         } else {
             // Gesture is in progress
-            mTopFingerBeginY = mTopFingerCurrY;
-            mBottomFingerBeginY = mBottomFingerCurrY;
-            mTopFingerCurrY = event.getY(0);
-            mBottomFingerCurrY = event.getY(1);
+//            mTopFingerBeginY = mTopFingerCurrY;
+//            mBottomFingerBeginY = mBottomFingerCurrY;
+//            mTopFingerCurrY = event.getY(0);
+//            mBottomFingerCurrY = event.getY(1);
 
             // // Do some zooming calculation
             // double factor = 0.1;

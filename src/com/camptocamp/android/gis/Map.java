@@ -116,7 +116,7 @@ public class Map extends Activity {
         final C2CGpsProvider locationSource = new C2CGpsProvider(Map.this);
         locationSource.setLocationMarker(new NutiteqLocationMarker(new PlaceIcon(Utils
                 .createImage("/res/drawable/marker.png"), 12, 12), new PlaceIcon(Utils
-                .createImage("/res/drawable/marker_offline.png"), 12, 24), 0, true));
+                .createImage("/res/drawable/marker_offline.png"), 12, 12), 0, true));
         final ImageButton btn_gps = (ImageButton) findViewById(R.id.position_track);
 
         btn_gps.setOnClickListener(new View.OnClickListener() {
@@ -244,7 +244,7 @@ public class Map extends Activity {
         } else if (mCurrentMenu == MENU_RECORD) {
             // Record GPS trace
             final C2CGpsProvider pr = (C2CGpsProvider) mapComponent.getLocationSource();
-            if (pr.record) {
+            if (pr != null && pr.record) {
                 pr.setRecord(false);
                 item.setTitle(R.string.menu_record_start);
                 item.setIcon(android.R.drawable.ic_media_play);
@@ -258,7 +258,7 @@ public class Map extends Activity {
                 });
                 dialog.setNegativeButton(R.string.btn_no, null);
                 dialog.show();
-            } else {
+            } else if (isTrackingPosition) {
                 pr.setRecord(true);
                 item.setTitle(R.string.menu_record_stop);
                 item.setIcon(android.R.drawable.ic_media_pause);
@@ -293,7 +293,6 @@ public class Map extends Activity {
         } else {
             Toast.makeText(ctxt, R.string.toast_trace_empty, Toast.LENGTH_SHORT).show();
         }
-
     }
 
     private void setMapComponent(final C2CMapComponent bmc, final GeoMap gm) {
