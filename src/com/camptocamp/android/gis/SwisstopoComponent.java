@@ -47,4 +47,9 @@ public class SwisstopoComponent extends C2CMapComponent {
 
         createZoomBufferAndUpdateScreen(Math.log(ratio) / Math.log(2), true, true);
     }
+
+    @Override
+    public double getPixelsPerMeter() {
+        return 1 / ((SwisstopoMap) displayedMap).resolutions.get(middlePoint.getZoom());
+    }
 }

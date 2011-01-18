@@ -126,5 +126,9 @@ public class C2CMapComponent extends BasicMapComponent {
             }
         }
     };
+    
+    public double getPixelsPerMeter(){
+        return 0;
+    }
 
 }

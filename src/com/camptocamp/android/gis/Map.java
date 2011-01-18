@@ -31,7 +31,6 @@ import com.nutiteq.components.PlaceIcon;
 import com.nutiteq.components.WgsBoundingBox;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.controls.AndroidKeysHandler;
-import com.nutiteq.location.NutiteqLocationMarker;
 import com.nutiteq.log.AndroidLogger;
 import com.nutiteq.log.Log;
 import com.nutiteq.maps.GeoMap;
@@ -64,19 +63,18 @@ public class Map extends Activity {
     private static final String OSM_MAPNIK_URL = "http://tile.openstreetmap.org/";
 
     private List<String> mSelectedLayers = new ArrayList<String>();
-
     private boolean onRetainCalled = false;
     private int mWidth = 1;
     private int mHeight = 1;
     private Context ctxt;
     private RelativeLayout mapLayout;
     private MapView mapView = null;
-    public C2CMapComponent mapComponent = null;
     private String search_query = "";
-    public boolean isTrackingPosition = false;
-
     private final double lat = 46.858423; // X: 190'000
     private final double lng = 8.225458; // Y: 660'000
+
+    public C2CMapComponent mapComponent = null;
+    public boolean isTrackingPosition = false;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -114,8 +112,9 @@ public class Map extends Activity {
 
         // GPS Location tracking
         final C2CGpsProvider locationSource = new C2CGpsProvider(Map.this);
-        locationSource.setLocationMarker(new NutiteqLocationMarker(new PlaceIcon(Utils
-                .createImage("/res/drawable/marker.png"), 12, 12), new PlaceIcon(Utils
+        // final C2CLocationCircle locationCircle = new C2CLocationCircle(ctxt);
+        locationSource.setLocationMarker(new C2CLocationMarker(new PlaceIcon(Utils
+                .createImage("/res/drawable/marker.png")), new PlaceIcon(Utils
                 .createImage("/res/drawable/marker_offline.png"), 12, 12), 0, true));
         final ImageButton btn_gps = (ImageButton) findViewById(R.id.position_track);
 

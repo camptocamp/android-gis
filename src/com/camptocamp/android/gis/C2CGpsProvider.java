@@ -28,7 +28,7 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
     private static final long UP_ACTIVE = 1000L;
     private static final float UP_DIST = 5F;
 
-    private LocationMarker marker;
+    private C2CLocationMarker marker;
     private LocationManager manager;
     private Location location = null;
     private WeakReference<Map> mMap;
@@ -51,6 +51,7 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
                 + loc.getAccuracy() + ", " + loc.getProvider());
         if (loc != null && isBetterLocation(loc)) {
             // Update Marker
+            marker.setAccuracy(loc.getAccuracy());
             marker.setLocation(new WgsPoint(loc.getLongitude(), loc.getLatitude()));
             // Update trace
             // TODO: Cut if signal lost ?
@@ -65,7 +66,9 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
                 }
             }
             // Network location no more needed as primary source
+            // FIXME: this always run !!!! FIXME
             if (LocationManager.GPS_PROVIDER.equals(loc.getProvider()) && location != null) {
+                Log.v(TAG, "change update rythm");
                 manager.removeUpdates(this);
                 manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, UP_ACTIVE, UP_DIST,
                         this);
@@ -119,7 +122,7 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
 
     @Override
     public void setLocationMarker(LocationMarker marker) {
-        this.marker = marker;
+        this.marker = (C2CLocationMarker) marker;
         marker.setLocationSource(this);
     }
 
@@ -144,9 +147,9 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
     @Override
     public void quit() {
         manager.removeUpdates(this);
-        // if (marker != null) {
-        // marker.quit();
-        // }
+        if (marker != null) {
+            marker.quit();
+        }
     }
 
     @Override
@@ -178,7 +181,7 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
         }
         boolean isNewer = timeDelta > 0;
 
-        // Difference is significante
+        // Difference is significant
         if (isSignificantlyNewer) {
             Log.v(TAG, "isSignificantlyNewer");
             return true;

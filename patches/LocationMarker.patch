@@ -1,0 +1,23 @@
+--- /home/jbaubort/Desktop/SIG Android/maps_lib_src/maps_lib/src/com/nutiteq/location/NutiteqLocationMarker.java	2009-06-03 17:34:46.000000000 +0200
++++ src/com/nutiteq/location/NutiteqLocationMarker.java	2011-01-18 16:20:06.000000000 +0100
+@@ -15,16 +15,16 @@
+  * indicating connection state (either connected or connection lost).
+  */
+ public class NutiteqLocationMarker extends TimerTask implements LocationMarker {
++  protected BasicMapComponent mapComponent;
++  protected LocationSource locationSource;
++  protected MapPos mapPosition;
++  protected final Placemark placemarkConnected;
+   private WgsPoint lastWgsLocation;
+-  private BasicMapComponent mapComponent;
+-  private MapPos mapPosition;
+-  private final Placemark placemarkConnected;
+   private final int updateInterval;
+   private boolean running;
+   private boolean track;
+   private final Placemark placemarkConnectionLost;
+   private final int lastStatus;
+-  private LocationSource locationSource;
+   //TODO jaanus : check this timer stuff
+   private final Timer timer = new Timer();
+ 
