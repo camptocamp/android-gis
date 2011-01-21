@@ -49,7 +49,7 @@ public class SwisstopoComponent extends C2CMapComponent {
     }
 
     @Override
-    public double getPixelsPerMeter() {
-        return 1 / ((SwisstopoMap) displayedMap).resolutions.get(middlePoint.getZoom());
+    public double getMetersPerPixel() {
+        return ((SwisstopoMap) displayedMap).resolutions.get(middlePoint.getZoom());
     }
 }

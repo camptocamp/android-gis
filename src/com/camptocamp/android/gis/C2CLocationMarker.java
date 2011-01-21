@@ -34,7 +34,7 @@ public class C2CLocationMarker extends NutiteqLocationMarker {
     public void paint(final Graphics g, final MapPos mp, final int screenCenterX,
             final int screenCenterY) {
         // Update accuracy circle
-        float radius = Math.round(((C2CMapComponent) mapComponent).getPixelsPerMeter() * accuracy);
+        float radius = Math.round(accuracy / ((C2CMapComponent) mapComponent).getMetersPerPixel());
         if (radius > 0) {
             final int size = (int) Math.ceil(radius * 2);
             bitmap = Bitmap.createBitmap(size, size, Config.ARGB_4444);

@@ -68,12 +68,11 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
             // Network location no more needed as primary source
             if (LocationManager.GPS_PROVIDER.equals(loc.getProvider()) && location != null
                     && LocationManager.NETWORK_PROVIDER.equals(location)) {
-                Log.v(TAG, "change update rythm");
-                manager.removeUpdates(this);
+                manager.removeUpdates(C2CGpsProvider.this);
                 manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, UP_ACTIVE, UP_DIST,
-                        this);
+                        C2CGpsProvider.this);
                 manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, UP_IDLE, UP_DIST,
-                        this);
+                        C2CGpsProvider.this);
             }
             location = loc;
         }
@@ -141,13 +140,15 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
             onLocationChanged(loc);
         }
         // Register for location updates
-        manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, UP_IDLE, UP_DIST, this);
-        manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, UP_ACTIVE, UP_DIST, this);
+        manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, UP_IDLE, UP_DIST,
+                C2CGpsProvider.this);
+        manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, UP_ACTIVE, UP_DIST,
+                C2CGpsProvider.this);
     }
 
     @Override
     public void quit() {
-        manager.removeUpdates(this);
+        manager.removeUpdates(C2CGpsProvider.this);
         if (marker != null) {
             marker.quit();
         }

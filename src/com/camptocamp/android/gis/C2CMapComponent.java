@@ -8,6 +8,7 @@ import com.nutiteq.BasicMapComponent;
 import com.nutiteq.cache.Cache;
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.WgsPoint;
+import com.nutiteq.maps.OpenStreetMap;
 
 public class C2CMapComponent extends BasicMapComponent {
 
@@ -20,6 +21,7 @@ public class C2CMapComponent extends BasicMapComponent {
     private static final int DOUBLETAP_RADIUS = 50; // px
     private static final int DOUBLETAP_PAN = 2; // px
     private static final int ZOOM = 7;
+    private static final double OSM_MP = 0.596; // FIXME: more precision needed
 
     private final int[] lastpanx = new int[2];
     private final int[] lastpany = new int[2];
@@ -126,8 +128,12 @@ public class C2CMapComponent extends BasicMapComponent {
             }
         }
     };
-    
-    public double getPixelsPerMeter(){
+
+    public double getMetersPerPixel() {
+        // For OSM
+        if (getMap() instanceof OpenStreetMap) {
+            return OSM_MP * Math.pow(2, (18 - getZoom()));
+        }
         return 0;
     }
 
