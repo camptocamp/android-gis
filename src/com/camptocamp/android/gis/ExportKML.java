@@ -15,45 +15,60 @@ import com.nutiteq.components.WgsPoint;
 
 public class ExportKML extends C2CExportTrace {
 
+    private final static String KML = "kml";
+    private final static String KML_XMLNS = "xmlns";
+    private final static String KML_DOCUMENT = "Document";
+    private final static String KML_NAME = "Name";
+    private final static String KML_PLACEMARK = "Placemark";
+    private final static String KML_LINESTRING = "LineString";
+    private final static String KML_EXTRUDE = "extrude";
+    private final static String KML_TESSELLATE = "tessellate";
+    private final static String KML_ALTITUDEMODE = "altitudeMode";
+    private final static String KML_COORDINATES = "coordinates";
+
+    private final static String VAL_EXTRUDE = "0";
+    private final static String VAL_TESSELLATE = "1";
+    private final static String VAL_ALTITUDEMODE = "clampToGround";
+    private final static String VAL_XMLNS = "http://www.opengis.net/kml/2.2";
+
     @Override
     public boolean export(List<C2CLine> trace) {
         final File file = new File(PATH + name + ".kml");
         if (!file.exists()) {
             final XmlSerializer xml = Xml.newSerializer();
             try {
-                xml.setOutput(new FileOutputStream(file), "utf-8");
-                xml.startDocument("utf-8", true);
-                xml.text("\r\n");
-                xml.startTag(null, "kml");
-                xml.attribute(null, "xmlns", "http://www.opengis.net/kml/2.2");
-                xml.startTag(null, "Document");
+                xml.setOutput(new FileOutputStream(file), UTF8);
+                xml.startDocument(UTF8, true);
+                xml.startTag(null, KML);
+                xml.attribute(null, KML_XMLNS, VAL_XMLNS);
+                xml.startTag(null, KML_DOCUMENT);
 
-                xml.startTag(null, "Name");
+                xml.startTag(null, KML_NAME);
                 xml.text(name);
-                xml.endTag(null, "Name");
+                xml.endTag(null, KML_NAME);
 
-                xml.startTag(null, "Placemark");
-                xml.startTag(null, "LineString");
-                xml.startTag(null, "extrude");
-                xml.text("0");
-                xml.endTag(null, "extrude");
-                xml.startTag(null, "tessellate");
-                xml.text("1");
-                xml.endTag(null, "tessellate");
-                xml.startTag(null, "altitudeMode");
-                xml.text("clampToGround");
-                xml.endTag(null, "altitudeMode");
-                xml.startTag(null, "coordinates");
+                xml.startTag(null, KML_PLACEMARK);
+                xml.startTag(null, KML_LINESTRING);
+                xml.startTag(null, KML_EXTRUDE);
+                xml.text(VAL_EXTRUDE);
+                xml.endTag(null, KML_EXTRUDE);
+                xml.startTag(null, KML_TESSELLATE);
+                xml.text(VAL_TESSELLATE);
+                xml.endTag(null, KML_TESSELLATE);
+                xml.startTag(null, KML_ALTITUDEMODE);
+                xml.text(VAL_ALTITUDEMODE);
+                xml.endTag(null, KML_ALTITUDEMODE);
+                xml.startTag(null, KML_COORDINATES);
                 for (C2CLine line : trace) {
                     WgsPoint pt = line.getPoints()[0];
                     xml.text(pt.getLon() + "," + pt.getLat() + ",0 ");
                 }
-                xml.endTag(null, "coordinates");
-                xml.endTag(null, "LineString");
-                xml.endTag(null, "Placemark");
+                xml.endTag(null, KML_COORDINATES);
+                xml.endTag(null, KML_LINESTRING);
+                xml.endTag(null, KML_PLACEMARK);
 
-                xml.endTag(null, "Document");
-                xml.endTag(null, "kml");
+                xml.endTag(null, KML_DOCUMENT);
+                xml.endTag(null, KML);
                 xml.flush();
                 xml.endDocument();
                 return true;

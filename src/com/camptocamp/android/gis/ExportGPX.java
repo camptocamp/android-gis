@@ -18,53 +18,74 @@ import com.nutiteq.components.WgsPoint;
 
 public class ExportGPX extends C2CExportTrace {
 
+    private final static String ISO8601 = "yyyy-MM-dd HH:mm:ss.SSSZ";
+
+    private final static String GPX = "gpx";
+    private final static String GPX_VERSION = "version";
+    private final static String GPX_XMLNS = "xmlns";
+    private final static String GPX_XMLNSXSI = "xmlns:xsi";
+    private final static String GPX_XSI = "xsi:schemaLocation";
+    private final static String GPX_CREATOR = "creator";
+    private final static String GPX_METADATA = "metadata";
+    private final static String GPX_TIME = "time";
+    private final static String GPX_NAME = "name";
+    private final static String GPX_TRK = "trk";
+    private final static String GPX_TRKSEG = "trkseg";
+    private final static String GPX_TRKPT = "trkpt";
+    private final static String GPX_ELE = "ele";
+    private final static String GPX_LAT = "lat";
+    private final static String GPX_LON = "lon";
+
+    private final static String VAL_ELE = "0";
+    private final static String VAL_VERSION = "1.1";
+    private final static String VAL_XMLNS = "http://www.topografix.com/GPX/1/1";
+    private final static String VAL_XMLNSXSI = "http://www.w3.org/2001/XMLSchema-instance";
+    private final static String VAL_XSI = "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd";
+
     @Override
     public boolean export(List<C2CLine> trace) {
         final File file = new File(PATH + name + ".gpx");
         if (!file.exists()) {
-            DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
+            DateFormat df = new SimpleDateFormat(ISO8601);
             final XmlSerializer xml = Xml.newSerializer();
             try {
-                xml.setOutput(new FileOutputStream(file), "utf-8");
-                xml.startDocument("utf-8", true);
-                xml.text("\r\n");
-                xml.startTag(null, "gpx");
-                xml.attribute(null, "version", "1.1");
-                xml.attribute(null, "xmlns", "http://www.topografix.com/GPX/1/1");
-                xml.attribute(null, "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-                xml
-                        .attribute(null, "xsi:schemaLocation",
-                                "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd");
-                xml.attribute(null, "creator", Map.PKG);
+                xml.setOutput(new FileOutputStream(file), UTF8);
+                xml.startDocument(UTF8, true);
+                xml.startTag(null, GPX);
+                xml.attribute(null, GPX_VERSION, VAL_VERSION);
+                xml.attribute(null, GPX_XMLNS, VAL_XMLNS);
+                xml.attribute(null, GPX_XMLNSXSI, VAL_XMLNSXSI);
+                xml.attribute(null, GPX_XSI, VAL_XSI);
+                xml.attribute(null, GPX_CREATOR, Map.PKG);
 
-                xml.startTag(null, "metadata");
-                xml.startTag(null, "time");
+                xml.startTag(null, GPX_METADATA);
+                xml.startTag(null, GPX_TIME);
                 xml.text(name);
-                xml.endTag(null, "time");
-                xml.endTag(null, "metadata");
+                xml.endTag(null, GPX_TIME);
+                xml.endTag(null, GPX_METADATA);
 
-                xml.startTag(null, "trk");
-                xml.startTag(null, "name");
+                xml.startTag(null, GPX_TRK);
+                xml.startTag(null, GPX_NAME);
                 xml.text(name);
-                xml.endTag(null, "name");
-                xml.startTag(null, "trkseg");
+                xml.endTag(null, GPX_NAME);
+                xml.startTag(null, GPX_TRKSEG);
                 for (C2CLine line : trace) {
                     WgsPoint pt = line.getPoints()[0];
-                    xml.startTag(null, "trkpt");
-                    xml.attribute(null, "lat", "" + pt.getLat());
-                    xml.attribute(null, "lon", "" + pt.getLon());
-                    xml.startTag(null, "ele");
-                    xml.text("0");
-                    xml.endTag(null, "ele");
-                    xml.startTag(null, "time");
+                    xml.startTag(null, GPX_TRKPT);
+                    xml.attribute(null, GPX_LAT, "" + pt.getLat());
+                    xml.attribute(null, GPX_LON, "" + pt.getLon());
+                    xml.startTag(null, GPX_ELE);
+                    xml.text(VAL_ELE);
+                    xml.endTag(null, GPX_ELE);
+                    xml.startTag(null, GPX_TIME);
                     xml.text(df.format(new Date(line.time)));
-                    xml.endTag(null, "time");
-                    xml.endTag(null, "trkpt");
+                    xml.endTag(null, GPX_TIME);
+                    xml.endTag(null, GPX_TRKPT);
                 }
-                xml.endTag(null, "trkseg");
-                xml.endTag(null, "trk");
+                xml.endTag(null, GPX_TRKSEG);
+                xml.endTag(null, GPX_TRK);
 
-                xml.endTag(null, "gpx");
+                xml.endTag(null, GPX);
                 xml.flush();
                 xml.endDocument();
                 return true;
