@@ -157,6 +157,14 @@ public class Map extends Activity {
         });
 
         handleIntent();
+
+        // FIXME: KML TESTS
+        // KmlUrlReader kml = new KmlUrlReader(
+        // "/sdcard/Android/data/com.camptocamp.android.gis/traces/2011-01-21-100151.kml",
+        // false);
+        // KmlUrlReader kml = new KmlUrlReader(
+        // "http://www.panoramio.com/panoramio.kml?LANG=en_US.utf8&", true);
+        // mapComponent.addKmlService(kml);
     }
 
     @Override
