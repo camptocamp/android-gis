@@ -66,8 +66,8 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
                 }
             }
             // Network location no more needed as primary source
-            // FIXME: this always run !!!! FIXME
-            if (LocationManager.GPS_PROVIDER.equals(loc.getProvider()) && location != null) {
+            if (LocationManager.GPS_PROVIDER.equals(loc.getProvider()) && location != null
+                    && LocationManager.NETWORK_PROVIDER.equals(location)) {
                 Log.v(TAG, "change update rythm");
                 manager.removeUpdates(this);
                 manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, UP_ACTIVE, UP_DIST,
@@ -136,6 +136,7 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
         // get last known location
         Location loc = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if (loc != null) {
+            loc.setProvider(LocationManager.NETWORK_PROVIDER);
             loc.setTime(System.currentTimeMillis());
             onLocationChanged(loc);
         }

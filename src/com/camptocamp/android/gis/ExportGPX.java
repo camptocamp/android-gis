@@ -43,7 +43,7 @@ public class ExportGPX extends C2CExportTrace {
     private final static String VAL_XSI = "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd";
 
     @Override
-    public boolean export(List<C2CLine> trace) {
+    public String export(List<C2CLine> trace) {
         final File file = new File(PATH + name + ".gpx");
         if (!file.exists()) {
             DateFormat df = new SimpleDateFormat(ISO8601);
@@ -88,7 +88,7 @@ public class ExportGPX extends C2CExportTrace {
                 xml.endTag(null, GPX);
                 xml.flush();
                 xml.endDocument();
-                return true;
+                return file.getAbsolutePath();
 
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
@@ -98,7 +98,7 @@ public class ExportGPX extends C2CExportTrace {
                 e.printStackTrace();
             }
         }
-        return false;
+        return "";
     }
 
 }

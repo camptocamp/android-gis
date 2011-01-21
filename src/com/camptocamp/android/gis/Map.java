@@ -292,8 +292,10 @@ public class Map extends Activity {
                 export = null;
             }
             // Export
-            if (export != null && export.export(pr.trace)) {
-                Toast.makeText(ctxt, R.string.toast_trace_saved, Toast.LENGTH_SHORT).show();
+            String file = "";
+            if (export != null && (file = export.export(pr.trace)) != "") {
+                Toast.makeText(ctxt, String.format(getString(R.string.toast_trace_saved), file),
+                        Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(ctxt, R.string.toast_trace_error, Toast.LENGTH_SHORT).show();
             }

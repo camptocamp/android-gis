@@ -37,7 +37,7 @@
     <string name="toast_overlay_removed">Overlay removed !</string>
     <string name="toast_fscacheremove">Cache removed !</string>
     <string name="toast_fscacheremove_error">Error removing cache !</string>
-    <string name="toast_trace_saved">Trace successfully saved !</string>
+    <string name="toast_trace_saved">Trace successfully saved to: %s</string>
     <string name="toast_trace_empty">Trace is empty !</string>
     <string name="toast_trace_error">Error exporting trace !</string>
     

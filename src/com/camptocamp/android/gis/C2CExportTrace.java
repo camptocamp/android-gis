@@ -24,5 +24,5 @@ public abstract class C2CExportTrace {
         name = new SimpleDateFormat(DF).format(new Date(System.currentTimeMillis()));
     }
 
-    abstract public boolean export(List<C2CLine> trace);
+    abstract public String export(List<C2CLine> trace);
 }
