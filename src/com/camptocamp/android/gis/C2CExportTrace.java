@@ -25,5 +25,4 @@ public abstract class C2CExportTrace {
     }
 
     abstract public boolean export(List<C2CLine> trace);
-
 }
