@@ -35,33 +35,38 @@ import com.nutiteq.log.AndroidLogger;
 import com.nutiteq.log.Log;
 import com.nutiteq.maps.GeoMap;
 import com.nutiteq.maps.OpenStreetMap;
+import com.nutiteq.services.YourNavigationDirections;
 import com.nutiteq.ui.NutiteqDownloadDisplay;
 import com.nutiteq.ui.ThreadDrivenPanning;
 import com.nutiteq.utils.Utils;
 
 public class Map extends Activity {
 
-    public static final String D = "C2C:";
-    public static final String APP = "c2c-android-gis";
-    public static final String PKG = "com.camptocamp.android.gis";
+    protected static final String D = "C2C:";
+    protected static final String APP = "c2c-android-gis";
+    protected static final String PKG = "com.camptocamp.android.gis";
     private static final String TAG = D + "Map";
+    private static final String PLACEHOLDER = "placeholder";
+    private static final String OSM_MAPNIK_URL = "http://tile.openstreetmap.org/";
+    private static final double LAT = 46.858423; // X: 190'000
+    private static final double LNG = 8.225458; // Y: 660'000
 
-    public static final String ACTION_GOTO = "action_goto";
-    public static final String EXTRA_LABEL = "extra_label";
-    public static final String EXTRA_MINX = "extra_minx"; // MapPos (px)
-    public static final String EXTRA_MINY = "extra_miny";
-    public static final String EXTRA_MAXX = "extra_maxx";
-    public static final String EXTRA_MAXY = "extra_maxy";
+    protected static final String ACTION_GOTO = "action_goto";
+    protected static final String ACTION_ROUTE = "action_route";
+    protected static final String EXTRA_LABEL = "extra_label";
+    protected static final String EXTRA_MINLON = "extra_minx";
+    protected static final String EXTRA_MINLAT = "extra_miny";
+    protected static final String EXTRA_MAXLON = "extra_maxx";
+    protected static final String EXTRA_MAXLAT = "extra_maxy";
 
-    private int mCurrentMenu = MENU_MAP_ST_PIXEL;
     private static final int MENU_MAP_ST_PIXEL = 0;
     private static final int MENU_MAP_ST_ORTHO = 1;
     private static final int MENU_MAP_OSM = 2;
     private static final int MENU_PREFS = 3;
     private static final int MENU_RECORD = 4;
-    private static final String PLACEHOLDER = "placeholder";
-    private static final String OSM_MAPNIK_URL = "http://tile.openstreetmap.org/";
+    private static final int MENU_DIRECTION = 5;
 
+    private SharedPreferences prefs;
     private List<String> mSelectedLayers = new ArrayList<String>();
     private boolean onRetainCalled = false;
     private int mWidth = 1;
@@ -70,11 +75,11 @@ public class Map extends Activity {
     private RelativeLayout mapLayout;
     private MapView mapView = null;
     private String search_query = "";
-    private final double lat = 46.858423; // X: 190'000
-    private final double lng = 8.225458; // Y: 660'000
+    private C2CDirectionsWaiter waiter;
 
-    public C2CMapComponent mapComponent = null;
-    public boolean isTrackingPosition = false;
+    protected C2CMapComponent mapComponent = null;
+    protected boolean isTrackingPosition = false;
+    private int mProvider;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -87,6 +92,7 @@ public class Map extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
         mapLayout = ((RelativeLayout) findViewById(R.id.map));
+        waiter = new C2CDirectionsWaiter(Map.this);
 
         // Width and Height
         Display display = getWindowManager().getDefaultDisplay();
@@ -94,7 +100,7 @@ public class Map extends Activity {
         mHeight = display.getHeight();
 
         // Set default map
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctxt);
+        prefs = PreferenceManager.getDefaultSharedPreferences(ctxt);
         selectMap(Integer.parseInt(prefs.getString(Prefs.KEY_PROVIDER, Prefs.DEFAULT_PROVIDER)));
 
         // Zoom
@@ -137,11 +143,10 @@ public class Map extends Activity {
         btn_overlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Layers only for Swisstopo maps (FIXME: Be generic)
-                if (mCurrentMenu == MENU_MAP_ST_PIXEL || mCurrentMenu == MENU_MAP_ST_ORTHO) {
+                if (mProvider == MENU_MAP_ST_PIXEL || mProvider == MENU_MAP_ST_ORTHO) {
                     setOverlay(new SwisstopoOverlay(getString(R.string.overlay_swisstopo_data)));
-                } else if (mCurrentMenu == MENU_MAP_OSM) {
-                    setOverlay(new OsmOverlay(getString(R.string.osm_overlay_contours)));
+                } else if (mProvider == MENU_MAP_OSM) {
+                    setOverlay(new OsmOverlay(getString(R.string.osm_overlay)));
                 } else {
                     Toast.makeText(Map.this, R.string.toast_no_layer, Toast.LENGTH_SHORT).show();
                 }
@@ -160,9 +165,6 @@ public class Map extends Activity {
 
         // FIXME: KML TESTS
         // KmlUrlReader kml = new KmlUrlReader(
-        // "/sdcard/Android/data/com.camptocamp.android.gis/traces/2011-01-21-100151.kml",
-        // false);
-        // KmlUrlReader kml = new KmlUrlReader(
         // "http://www.panoramio.com/panoramio.kml?LANG=en_US.utf8&", true);
         // mapComponent.addKmlService(kml);
     }
@@ -175,25 +177,52 @@ public class Map extends Activity {
 
     private void handleIntent() {
         Intent intent = getIntent();
-        // Goto Place
-        if (ACTION_GOTO.equals(intent.getAction())) {
+        String action = intent.getAction();
 
+        if (ACTION_GOTO.equals(action)) {
             search_query = intent.getStringExtra(EXTRA_LABEL);
             ((TextView) findViewById(R.id.search_query)).setText(search_query);
 
-            // Get positions in pixels
-            double minx = intent.getDoubleExtra(EXTRA_MINX, 0);
-            double miny = intent.getDoubleExtra(EXTRA_MINY, 0);
-            double maxx = intent.getDoubleExtra(EXTRA_MAXX, 0);
-            double maxy = intent.getDoubleExtra(EXTRA_MAXY, 0);
+            // Get positions and Zoom
+            final double minx = intent.getDoubleExtra(EXTRA_MINLON, 0);
+            final double miny = intent.getDoubleExtra(EXTRA_MINLAT, 0);
+            final double maxx = intent.getDoubleExtra(EXTRA_MAXLON, 0);
+            final double maxy = intent.getDoubleExtra(EXTRA_MAXLAT, 0);
+            zoomToBbox(new WgsPoint(minx, miny), new WgsPoint(maxx, maxy));
 
-            // Positionning the map according to bbox
-            GeoMap map = mapComponent.getMap();
-            mapComponent.setZoom(map.getMinZoom());
-            WgsPoint min = new WgsPoint(minx, miny);
-            WgsPoint max = new WgsPoint(maxx, maxy);
-            mapComponent.setBoundingBox(new WgsBoundingBox(min, max));
+        } else if (ACTION_ROUTE.equals(action)) {
+            // Get points, Draw route and Zoom
+            final double startx = intent.getDoubleExtra(EXTRA_MINLON, 0);
+            final double starty = intent.getDoubleExtra(EXTRA_MINLAT, 0);
+            final double endx = intent.getDoubleExtra(EXTRA_MAXLON, 0);
+            final double endy = intent.getDoubleExtra(EXTRA_MAXLAT, 0);
+            WgsPoint from = new WgsPoint(startx, starty);
+            WgsPoint to = new WgsPoint(endx, endy);
 
+            YourNavigationDirections yours = new YourNavigationDirections(waiter, from, to,
+                    YourNavigationDirections.MOVE_METHOD_CAR,
+                    YourNavigationDirections.ROUTE_TYPE_FASTEST);
+            mapComponent.enqueueDownload(yours, Cache.CACHE_LEVEL_NONE);
+
+            // OpenLSDirections ols = new OpenLSDirections(waiter,
+            // OpenLSDirections.NUTITEQ_DEFAULT_SERVICE_URL, "en-US", from, to);
+            // mapComponent.enqueueDownload(ols, Cache.CACHE_LEVEL_NONE);
+
+            if (startx < endx && starty > endy) {
+                from = new WgsPoint(startx, endy);
+                to = new WgsPoint(endx, starty);
+            } else if (startx > endx) {
+                if (starty > endy) {
+                    final WgsPoint tmp = to;
+                    to = from;
+                    from = tmp;
+                } else {
+                    from = new WgsPoint(endx, starty);
+                    to = new WgsPoint(startx, endy);
+                }
+
+            }
+            zoomToBbox(from, to);
         }
     }
 
@@ -229,26 +258,29 @@ public class Map extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
-        menu.add(0, MENU_MAP_ST_PIXEL, 0, R.string.menu_swisstopo_pixel).setIcon(
+        menu.add(0, MENU_MAP_ST_PIXEL, MENU_MAP_ST_PIXEL, R.string.menu_swisstopo_pixel).setIcon(
                 android.R.drawable.ic_menu_mapmode);
-        menu.add(0, MENU_MAP_ST_ORTHO, 1, R.string.menu_swisstopo_ortho).setIcon(
+        menu.add(0, MENU_MAP_ST_ORTHO, MENU_MAP_ST_ORTHO, R.string.menu_swisstopo_ortho).setIcon(
                 android.R.drawable.ic_menu_mapmode);
-        menu.add(1, MENU_MAP_OSM, 2, R.string.menu_osm).setIcon(android.R.drawable.ic_menu_mapmode);
-        menu.add(2, MENU_PREFS, 3, R.string.menu_prefs).setIcon(
+        menu.add(1, MENU_MAP_OSM, MENU_MAP_OSM, R.string.menu_osm).setIcon(
+                android.R.drawable.ic_menu_mapmode);
+        menu.add(2, MENU_PREFS, MENU_PREFS, R.string.menu_prefs).setIcon(
                 android.R.drawable.ic_menu_preferences);
-        menu.add(3, MENU_RECORD, 4, R.string.menu_record_start).setIcon(
+        menu.add(3, MENU_RECORD, MENU_RECORD, R.string.menu_record_start).setIcon(
                 android.R.drawable.ic_media_play);
+        menu.add(3, MENU_DIRECTION, MENU_DIRECTION, R.string.menu_direction).setIcon(
+                android.R.drawable.ic_menu_directions);
         return true;
     }
 
     @Override
     public boolean onMenuItemSelected(final int featureId, final MenuItem item) {
-        mCurrentMenu = item.getItemId();
-        if (mCurrentMenu <= MENU_MAP_OSM) {
-            selectMap(mCurrentMenu);
-        } else if (mCurrentMenu == MENU_PREFS) {
+        final int itemid = item.getItemId();
+        if (itemid <= MENU_MAP_OSM) {
+            selectMap(itemid);
+        } else if (itemid == MENU_PREFS) {
             startActivity(new Intent(Map.this, Prefs.class));
-        } else if (mCurrentMenu == MENU_RECORD) {
+        } else if (itemid == MENU_RECORD) {
             // Record GPS trace
             final C2CGpsProvider pr = (C2CGpsProvider) mapComponent.getLocationSource();
             if (pr != null && pr.record) {
@@ -270,12 +302,13 @@ public class Map extends Activity {
                 item.setTitle(R.string.menu_record_stop);
                 item.setIcon(android.R.drawable.ic_media_pause);
             }
+        } else if (itemid == MENU_DIRECTION) {
+            startActivity(new Intent(Map.this, C2CDirections.class));
         }
         return true;
     }
 
     protected void saveTrace(C2CGpsProvider pr) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctxt);
         if (pr.trace.size() > 0) {
             // Choose format
             int format = Integer.parseInt(prefs.getString(Prefs.KEY_TRACE_FORMAT,
@@ -325,8 +358,9 @@ public class Map extends Activity {
     }
 
     private void selectMap(int provider_id) {
+        mProvider = provider_id;
         int zoom = -1;
-        WgsPoint pt = new WgsPoint(lng, lat);
+        WgsPoint pt = new WgsPoint(LNG, LAT);
         // Reset mapcomponent
         if (mapComponent != null) {
             zoom = mapComponent.getZoom();
@@ -447,5 +481,10 @@ public class Map extends Activity {
                 System.gc();
             }
         }
+    }
+
+    private void zoomToBbox(WgsPoint min, WgsPoint max) {
+        mapComponent.setZoom(mapComponent.getMap().getMinZoom());
+        mapComponent.setBoundingBox(new WgsBoundingBox(min, max));
     }
 }

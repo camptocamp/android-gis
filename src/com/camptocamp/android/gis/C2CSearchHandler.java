@@ -78,10 +78,10 @@ public class C2CSearchHandler extends Activity {
             newintent.putExtra(Map.EXTRA_LABEL, json.getString("label"));
 
             // Bbox
-            newintent.putExtra(Map.EXTRA_MINX, a.getDouble(0));
-            newintent.putExtra(Map.EXTRA_MINY, a.getDouble(1));
-            newintent.putExtra(Map.EXTRA_MAXX, a.getDouble(2));
-            newintent.putExtra(Map.EXTRA_MAXY, a.getDouble(3));
+            newintent.putExtra(Map.EXTRA_MINLON, a.getDouble(0));
+            newintent.putExtra(Map.EXTRA_MINLAT, a.getDouble(1));
+            newintent.putExtra(Map.EXTRA_MAXLON, a.getDouble(2));
+            newintent.putExtra(Map.EXTRA_MAXLAT, a.getDouble(3));
 
         } catch (JSONException e) {
             e.printStackTrace();
