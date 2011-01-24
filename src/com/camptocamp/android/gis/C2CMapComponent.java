@@ -21,11 +21,13 @@ public class C2CMapComponent extends BasicMapComponent {
     private static final int DOUBLETAP_RADIUS = 50; // px
     private static final int DOUBLETAP_PAN = 2; // px
     private static final int ZOOM = 7;
-    private static final double OSM_MP = 0.596; // FIXME: more precision needed
+    private static final double C = 40076592d; // m
 
     private final int[] lastpanx = new int[2];
     private final int[] lastpany = new int[2];
 
+    private double zpow;
+    private double ycos;
     private int lastposx = 0;
     private int lastposy = 0;
     private long lasttouch;
@@ -33,6 +35,8 @@ public class C2CMapComponent extends BasicMapComponent {
     public C2CMapComponent(WgsPoint middlePoint, int width, int height, int zoom) {
         super(KEY, VDR, Map.APP, width, height, middlePoint, (zoom != -1 ? zoom : ZOOM));
         setZoomLevelIndicator(new C2CZoomIndicator(0, 18));
+        zpow = Math.pow(2, zoom + 8);
+        ycos = Math.cos(middlePoint.getLat());
     }
 
     @Override
@@ -60,6 +64,19 @@ public class C2CMapComponent extends BasicMapComponent {
         lastpany[0] = panY;
 
         super.panMap(panX, panY);
+        ycos = Math.cos(getMiddlePoint().getLat());
+    }
+
+    @Override
+    public void zoomIn() {
+        super.zoomIn();
+        zpow = Math.pow(2, getZoom() + 8);
+    }
+
+    @Override
+    public void zoomOut() {
+        super.zoomOut();
+        zpow = Math.pow(2, getZoom() + 8);
     }
 
     @Override
@@ -132,9 +149,10 @@ public class C2CMapComponent extends BasicMapComponent {
     public double getMetersPerPixel() {
         // For OSM
         if (getMap() instanceof OpenStreetMap) {
-            return OSM_MP * Math.pow(2, (18 - getZoom()));
+            // Dummy calculation: 0.596 * Math.pow(2, (18 - getZoom()));
+            // http://wiki.openstreetmap.org/wiki/Height_and_width_of_a_map#Pure_Math_Method
+            return -(C * ycos / zpow);
         }
         return 0;
     }
-
 }
