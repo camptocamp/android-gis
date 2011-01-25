@@ -59,6 +59,7 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
             if (loc.hasBearing()) {
                 setLocationMarker(new C2CLocationMarker(new PlaceIcon(Utils
                         .createImage("/res/drawable/direction.png")), 0, true));
+                // TODO: FIXME: rotate icon !!
             } else {
                 setLocationMarker(new C2CLocationMarker(new PlaceIcon(Utils
                         .createImage("/res/drawable/marker.png")), new PlaceIcon(Utils

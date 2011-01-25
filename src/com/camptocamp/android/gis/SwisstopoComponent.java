@@ -1,6 +1,7 @@
 package com.camptocamp.android.gis;
 
 import com.nutiteq.components.WgsPoint;
+import com.nutiteq.location.LocationSource;
 
 public class SwisstopoComponent extends C2CMapComponent {
 
@@ -29,6 +30,11 @@ public class SwisstopoComponent extends C2CMapComponent {
 
         createZoomBufferAndUpdateScreen(Math.log(ratio) / Math.log(2), true, false);
 
+        // Set precision radius if gps tracking is active
+        final LocationSource loc = getLocationSource();
+        if (loc != null) {
+            ((C2CLocationMarker) loc.getLocationMarker()).setRadius();
+        }
     }
 
     @Override
@@ -46,6 +52,12 @@ public class SwisstopoComponent extends C2CMapComponent {
                 / ((SwisstopoMap) displayedMap).resolutions.get(z1);
 
         createZoomBufferAndUpdateScreen(Math.log(ratio) / Math.log(2), true, true);
+        
+        // Set precision radius if gps tracking is active
+        final LocationSource loc = getLocationSource();
+        if (loc != null) {
+            ((C2CLocationMarker) loc.getLocationMarker()).setRadius();
+        }
     }
 
     @Override
