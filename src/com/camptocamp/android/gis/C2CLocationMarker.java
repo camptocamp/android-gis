@@ -33,6 +33,13 @@ public class C2CLocationMarker extends NutiteqLocationMarker {
         paint.setAlpha(50);
     }
 
+    public C2CLocationMarker(Placemark placemark, int updateInterval, boolean track) {
+        super(placemark, placemark, updateInterval, track);
+        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setColor(Color.BLUE);
+        paint.setAlpha(50);
+    }
+
     @Override
     protected void update() {
         if (track) {

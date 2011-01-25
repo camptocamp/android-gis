@@ -14,10 +14,12 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.nutiteq.components.PlaceIcon;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.location.LocationListener;
 import com.nutiteq.location.LocationMarker;
 import com.nutiteq.location.LocationSource;
+import com.nutiteq.utils.Utils;
 
 public class C2CGpsProvider implements LocationSource, android.location.LocationListener {
 
@@ -40,6 +42,9 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
     public C2CGpsProvider(Map a) {
         mMap = new WeakReference<Map>(a);
         manager = (LocationManager) a.getSystemService(Context.LOCATION_SERVICE);
+        setLocationMarker(new C2CLocationMarker(new PlaceIcon(Utils
+                .createImage("/res/drawable/marker.png")), new PlaceIcon(Utils
+                .createImage("/res/drawable/marker_offline.png")), 0, true));
     }
 
     /**
@@ -51,6 +56,14 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
                 + loc.getAccuracy() + ", " + loc.getProvider());
         if (loc != null && isBetterLocation(loc)) {
             // Update Marker
+            if (loc.hasBearing()) {
+                setLocationMarker(new C2CLocationMarker(new PlaceIcon(Utils
+                        .createImage("/res/drawable/direction.png")), 0, true));
+            } else {
+                setLocationMarker(new C2CLocationMarker(new PlaceIcon(Utils
+                        .createImage("/res/drawable/marker.png")), new PlaceIcon(Utils
+                        .createImage("/res/drawable/marker_offline.png")), 0, true));
+            }
             marker.setAccuracy(loc.getAccuracy());
             marker.setLocation(new WgsPoint(loc.getLongitude(), loc.getLatitude()));
             // Update trace
@@ -123,6 +136,13 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
     public void setLocationMarker(LocationMarker marker) {
         this.marker = (C2CLocationMarker) marker;
         marker.setLocationSource(this);
+        // FIXME: what if this is null ?
+        final Map a = mMap.get();
+        if (a != null) {
+            marker.setMapComponent(a.mapComponent);
+        } else {
+            marker.quit();
+        }
     }
 
     @Override

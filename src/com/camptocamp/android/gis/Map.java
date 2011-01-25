@@ -27,7 +27,6 @@ import android.widget.ZoomControls;
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.android.MapView;
 import com.nutiteq.cache.Cache;
-import com.nutiteq.components.PlaceIcon;
 import com.nutiteq.components.WgsBoundingBox;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.controls.AndroidKeysHandler;
@@ -38,7 +37,6 @@ import com.nutiteq.maps.OpenStreetMap;
 import com.nutiteq.services.YourNavigationDirections;
 import com.nutiteq.ui.NutiteqDownloadDisplay;
 import com.nutiteq.ui.ThreadDrivenPanning;
-import com.nutiteq.utils.Utils;
 
 public class Map extends Activity {
 
@@ -118,11 +116,7 @@ public class Map extends Activity {
 
         // GPS Location tracking
         final C2CGpsProvider locationSource = new C2CGpsProvider(Map.this);
-        locationSource.setLocationMarker(new C2CLocationMarker(new PlaceIcon(Utils
-                .createImage("/res/drawable/marker.png")), new PlaceIcon(Utils
-                .createImage("/res/drawable/marker_offline.png")), 0, true));
         final ImageButton btn_gps = (ImageButton) findViewById(R.id.position_track);
-
         btn_gps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

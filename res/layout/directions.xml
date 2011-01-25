@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#55000000">
+	<LinearLayout
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:background="#000000"
+	    android:orientation="vertical"
+	    android:padding="5dip">
+    
+		<LinearLayout
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content">
+		    <EditText
+		        android:id="@+id/start"
+		        android:layout_width="0dip"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="1"
+		        android:hint="Start point" />
+		    <ImageButton
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:src="@android:drawable/ic_input_get" />
+	    </LinearLayout>
+	    
+	    <LinearLayout
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content">
+	        <EditText
+	            android:id="@+id/end"
+	            android:layout_width="0dip"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:hint="End point" />
+	        <ImageButton
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:src="@android:drawable/ic_input_get" />
+	    </LinearLayout>
+	    
+	    <LinearLayout
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content">
+	        <RadioGroup
+		        android:layout_width="0dip"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="1"
+		        android:orientation="horizontal">
+	            <RadioButton
+		            android:layout_width="0dip"
+		            android:layout_height="wrap_content"
+	                android:layout_weight="1"
+		            android:text="Car"
+		            android:checked="true" />
+	            <RadioButton
+	                android:layout_width="0dip"
+	                android:layout_height="wrap_content"
+	                android:layout_weight="1"
+	                android:text="Bus" />
+	            <RadioButton
+	                android:layout_width="0dip"
+	                android:layout_height="wrap_content"
+	                android:layout_weight="1"
+	                android:text="Walk" />
+	        </RadioGroup>
+	        <Button
+	            android:id="@+id/go"
+	            android:layout_width="80dip"
+	            android:layout_height="wrap_content"
+	            android:text="Go" />
+	    </LinearLayout>
+    
+    </LinearLayout>
+</LinearLayout>
