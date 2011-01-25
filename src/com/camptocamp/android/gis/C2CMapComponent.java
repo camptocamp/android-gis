@@ -8,6 +8,7 @@ import com.nutiteq.BasicMapComponent;
 import com.nutiteq.cache.Cache;
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.WgsPoint;
+import com.nutiteq.location.LocationSource;
 import com.nutiteq.maps.OpenStreetMap;
 
 public class C2CMapComponent extends BasicMapComponent {
@@ -26,8 +27,7 @@ public class C2CMapComponent extends BasicMapComponent {
     private final int[] lastpanx = new int[2];
     private final int[] lastpany = new int[2];
 
-    private double zpow;
-    private double ycos;
+    private double ycos = 0;
     private int lastposx = 0;
     private int lastposy = 0;
     private long lasttouch;
@@ -35,7 +35,6 @@ public class C2CMapComponent extends BasicMapComponent {
     public C2CMapComponent(WgsPoint middlePoint, int width, int height, int zoom) {
         super(KEY, VDR, Map.APP, width, height, middlePoint, (zoom != -1 ? zoom : ZOOM));
         setZoomLevelIndicator(new C2CZoomIndicator(0, 18));
-        zpow = Math.pow(2, zoom + 8);
         ycos = Math.cos(middlePoint.getLat());
     }
 
@@ -70,13 +69,23 @@ public class C2CMapComponent extends BasicMapComponent {
     @Override
     public void zoomIn() {
         super.zoomIn();
-        zpow = Math.pow(2, getZoom() + 8);
+
+        // Set precision radius if gps tracking is active
+        final LocationSource loc = getLocationSource();
+        if (loc != null) {
+            ((C2CLocationMarker) loc.getLocationMarker()).setRadius();
+        }
     }
 
     @Override
     public void zoomOut() {
         super.zoomOut();
-        zpow = Math.pow(2, getZoom() + 8);
+
+        // Set precision radius if gps tracking is active
+        final LocationSource loc = getLocationSource();
+        if (loc != null) {
+            ((C2CLocationMarker) loc.getLocationMarker()).setRadius();
+        }
     }
 
     @Override
@@ -151,7 +160,7 @@ public class C2CMapComponent extends BasicMapComponent {
         if (getMap() instanceof OpenStreetMap) {
             // Dummy calculation: 0.596 * Math.pow(2, (18 - getZoom()));
             // http://wiki.openstreetmap.org/wiki/Height_and_width_of_a_map#Pure_Math_Method
-            return -(C * ycos / zpow);
+            return -(C * ycos / Math.pow(2, getZoom() + 8));
         }
         return 0;
     }

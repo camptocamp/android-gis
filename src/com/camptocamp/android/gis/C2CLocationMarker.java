@@ -11,6 +11,8 @@ import android.graphics.Bitmap.Config;
 
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.Placemark;
+import com.nutiteq.components.WgsBoundingBox;
+import com.nutiteq.components.WgsPoint;
 import com.nutiteq.location.NutiteqLocationMarker;
 
 // http://davy-leggieri.developpez.com/tutoriels/android/creation-boussole
@@ -20,7 +22,8 @@ public class C2CLocationMarker extends NutiteqLocationMarker {
     private Canvas canvas;
     private Paint paint;
     private Bitmap bitmap = null;
-    private float accuracy = 0;
+    private float accuracy = 0; // m
+    private int radius = 0; // px
 
     public C2CLocationMarker(Placemark placemarkConnected, Placemark connectionLost,
             int updateInterval, boolean track) {
@@ -31,10 +34,22 @@ public class C2CLocationMarker extends NutiteqLocationMarker {
     }
 
     @Override
+    protected void update() {
+        if (track) {
+            // FIXME
+            final MapPos pt1 = mapComponent.getMapPosition(lastWgsLocation);
+            final MapPos pt2 = new MapPos(pt1.getX(), pt1.getY() + radius, mapComponent.getZoom());
+            final WgsPoint pt22 = mapComponent.getMap().mapPosToWgs(pt2).toWgsPoint();
+            mapComponent.setZoom(mapComponent.getMap().getMinZoom());
+            mapComponent.setBoundingBox(new WgsBoundingBox(lastWgsLocation, pt22));
+        }
+        super.update();
+    }
+
+    @Override
     public void paint(final Graphics g, final MapPos mp, final int screenCenterX,
             final int screenCenterY) {
         // Update accuracy circle
-        float radius = Math.round(accuracy / ((C2CMapComponent) mapComponent).getMetersPerPixel());
         if (radius > 0) {
             final int size = (int) Math.ceil(radius * 2);
             bitmap = Bitmap.createBitmap(size, size, Config.ARGB_4444);
@@ -49,6 +64,12 @@ public class C2CLocationMarker extends NutiteqLocationMarker {
 
     public void setAccuracy(float accuracy) {
         this.accuracy = accuracy;
+        setRadius();
+    }
+
+    protected void setRadius() {
+        // FIXME: Check (int)
+        radius = (int) Math.round(accuracy / ((C2CMapComponent) mapComponent).getMetersPerPixel());
     }
 
 }
