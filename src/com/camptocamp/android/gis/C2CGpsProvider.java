@@ -178,9 +178,12 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
 
     @Override
     public void quit() {
+        status = STATUS_CONNECTION_LOST;
         manager.removeUpdates(C2CGpsProvider.this);
         if (marker != null) {
             marker.quit();
+            // FIXME: Marker needs to repaint
+            // marker.update();
         }
     }
 
