@@ -4,8 +4,12 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.microedition.lcdui.Image;
+
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
@@ -38,13 +42,14 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
 
     public List<C2CLine> trace = new ArrayList<C2CLine>();
     public boolean record = false;
+    public boolean track = true;
 
     public C2CGpsProvider(Map a) {
         mMap = new WeakReference<Map>(a);
         manager = (LocationManager) a.getSystemService(Context.LOCATION_SERVICE);
         setLocationMarker(new C2CLocationMarker(new PlaceIcon(Utils
                 .createImage("/res/drawable/marker.png")), new PlaceIcon(Utils
-                .createImage("/res/drawable/marker_offline.png")), 0, true));
+                .createImage("/res/drawable/marker_offline.png")), 0, track));
     }
 
     /**
@@ -55,18 +60,22 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
         Log.v(TAG, "loc=" + loc.getLatitude() + ", " + loc.getLongitude() + ", "
                 + loc.getAccuracy() + ", " + loc.getProvider());
         if (loc != null && isBetterLocation(loc)) {
-            // Update Marker
+            // Update Bearing
+            // FIXME THIS IS BULLSHIT
             if (loc.hasBearing()) {
-                setLocationMarker(new C2CLocationMarker(new PlaceIcon(Utils
-                        .createImage("/res/drawable/direction.png")), 0, true));
-                // TODO: FIXME: rotate icon !!
+                setLocationMarker(new C2CLocationMarker(new PlaceIcon(rotateImage(Utils
+                        .createImage("/res/drawable/direction.png"))), 0, track));
+
             } else {
                 setLocationMarker(new C2CLocationMarker(new PlaceIcon(Utils
                         .createImage("/res/drawable/marker.png")), new PlaceIcon(Utils
-                        .createImage("/res/drawable/marker_offline.png")), 0, true));
+                        .createImage("/res/drawable/marker_offline.png")), 0, track));
             }
+
+            // Update Marker
             marker.setAccuracy(loc.getAccuracy());
             marker.setLocation(new WgsPoint(loc.getLongitude(), loc.getLatitude()));
+
             // Update trace
             // TODO: Cut if signal lost ?
             if (record) {
@@ -183,6 +192,16 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
     /**
      * Custom
      */
+
+    private Image rotateImage(Image img) {
+        Bitmap src = img.getBitmap();
+        int width = src.getWidth();
+        int height = src.getHeight();
+        Matrix matrix = new Matrix();
+        matrix.postRotate(45);
+        Bitmap dst = Bitmap.createBitmap(src, 0, 0, width, height, matrix, true);
+        return new Image(dst);
+    }
 
     // http://developer.android.com/guide/topics/location/obtaining-user-location.html#BestEstimate
     private boolean isBetterLocation(Location loc) {

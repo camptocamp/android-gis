@@ -58,6 +58,7 @@ public class C2CLocationMarker extends NutiteqLocationMarker {
             final int screenCenterY) {
         // Update accuracy circle
         if (radius > 0) {
+            android.util.Log.e("TEST", "rad=" + radius);
             final int size = (int) Math.ceil(radius * 2);
             bitmap = Bitmap.createBitmap(size, size, Config.ARGB_4444);
             canvas = new Canvas(bitmap);
