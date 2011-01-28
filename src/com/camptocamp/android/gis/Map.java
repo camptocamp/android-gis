@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -184,7 +185,13 @@ public class Map extends Activity {
             zoomToBbox(new WgsPoint(minx, miny), new WgsPoint(maxx, maxy));
 
         } else if (ACTION_ROUTE.equals(action)) {
-            // Get points, Draw route and Zoom
+            // Modal dialog
+            final ProgressDialog dialog = ProgressDialog.show(Map.this,
+                    getString(R.string.dialog_route_create_title),
+                    getString(R.string.dialog_route_create_messg));
+            dialog.setCancelable(true);
+
+            // Get points
             final double startx = intent.getDoubleExtra(EXTRA_MINLON, 0);
             final double starty = intent.getDoubleExtra(EXTRA_MINLAT, 0);
             final double endx = intent.getDoubleExtra(EXTRA_MAXLON, 0);
@@ -192,15 +199,30 @@ public class Map extends Activity {
             WgsPoint from = new WgsPoint(startx, starty);
             WgsPoint to = new WgsPoint(endx, endy);
 
+            // Get route and draw it
             YourNavigationDirections yours = new YourNavigationDirections(waiter, from, to,
                     YourNavigationDirections.MOVE_METHOD_CAR,
-                    YourNavigationDirections.ROUTE_TYPE_FASTEST);
+                    YourNavigationDirections.ROUTE_TYPE_FASTEST) {
+                @Override
+                public void dataRetrieved(final byte[] data) {
+                    super.dataRetrieved(data);
+                    dialog.dismiss();
+                }
+
+                @Override
+                public void notifyError() {
+                    super.notifyError();
+                    dialog.dismiss();
+                    Toast.makeText(Map.this, R.string.toast_route_error, Toast.LENGTH_SHORT);
+                }
+            };
             mapComponent.enqueueDownload(yours, Cache.CACHE_LEVEL_NONE);
 
             // OpenLSDirections ols = new OpenLSDirections(waiter,
             // OpenLSDirections.NUTITEQ_DEFAULT_SERVICE_URL, "en-US", from, to);
             // mapComponent.enqueueDownload(ols, Cache.CACHE_LEVEL_NONE);
 
+            // Zoom to Route
             if (startx < endx && starty > endy) {
                 from = new WgsPoint(startx, endy);
                 to = new WgsPoint(endx, starty);

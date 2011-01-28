@@ -14,6 +14,8 @@
     <string name="dialog_layer_title">Choose layer(s):</string>
     <string name="dialog_fs_cache_remove">Do you want to remove the cache ?</string>
     <string name="dialog_save_trace">Do you want save this GPS trace ?</string>
+    <string name="dialog_route_create_title">Routing</string>
+    <string name="dialog_route_create_messg">Creating route...\nPlease wait!</string>
     
     <string name="btn_apply">Apply</string>
     <string name="btn_yes">Yes</string>
@@ -41,6 +43,7 @@
     <string name="toast_trace_saved">Trace successfully saved to: %s</string>
     <string name="toast_trace_empty">Trace is empty !</string>
     <string name="toast_trace_error">Error exporting trace !</string>
+    <string name="toast_route_error">Error creating trace ! (network error)</string>
     
     <string name="o_shades">Hill shades</string>
     <string name="osm_overlay">http://129.206.229.158/cached/hillshade?LAYERS=%1$s&amp;SRS=EPSG%%3A900913&amp;FORMAT=image%%2FJPEG&amp;TRANSPARENT=true&amp;SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;STYLES=&amp;EXCEPTIONS=application%%2Fvnd.ogc.se_inimage&amp;BBOX=%2$f,%3$f,%4$f,%5$f&amp;WIDTH=256&amp;HEIGHT=256</string>
