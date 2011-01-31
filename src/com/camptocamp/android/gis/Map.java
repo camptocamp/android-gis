@@ -33,6 +33,7 @@ import com.nutiteq.cache.Cache;
 import com.nutiteq.components.WgsBoundingBox;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.controls.AndroidKeysHandler;
+import com.nutiteq.location.LocationSource;
 import com.nutiteq.maps.GeoMap;
 import com.nutiteq.maps.OpenStreetMap;
 import com.nutiteq.services.YourNavigationDirections;
@@ -373,58 +374,72 @@ public class Map extends Activity {
     }
 
     private void setMapComponent(final C2CMapComponent bmc, final GeoMap gm) {
-        final Object savedMapComponent = getLastNonConfigurationInstance();
-        if (savedMapComponent == null) {
-            cleanCaches();
-            bmc.setMap(gm);
-            bmc.setNetworkCache(new C2CCaching(ctxt));
-            // bmc.setImageProcessor(new NightModeImageProcessor());
-            bmc.setPanningStrategy(new ThreadDrivenPanning());
-            bmc.setControlKeysHandler(new AndroidKeysHandler());
-            bmc.setDownloadCounter(new C2CDownloadCounter());
-            bmc.setDownloadDisplay(new NutiteqDownloadDisplay());
-            bmc.startMapping();
-            bmc.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
-            mapComponent = bmc;
-        } else {
-            android.util.Log.v(TAG, "using savedMapComponent");
-            mapComponent = (C2CMapComponent) savedMapComponent;
-        }
+        cleanCaches();
+        bmc.setMap(gm);
+        bmc.setNetworkCache(new C2CCaching(ctxt));
+        // bmc.setImageProcessor(new NightModeImageProcessor());
+        bmc.setPanningStrategy(new ThreadDrivenPanning());
+        bmc.setControlKeysHandler(new AndroidKeysHandler());
+        bmc.setDownloadCounter(new C2CDownloadCounter());
+        bmc.setDownloadDisplay(new NutiteqDownloadDisplay());
+        bmc.startMapping();
+        bmc.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
+        mapComponent = bmc;
     }
 
     private void selectMap(int provider_id) {
+        LocationSource loc = null;
         mProvider = provider_id;
         int zoom = -1;
         WgsPoint pt = new WgsPoint(LNG, LAT);
-        // Reset mapcomponent
+        // Reset mapComponent
         if (mapComponent != null) {
+            // Save zoom
             zoom = mapComponent.getZoom();
             if (mapComponent instanceof SwisstopoComponent && provider_id == MENU_MAP_OSM) {
                 zoom -= 7;
             } else if (mapComponent instanceof C2CMapComponent) {
                 zoom += 7;
             }
+            // Save point
             pt = mapComponent.getMiddlePoint();
+            // Save location provider
+            if (isTrackingPosition) {
+                loc = mapComponent.getLocationSource();
+            }
+
             mapComponent.stopMapping();
             mapComponent = null;
         }
         // Select map
-        switch (provider_id) {
-        case MENU_MAP_ST_PIXEL:
-            setMapComponent(new SwisstopoComponent(pt, mWidth, mHeight, zoom), new SwisstopoMap(
-                    getString(R.string.st_url_pixel), getString(R.string.vendor_swisstopo), zoom));
-            break;
-        case MENU_MAP_ST_ORTHO:
-            setMapComponent(new SwisstopoComponent(pt, mWidth, mHeight, zoom), new SwisstopoMap(
-                    getString(R.string.st_url_ortho), getString(R.string.vendor_swisstopo), zoom));
-            break;
-        case MENU_MAP_OSM:
-            setMapComponent(new C2CMapComponent(pt, mWidth, mHeight, zoom), new OpenStreetMap(
-                    OSM_MAPNIK_URL, OpenStreetMap.TILE_SIZE, OpenStreetMap.MIN_ZOOM, 18));
-            break;
-        default:
-            setMapComponent(new SwisstopoComponent(pt, mWidth, mHeight, zoom), new SwisstopoMap(
-                    getString(R.string.st_url_pixel), getString(R.string.vendor_swisstopo), zoom));
+        final Object savedMapComponent = getLastNonConfigurationInstance();
+        if (savedMapComponent == null) {
+            switch (provider_id) {
+            case MENU_MAP_ST_PIXEL:
+                setMapComponent(new SwisstopoComponent(pt, mWidth, mHeight, zoom),
+                        new SwisstopoMap(getString(R.string.st_url_pixel),
+                                getString(R.string.vendor_swisstopo), zoom));
+                break;
+            case MENU_MAP_ST_ORTHO:
+                setMapComponent(new SwisstopoComponent(pt, mWidth, mHeight, zoom),
+                        new SwisstopoMap(getString(R.string.st_url_ortho),
+                                getString(R.string.vendor_swisstopo), zoom));
+                break;
+            case MENU_MAP_OSM:
+                setMapComponent(new C2CMapComponent(pt, mWidth, mHeight, zoom), new OpenStreetMap(
+                        OSM_MAPNIK_URL, OpenStreetMap.TILE_SIZE, OpenStreetMap.MIN_ZOOM, 18));
+                break;
+            default:
+                setMapComponent(new SwisstopoComponent(pt, mWidth, mHeight, zoom),
+                        new SwisstopoMap(getString(R.string.st_url_pixel),
+                                getString(R.string.vendor_swisstopo), zoom));
+            }
+        } else {
+            android.util.Log.v(TAG, "using savedMapComponent");
+            mapComponent = (C2CMapComponent) savedMapComponent;
+        }
+        if (loc != null) {
+            mapComponent.setLocationSource(loc);
         }
         setMapView();
     }
