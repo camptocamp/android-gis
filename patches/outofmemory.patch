@@ -35,22 +35,6 @@
      if (locationSource != null) {
        locationSource.quit();
      }
---- src/com/nutiteq/cache/MemoryCache.java
-+++ src/com/nutiteq/cache/MemoryCache.java
-@@ -37,7 +37,12 @@ public class MemoryCache implements Cache {
-   }
- 
-   public void deinitialize() {
--
-+    if (cache != null) {
-+        cache.clear();
-+    }
-+    cache = null;
-+    mru = null;
-+    lru = null;
-   }
- 
-   public byte[] get(final String cacheId) {
 --- src/com/nutiteq/components/ImageBuffer.java
 +++ src/com/nutiteq/components/ImageBuffer.java
 @@ -48,6 +48,11 @@ public class ImageBuffer {
