@@ -1,7 +1,5 @@
 package com.camptocamp.android.gis;
 
-import java.util.HashMap;
-
 import com.nutiteq.components.MapTile;
 
 public class OsmOverlay extends C2COverlay {
@@ -12,10 +10,10 @@ public class OsmOverlay extends C2COverlay {
     // BBOX=790053.12341406,6573584.4305477,790664.61964023,6574195.9267738&WIDTH=256&HEIGHT=256
 
     // private static final String TAG = Map.D + "OsmOverlay";
-    private String baseUrl;
+    // private String baseUrl;
 
     public OsmOverlay(final String baseUrl) {
-        this.baseUrl = baseUrl;
+        // this.baseUrl = baseUrl;
         // layers_all = new HashMap<String, String>() {
         // private static final long serialVersionUID = 1L;
         // {

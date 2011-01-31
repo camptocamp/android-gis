@@ -1,1 +1,19 @@
 NOTICE: App is not compilable as is, please be patient until beta release.
+
+BUILD:
+
+1. Check out sources
+mkdir /tmp/android; cd /tmp/android
+ git clone git://github.com/camptocamp/android-gis.git
+ git clone https://github.com/jbaubort/maps-lib-nutiteq.git
+
+2. Create structure in current directory
+ sh maps-lib-nutiteq/create.sh
+
+3. Copy the nutiteq-android directory to android-gis
+ rsync -av nutiteq-android/src/ android-gis/src/
+
+4. Apply patches (using GNU patch unified format)
+ cd android-gis
+ for i in patches/*.patch; do patch -p0 -i $i; done
+

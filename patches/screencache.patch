@@ -1,37 +1,6 @@
---- src/com/mgmaps/cache/ScreenCache.java
-+++ src/com/mgmaps/cache/ScreenCache.java
-@@ -105,9 +105,10 @@ public class ScreenCache {
-     */
-    public void paint(final Graphics g, final int i, final MapPos centerCopy,
-            final int screenCenterX, final int screenCenterY) {
--     if (images[i] == null) {
-+     if (images[i] == null || !valid[i]) {
-       //TODO jaanus : why does this sometimes happen with streamed tiles?
-       Log.debug(">>>>>>>>>>>>>>>>>>>>>>> SC: null image!");
-+      valid[i] = false; //FIXME
-       images[i] = tiles[i].getMap().getMissingTileImage();
-     }
-     final int left = tiles[i].getX() - centerCopy.getX() + screenCenterX;
-@@ -121,7 +122,7 @@ public class ScreenCache {
-    */
-   public int find(final MapTile t) {
-     for (int i = 0; i < size; i++) {
--      if (valid[i] && tiles[i].equals(t)) {
-+      if (valid[i] && images[i] != null && tiles[i] != null && tiles[i].equals(t)) {
-         return i;
-       }
-     }
-@@ -206,6 +212,9 @@ public class ScreenCache {
-   public void setImageProcessor(final ImageProcessor processor) {
-     imageProcessor = processor;
-     for (int i = 0; i < size; i++) {
-+      if (images[i] != null) {
-+        images[i].getBitmap().recycle();
-+      }
-       valid[i] = false;
-       tiles[i] = null;
-       images[i] = null;
-@@ -61,6 +61,22 @@ public class ScreenCache {
+--- /home/jbaubort/Desktop/SIG Android/maps_lib_src/maps_lib/src/com/mgmaps/cache/ScreenCache.java	2010-11-23 10:44:36.000000000 +0100
++++ /tmp/ScreenCache.java	2011-01-31 15:45:34.564297534 +0100
+@@ -59,6 +59,17 @@
      resize(n);
    }
  
@@ -49,3 +18,34 @@
    /**
     * Resize the screen cache when switching full screen.
     * 
+@@ -100,9 +111,10 @@
+    *          copy of the map center, used for synchronization
+    */
+   public void paint(final Graphics g, final int i, final MapPos centerCopy, final int screenCenterX, final int screenCenterY) {
+-    if (images[i] == null) {
++    if (images[i] == null || !valid[i]) {
+       //TODO jaanus : why does this sometimes happen with streamed tiles?
+       Log.debug(">>>>>>>>>>>>>>>>>>>>>>> SC: null image!");
++      valid[i] = false; //FIXME
+       images[i] = tiles[i].getMap().getMissingTileImage();
+     }
+     final int left = tiles[i].getX() - centerCopy.getX() + screenCenterX;
+@@ -119,7 +131,7 @@
+    */
+   public int find(final MapTile t) {
+     for (int i = 0; i < size; i++) {
+-      if (valid[i] && tiles[i].equals(t)) {
++      if (valid[i] && images[i] != null && tiles[i] != null && tiles[i].equals(t)) {
+         return i;
+       }
+     }
+@@ -204,6 +216,9 @@
+   public void setImageProcessor(final ImageProcessor processor) {
+     imageProcessor = processor;
+     for (int i = 0; i < size; i++) {
++      if (images[i] != null) {
++        images[i].getBitmap().recycle();
++      }
+       valid[i] = false;
+       tiles[i] = null;
+       images[i] = null;
