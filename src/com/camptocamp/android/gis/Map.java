@@ -6,9 +6,11 @@ import java.util.List;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -31,8 +33,6 @@ import com.nutiteq.cache.Cache;
 import com.nutiteq.components.WgsBoundingBox;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.controls.AndroidKeysHandler;
-import com.nutiteq.log.AndroidLogger;
-import com.nutiteq.log.Log;
 import com.nutiteq.maps.GeoMap;
 import com.nutiteq.maps.OpenStreetMap;
 import com.nutiteq.services.YourNavigationDirections;
@@ -52,11 +52,14 @@ public class Map extends Activity {
 
     protected static final String ACTION_GOTO = "action_goto";
     protected static final String ACTION_ROUTE = "action_route";
+    protected static final String ACTION_TOAST = "action_toast";
     protected static final String EXTRA_LABEL = "extra_label";
     protected static final String EXTRA_MINLON = "extra_minx";
     protected static final String EXTRA_MINLAT = "extra_miny";
     protected static final String EXTRA_MAXLON = "extra_maxx";
     protected static final String EXTRA_MAXLAT = "extra_maxy";
+    protected static final String EXTRA_TYPE = "extra_type";
+    protected static final String EXTRA_MSG = "extra_msg";
 
     private static final int MENU_MAP_ST_PIXEL = 0;
     private static final int MENU_MAP_ST_ORTHO = 1;
@@ -84,8 +87,8 @@ public class Map extends Activity {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ctxt = getApplicationContext();
-        Log.setLogger(new AndroidLogger(APP));
-        Log.enableAll();
+        // Log.setLogger(new AndroidLogger(APP));
+        // Log.enableAll();
 
         onRetainCalled = false;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -169,11 +172,20 @@ public class Map extends Activity {
         handleIntent();
     }
 
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        public void onReceive(Context ctxt, Intent intent) {
+            onNewIntent(intent);
+        }
+    };
+
     private void handleIntent() {
         Intent intent = getIntent();
         String action = intent.getAction();
 
-        if (ACTION_GOTO.equals(action)) {
+        if (ACTION_TOAST.equals(action)) {
+            Toast.makeText(ctxt, intent.getStringExtra(EXTRA_MSG), Toast.LENGTH_SHORT).show();
+
+        } else if (ACTION_GOTO.equals(action)) {
             search_query = intent.getStringExtra(EXTRA_LABEL);
             ((TextView) findViewById(R.id.search_query)).setText(search_query);
 
@@ -196,12 +208,12 @@ public class Map extends Activity {
             final double starty = intent.getDoubleExtra(EXTRA_MINLAT, 0);
             final double endx = intent.getDoubleExtra(EXTRA_MAXLON, 0);
             final double endy = intent.getDoubleExtra(EXTRA_MAXLAT, 0);
+            final String type = intent.getStringExtra(EXTRA_TYPE);
             WgsPoint from = new WgsPoint(startx, starty);
             WgsPoint to = new WgsPoint(endx, endy);
 
             // Get route and draw it
-            YourNavigationDirections yours = new YourNavigationDirections(waiter, from, to,
-                    YourNavigationDirections.MOVE_METHOD_CAR,
+            YourNavigationDirections yours = new YourNavigationDirections(waiter, from, to, type,
                     YourNavigationDirections.ROUTE_TYPE_FASTEST) {
                 @Override
                 public void dataRetrieved(final byte[] data) {
@@ -213,7 +225,6 @@ public class Map extends Activity {
                 public void notifyError() {
                     super.notifyError();
                     dialog.dismiss();
-                    Toast.makeText(Map.this, R.string.toast_route_error, Toast.LENGTH_SHORT);
                 }
             };
             mapComponent.enqueueDownload(yours, Cache.CACHE_LEVEL_NONE);
@@ -235,7 +246,6 @@ public class Map extends Activity {
                     from = new WgsPoint(endx, starty);
                     to = new WgsPoint(startx, endy);
                 }
-
             }
             zoomToBbox(from, to);
         }
@@ -259,8 +269,18 @@ public class Map extends Activity {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        // Listening for events
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_TOAST);
+        registerReceiver(receiver, filter);
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
+        unregisterReceiver(receiver);
         System.gc();
     }
 

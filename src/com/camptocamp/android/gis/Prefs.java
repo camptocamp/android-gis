@@ -31,19 +31,19 @@ public class Prefs extends PreferenceActivity implements OnSharedPreferenceChang
     private static final String TAG = Map.D + "Prefs";
     private PreferenceScreen ps;
 
-    public final static String KEY_PROVIDER = "provider";
-    public final static String DEFAULT_PROVIDER = "0";
+    protected final static String KEY_PROVIDER = "provider";
+    protected final static String DEFAULT_PROVIDER = "0";
 
-    public final static String KEY_TRACE_FORMAT = "trace_format";
-    public final static String DEFAULT_TRACE_FORMAT = "0";
+    protected final static String KEY_TRACE_FORMAT = "trace_format";
+    protected final static String DEFAULT_TRACE_FORMAT = "0";
 
-    public final static String KEY_FS_CACHING = "fscaching";
-    public final static boolean DEFAULT_FS_CACHING = false;
+    protected final static String KEY_FS_CACHING = "fscaching";
+    protected final static boolean DEFAULT_FS_CACHING = false;
 
-    public final static String KEY_FS_CACHING_SIZE = "fscachingsize";
-    public final static int DEFAULT_FS_CACHING_SIZE = 0; // Bytes
+    protected final static String KEY_FS_CACHING_SIZE = "fscachingsize";
+    protected final static int DEFAULT_FS_CACHING_SIZE = 0; // Bytes
 
-    public final static String KEY_FS_CACHING_REMOVE = "fscachingremove";
+    protected final static String KEY_FS_CACHING_REMOVE = "fscachingremove";
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

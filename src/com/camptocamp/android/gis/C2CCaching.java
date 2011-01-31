@@ -20,7 +20,7 @@ public class C2CCaching extends CachingChain {
 
     // An image is ~25kB => 1MB = 40 cached images
     private static final int MEMORYCACHE = 1024 * 1024; // Bytes
-    public static final File FSCACHEDIR = new File(Environment.getExternalStorageDirectory()
+    protected static final File FSCACHEDIR = new File(Environment.getExternalStorageDirectory()
             .getAbsolutePath()
             + "/Android/data/" + Map.PKG + "/cache");
 

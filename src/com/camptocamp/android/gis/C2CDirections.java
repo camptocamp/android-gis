@@ -1,5 +1,7 @@
 package com.camptocamp.android.gis;
 
+import com.nutiteq.services.YourNavigationDirections;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,6 +27,7 @@ public class C2CDirections extends Activity {
                 i.putExtra(Map.EXTRA_MINLAT, 46.858423);
                 i.putExtra(Map.EXTRA_MAXLON, 6.633537);
                 i.putExtra(Map.EXTRA_MAXLAT, 46.519463);
+                i.putExtra(Map.EXTRA_TYPE, YourNavigationDirections.MOVE_METHOD_CAR);
                 startActivity(i);
                 finish();
             }

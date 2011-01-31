@@ -40,9 +40,9 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
     private WeakReference<Map> mMap;
     private int status = STATUS_CONNECTING;
 
-    public List<C2CLine> trace = new ArrayList<C2CLine>();
-    public boolean record = false;
-    public boolean track = true;
+    protected List<C2CLine> trace = new ArrayList<C2CLine>();
+    protected boolean record = false;
+    protected boolean track = true;
 
     public C2CGpsProvider(Map a) {
         mMap = new WeakReference<Map>(a);

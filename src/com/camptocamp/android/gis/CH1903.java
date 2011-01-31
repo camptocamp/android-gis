@@ -19,10 +19,10 @@ import com.nutiteq.ui.Copyright;
 public abstract class CH1903 extends BaseMap implements Projection {
 
     // private static final String TAG = Map.D + "CH1903";
-    public static double MIN_X = 485869.5728;
-    public static double MAX_X = 837076.5648;
-    public static double MIN_Y = 76443.1884;
-    public static double MAX_Y = 299941.7864;
+    protected static double MIN_X = 485869.5728;
+    protected static double MAX_X = 837076.5648;
+    protected static double MIN_Y = 76443.1884;
+    protected static double MAX_Y = 299941.7864;
 
     public CH1903(final Copyright copyright, final int tileSize, final int minZoom,
             final int maxZoom, final int initialZoom) {
