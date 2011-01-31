@@ -1,18 +1,18 @@
 --- src/com/nutiteq/BasicMapComponent.java
 +++ src/com/nutiteq/BasicMapComponent.java
-@@ -131,10 +131,10 @@ public class BasicMapComponent extends BaseMapComponent implements MapTilesRequestor, Pannable,
+@@ -131,10 +131,10 @@
    private ControlKeysHandler controlKeysHandler;
    private Cursor cursor;
  
 -  private GeoMap displayedMap;
 +  protected GeoMap displayedMap;
-
-  private KmlServicesHandler kmlServicesHandler;
+ 
+   private KmlServicesHandler kmlServicesHandler;
 -  private com.nutiteq.cache.Cache networkCache;
 +  protected com.nutiteq.cache.Cache networkCache;
-
-  private final TasksRunner taskRunner;
-
+ 
+   private final TasksRunner taskRunner;
+ 
 @@ -1964,10 +1964,19 @@ public class BasicMapComponent extends BaseMapComponent implements MapTilesRequestor, Pannable,
        return;
      }
