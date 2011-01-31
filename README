@@ -3,7 +3,7 @@ NOTICE: App is not compilable as is, please be patient until beta release.
 BUILD:
 
 1. Check out sources
-mkdir /tmp/android; cd /tmp/android
+ mkdir /tmp/android; cd /tmp/android
  git clone git://github.com/camptocamp/android-gis.git
  git clone https://github.com/jbaubort/maps-lib-nutiteq.git
 
