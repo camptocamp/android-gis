@@ -1,7 +1,11 @@
 --- src/com/nutiteq/BasicMapComponent.java
 +++ src/com/nutiteq/BasicMapComponent.java
-@@ -137,7 +137,7 @@ public class BasicMapComponent extends BaseMapComponent implements MapTilesReque
-  protected GeoMap displayedMap;
+@@ -131,10 +131,10 @@ public class BasicMapComponent extends BaseMapComponent implements MapTilesReque
+   private ControlKeysHandler controlKeysHandler;
+   private Cursor cursor;
+ 
+-  private GeoMap displayedMap;
++  protected GeoMap displayedMap;
 
   private KmlServicesHandler kmlServicesHandler;
 -  private com.nutiteq.cache.Cache networkCache;
@@ -9,8 +13,6 @@
 
   private final TasksRunner taskRunner;
 
---- src/com/nutiteq/BasicMapComponent.java
-+++ src/com/nutiteq/BasicMapComponent.java
 @@ -1964,10 +1964,19 @@ public class BasicMapComponent extends BaseMapComponent implements MapTilesReque
        return;
      }

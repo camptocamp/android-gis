@@ -74,15 +74,6 @@
  
    // tile display
    private int tileX;
-@@ -131,7 +131,7 @@ public class BasicMapComponent extends BaseMapComponent implements MapTilesReque
-   private ControlKeysHandler controlKeysHandler;
-   private Cursor cursor;
- 
--  private GeoMap displayedMap;
-+  protected GeoMap displayedMap;
- 
-   private KmlServicesHandler kmlServicesHandler;
-   private com.nutiteq.cache.Cache networkCache;
 @@ -195,7 +195,7 @@ public class BasicMapComponent extends BaseMapComponent implements MapTilesReque
    private final LicenseKeyCheck licenseKeyCheck;
  
