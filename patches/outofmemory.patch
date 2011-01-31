@@ -1,6 +1,6 @@
 --- src/com/nutiteq/BasicMapComponent.java
 +++ src/com/nutiteq/BasicMapComponent.java
-@@ -131,10 +131,10 @@ public class BasicMapComponent extends BaseMapComponent implements MapTilesReque
+@@ -131,10 +131,10 @@ public class BasicMapComponent extends BaseMapComponent implements MapTilesRequestor, Pannable,
    private ControlKeysHandler controlKeysHandler;
    private Cursor cursor;
  
@@ -13,7 +13,7 @@
 
   private final TasksRunner taskRunner;
 
-@@ -1964,10 +1964,19 @@ public class BasicMapComponent extends BaseMapComponent implements MapTilesReque
+@@ -1964,10 +1964,19 @@ public class BasicMapComponent extends BaseMapComponent implements MapTilesRequestor, Pannable,
        return;
      }
  
