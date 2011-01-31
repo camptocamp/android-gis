@@ -385,6 +385,7 @@ public class Map extends Activity {
         bmc.startMapping();
         bmc.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
         mapComponent = bmc;
+        // return bmc;
     }
 
     private void selectMap(int provider_id) {
@@ -434,12 +435,12 @@ public class Map extends Activity {
                         new SwisstopoMap(getString(R.string.st_url_pixel),
                                 getString(R.string.vendor_swisstopo), zoom));
             }
+            if (loc != null) {
+                mapComponent.setLocationSource(loc);
+            }
         } else {
             android.util.Log.v(TAG, "using savedMapComponent");
             mapComponent = (C2CMapComponent) savedMapComponent;
-        }
-        if (loc != null) {
-            mapComponent.setLocationSource(loc);
         }
         setMapView();
     }
