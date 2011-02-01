@@ -35,6 +35,7 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
     private static final float UP_DIST = 5F;
 
     private C2CLocationMarker marker;
+    private C2CLocationMarker marker_simple;
     private LocationManager manager;
     private Location location = null;
     private WeakReference<Map> mMap;
@@ -47,9 +48,10 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
     public C2CGpsProvider(Map a) {
         mMap = new WeakReference<Map>(a);
         manager = (LocationManager) a.getSystemService(Context.LOCATION_SERVICE);
-        setLocationMarker(new C2CLocationMarker(new PlaceIcon(Utils
+        marker_simple = new C2CLocationMarker(new PlaceIcon(Utils
                 .createImage("/res/drawable/marker.png")), new PlaceIcon(Utils
-                .createImage("/res/drawable/marker_offline.png")), 0, track));
+                .createImage("/res/drawable/marker_offline.png")), 0, track);
+        setLocationMarker(marker_simple);
     }
 
     /**
@@ -67,9 +69,7 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
                         .createImage("/res/drawable/direction.png"))), 0, track));
 
             } else {
-                setLocationMarker(new C2CLocationMarker(new PlaceIcon(Utils
-                        .createImage("/res/drawable/marker.png")), new PlaceIcon(Utils
-                        .createImage("/res/drawable/marker_offline.png")), 0, track));
+                setLocationMarker(marker_simple);
             }
 
             // Update Marker
