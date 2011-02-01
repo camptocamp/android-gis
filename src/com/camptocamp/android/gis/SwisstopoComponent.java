@@ -30,7 +30,7 @@ public class SwisstopoComponent extends C2CMapComponent {
         createZoomBufferAndUpdateScreen(Math.log(ratio) / Math.log(2), true, false);
 
         // Set precision radius if gps tracking is active
-        if (locactionSource != null) {
+        if (locationSource != null) {
             ((C2CLocationMarker) locationSource.getLocationMarker()).setRadius();
         }
     }
