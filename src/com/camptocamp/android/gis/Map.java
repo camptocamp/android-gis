@@ -16,6 +16,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -54,6 +55,7 @@ public class Map extends Activity {
     protected static final String ACTION_GOTO = "action_goto";
     protected static final String ACTION_ROUTE = "action_route";
     protected static final String ACTION_TOAST = "action_toast";
+    protected static final String ACTION_PICK = "action_pick";
     protected static final String EXTRA_LABEL = "extra_label";
     protected static final String EXTRA_MINLON = "extra_minx";
     protected static final String EXTRA_MINLAT = "extra_miny";
@@ -61,6 +63,8 @@ public class Map extends Activity {
     protected static final String EXTRA_MAXLAT = "extra_maxy";
     protected static final String EXTRA_TYPE = "extra_type";
     protected static final String EXTRA_MSG = "extra_msg";
+    protected static final String EXTRA_FIELD = "extra_field";
+    protected static final String EXTRA_COORD = "extra_coord";
 
     private static final int MENU_MAP_ST_PIXEL = 0;
     private static final int MENU_MAP_ST_ORTHO = 1;
@@ -180,10 +184,29 @@ public class Map extends Activity {
     };
 
     private void handleIntent() {
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
         String action = intent.getAction();
 
-        if (ACTION_TOAST.equals(action)) {
+        Log.v(TAG, "intent=" + intent.toString());
+
+        if (ACTION_PICK.equals(action)) {
+            // Select place mode
+            Toast.makeText(ctxt, "FIXME: Tap your point on the map!", Toast.LENGTH_SHORT);
+
+            mapComponent.setMapListener(new C2CMapView(ctxt, mapComponent) {
+                @Override
+                public void mapClicked(WgsPoint p) {
+                    mapComponent.setMapListener(mapView);
+                    Intent i = new Intent(Map.this, C2CDirections.class);
+                    i.putExtra(EXTRA_FIELD, intent.getIntExtra(Map.EXTRA_FIELD, R.id.start));
+                    i.putExtra(EXTRA_COORD, p.getLon() + "," + p.getLat());
+                    i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    i.setAction(Map.ACTION_PICK);
+                    startActivity(i);
+                }
+            });
+
+        } else if (ACTION_TOAST.equals(action)) {
             Toast.makeText(ctxt, intent.getStringExtra(EXTRA_MSG), Toast.LENGTH_SHORT).show();
 
         } else if (ACTION_GOTO.equals(action)) {
