@@ -21,4 +21,4 @@ BUILD:
 
 # Compile and install
    ant debug
-   adb install bin/android-gis.apk
+   adb install bin/android-gis-debug.apk
