@@ -49,8 +49,8 @@
    private boolean isMapComplete;
    private long lastZoomCall;
  
--  private final Vector<Rectangle> changedAreas = new Vector<Rectangle>();
-+  private final Vector changedAreas = new Vector();
+-  private final Vector changedAreas = new Vector();
++  private final Vector<Rectangle> changedAreas = new Vector<Rectangle>();
  
 -  private LocationSource locationSource;
 +  protected LocationSource locationSource;
