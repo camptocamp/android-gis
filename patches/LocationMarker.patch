@@ -9,7 +9,8 @@
 +  protected MapPos mapPosition;
 +  protected final Placemark placemarkConnected;
 +  protected boolean track;
-   private WgsPoint lastWgsLocation;
++  protected WgsPoint lastWgsLocation;
+-  private WgsPoint lastWgsLocation;
 -  private BasicMapComponent mapComponent;
 -  private MapPos mapPosition;
 -  private final Placemark placemarkConnected;
@@ -31,3 +32,28 @@
      if (mapComponent == null || lastWgsLocation == null) {
        return;
      }
+--- src/javax/microedition/lcdui/Image.java	2010-06-11 20:16:18.000000000 +0200
++++ src/javax/microedition/lcdui/Image.java	2011-01-18 14:39:40.000000000 +0100
+@@ -10,7 +10,7 @@
+ public class Image {
+   private final Bitmap bitmap;
+ 
+-  private Image(final Bitmap bitmap) {
++  public Image(final Bitmap bitmap) {
+     this.bitmap = bitmap;
+   }
+ 
+--- src/com/nutiteq/BasicMapComponent.java	2011-01-25 14:42:16.000000000 +0100
++++ src/com/nutiteq/BasicMapComponent.java	2011-02-01 10:26:05.000000000 +0100
+@@ -187,9 +187,9 @@
+   private boolean isMapComplete;
+   private long lastZoomCall;
+ 
+-  private final Vector<Rectangle> changedAreas = new Vector<Rectangle>();
++  private final Vector changedAreas = new Vector();
+ 
+-  private LocationSource locationSource;
++  protected LocationSource locationSource;
+   private GeoMap[] tileSearchStrategy;
+ 
+   private final LicenseKeyCheck licenseKeyCheck;

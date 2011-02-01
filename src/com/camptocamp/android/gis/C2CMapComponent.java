@@ -71,9 +71,8 @@ public class C2CMapComponent extends BasicMapComponent {
         super.zoomIn();
 
         // Set precision radius if gps tracking is active
-        final LocationSource loc = getLocationSource();
-        if (loc != null) {
-            ((C2CLocationMarker) loc.getLocationMarker()).setRadius();
+        if (locationSource != null) {
+            ((C2CLocationMarker) locationSource.getLocationMarker()).setRadius();
         }
     }
 
@@ -82,9 +81,8 @@ public class C2CMapComponent extends BasicMapComponent {
         super.zoomOut();
 
         // Set precision radius if gps tracking is active
-        final LocationSource loc = getLocationSource();
-        if (loc != null) {
-            ((C2CLocationMarker) loc.getLocationMarker()).setRadius();
+        if (locationSource != null) {
+            ((C2CLocationMarker) locationSource.getLocationMarker()).setRadius();
         }
     }
 
@@ -126,6 +124,10 @@ public class C2CMapComponent extends BasicMapComponent {
         lastposy = y;
 
         // FIXME: Get missing overlay tiles
+    }
+
+    public LocationSource getLocationSource(){
+        return locationSource;
     }
 
     public Cache getCache() {

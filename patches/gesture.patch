@@ -1,0 +1,11 @@
+--- src/com/nutiteq/android/MapView.java	2010-05-06 10:13:38.000000000 +0200
++++ src/com/nutiteq/android/MapView.java	2010-12-13 16:46:30.000000000 +0100
+@@ -23,7 +23,7 @@
+   private static final int ACTION_POINTER_2_UP = 262;
+ private static final int ACTION_POINTER_2_DOWN = 261;
+   
+-private BasicMapComponent mapComponent;
++protected BasicMapComponent mapComponent;
+   private Graphics g;
+   private Canvas wrapped;
+   private RepaintHandler repaintHandler;

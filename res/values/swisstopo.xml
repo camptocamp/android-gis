@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<!-- URL's -->
+    <string name="st_url_pixel">http://tile%1$d.bgdi.admin.ch/geoadmin/ch.swisstopo.pixelkarte-farbe/%2$02d/%3$03d/%4$03d/%5$03d/%6$03d/%7$03d/%8$03d%9$s</string>
+    <string name="st_url_ortho">http://tile%1$d.bgdi.admin.ch/geoadmin/ch.swisstopo.swissimage/%2$02d/%3$03d/%4$03d/%5$03d/%6$03d/%7$03d/%8$03d%9$s</string>
+    <string name="st_url_search">http://map.geo.admin.ch/swisssearch?_dc=%1$d&amp;lang=en&amp;ref=geoadmin&amp;query=%2$s</string>
+    <string name="overlay_swisstopo_data">http://map.veloland.ch/tilecache?FORMAT=image%%2Fpng&amp;LAYERS=%1$s&amp;SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetMap&amp;STYLES=&amp;EXCEPTIONS=application%%2Fvnd.ogc.se_inimage&amp;SRS=EPSG%%3A21781&amp;BBOX=%2$f,%3$f,%4$f,%5$f&amp;WIDTH=256&amp;HEIGHT=256</string>
+
+<!-- Strings -->
+    <string name="o_cycling">Cycling in Switzerland</string>
+    <string name="o_hiking">Hiking in Switzerland</string>
+    <string name="o_mountainbiking">Mountainbiking in Switzerland</string>
+    <string name="o_skating">Skating in Switzerland</string>
+    <string name="o_canoeing">Canoeing in Switzerland</string>
+    <string name="o_transport">Rail, bus, boat</string>
+    <string name="o_places">Places</string>
+    <string name="o_accomodation">Accommodation</string>
+    <string name="o_shopping">Shopping</string>
+    <string name="o_poi">Places of interest</string>
+
+</resources>
