@@ -18,3 +18,7 @@ BUILD:
 # Apply patches (using GNU patch unified format)
    cd android-gis
    for i in patches/*.patch; do patch -p0 -i $i; done
+
+# Compile and install
+   ant debug
+   adb install bin/android-gis.apk
