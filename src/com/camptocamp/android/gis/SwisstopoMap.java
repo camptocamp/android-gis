@@ -2,7 +2,11 @@ package com.camptocamp.android.gis;
 
 //http://trac.openlayers.org/browser/trunk/openlayers/lib/OpenLayers/Util.js#L1259
 
+import java.io.IOException;
 import java.util.HashMap;
+
+import javax.microedition.lcdui.Graphics;
+import javax.microedition.lcdui.Image;
 
 import com.nutiteq.components.MapPos;
 import com.nutiteq.maps.UnstreamedMap;
@@ -19,6 +23,7 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
     private int y;
     private int x;
     private int zoom;
+    private Image missingTile;
     // private final Random rand = new Random(156321);
     // private final int MIN = 5;
     // private final int MAX = 9;
@@ -128,5 +133,21 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
         }
         y_shift = getMapHeight(zoom) - getRealMapHeight(zoom);
     }
+
+    @Override
+    public Image getMissingTileImage() {
+        if (missingTile == null) {
+            try {
+                missingTile = Image.createImage("/images/notile.png");
+            } catch (IOException e) {
+                missingTile = Image.createImage(getTileSize(), getTileSize());
+                final Graphics g = missingTile.getGraphics();
+                g.setColor(0xFFFF0000);
+                g.fillRect(0, 0, getTileSize(), getTileSize());
+            }
+          }
+          return missingTile;
+    }
+    
 
 }

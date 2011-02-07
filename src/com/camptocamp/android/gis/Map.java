@@ -35,8 +35,8 @@ import com.nutiteq.components.WgsBoundingBox;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.controls.AndroidKeysHandler;
 import com.nutiteq.location.LocationSource;
+import com.nutiteq.log.AndroidLogger;
 import com.nutiteq.maps.GeoMap;
-import com.nutiteq.maps.OpenStreetMap;
 import com.nutiteq.services.YourNavigationDirections;
 import com.nutiteq.ui.NutiteqDownloadDisplay;
 import com.nutiteq.ui.ThreadDrivenPanning;
@@ -92,8 +92,9 @@ public class Map extends Activity {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ctxt = getApplicationContext();
-        // Log.setLogger(new AndroidLogger(APP));
-        // Log.enableAll();
+
+        com.nutiteq.log.Log.setLogger(new AndroidLogger(APP));
+        com.nutiteq.log.Log.enableAll();
 
         onRetainCalled = false;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
