@@ -80,7 +80,7 @@ public class C2CLocationMarker extends NutiteqLocationMarker {
         setRadius();
     }
 
-    protected void setRadius() {
+    public void setRadius() {
         // FIXME: Check (int)
         radius = (int) Math.round(accuracy / ((C2CMapComponent) mapComponent).getMetersPerPixel());
     }

@@ -1,5 +1,8 @@
-package com.camptocamp.android.gis;
+package com.camptocamp.android.gis.providers;
 
+import com.camptocamp.android.gis.C2CLocationMarker;
+import com.camptocamp.android.gis.C2CMapComponent;
+import com.camptocamp.android.gis.C2CZoomIndicator;
 import com.nutiteq.components.WgsPoint;
 
 public class SwisstopoComponent extends C2CMapComponent {

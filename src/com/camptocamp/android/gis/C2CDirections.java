@@ -18,6 +18,7 @@ import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.camptocamp.android.gis.providers.OsmGeocoding;
 import com.nutiteq.components.Place;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.services.YourNavigationDirections;

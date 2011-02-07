@@ -1,5 +1,6 @@
-package com.camptocamp.android.gis;
+package com.camptocamp.android.gis.providers;
 
+import com.camptocamp.android.gis.C2COverlay;
 import com.nutiteq.components.MapTile;
 
 public class OsmOverlay extends C2COverlay {

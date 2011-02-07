@@ -9,6 +9,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.camptocamp.android.gis.utils.Prefs;
 import com.nutiteq.cache.AndroidFileSystemCache;
 import com.nutiteq.cache.Cache;
 import com.nutiteq.cache.CachingChain;
@@ -20,7 +21,7 @@ public class C2CCaching extends CachingChain {
 
     // An image is ~25kB => 1MB = 40 cached images
     private static final int MEMORYCACHE = 1024 * 1024; // Bytes
-    protected static final File FSCACHEDIR = new File(Environment.getExternalStorageDirectory()
+    public static final File FSCACHEDIR = new File(Environment.getExternalStorageDirectory()
             .getAbsolutePath()
             + "/Android/data/" + Map.PKG + "/cache");
 

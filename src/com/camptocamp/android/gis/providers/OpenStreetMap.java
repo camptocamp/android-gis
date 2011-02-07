@@ -1,4 +1,4 @@
-package com.camptocamp.android.gis;
+package com.camptocamp.android.gis.providers;
 
 import java.io.IOException;
 

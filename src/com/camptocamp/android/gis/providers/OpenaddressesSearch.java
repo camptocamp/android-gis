@@ -1,10 +1,14 @@
-package com.camptocamp.android.gis;
+package com.camptocamp.android.gis.providers;
 
 import java.net.URLEncoder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.camptocamp.android.gis.C2CSearch;
+import com.camptocamp.android.gis.Map;
+import com.camptocamp.android.gis.R;
 
 import android.app.SearchManager;
 import android.content.Context;

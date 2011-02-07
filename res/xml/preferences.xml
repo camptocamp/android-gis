@@ -26,7 +26,7 @@
             android:title="Filesystem Caching"
             android:summary=""
             android:defaultValue="false" />
-        <com.camptocamp.android.gis.SeekbarPreference
+        <com.camptocamp.android.gis.utils.SeekbarPreference
             android:key="fscachingsize"
             android:title="Filesystem Caching Size"
             android:summary=""

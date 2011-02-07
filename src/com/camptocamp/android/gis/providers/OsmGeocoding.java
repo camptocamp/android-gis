@@ -1,4 +1,4 @@
-package com.camptocamp.android.gis;
+package com.camptocamp.android.gis.providers;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +14,7 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
+import com.camptocamp.android.gis.Map;
 import com.nutiteq.components.Place;
 
 //http://ws.geonames.org/postalCodeSearch?placename=Lausanne&maxRows=1

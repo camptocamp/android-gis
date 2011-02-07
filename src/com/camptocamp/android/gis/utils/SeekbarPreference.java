@@ -1,4 +1,4 @@
-package com.camptocamp.android.gis;
+package com.camptocamp.android.gis.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+
+import com.camptocamp.android.gis.R;
 
 public class SeekbarPreference extends DialogPreference implements OnSeekBarChangeListener {
 

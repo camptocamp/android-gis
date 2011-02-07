@@ -28,6 +28,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ZoomControls;
 
+import com.camptocamp.android.gis.providers.OpenStreetMap;
+import com.camptocamp.android.gis.providers.OsmOverlay;
+import com.camptocamp.android.gis.providers.SwisstopoComponent;
+import com.camptocamp.android.gis.providers.SwisstopoMap;
+import com.camptocamp.android.gis.providers.SwisstopoOverlay;
+import com.camptocamp.android.gis.utils.ExportGPX;
+import com.camptocamp.android.gis.utils.ExportKML;
+import com.camptocamp.android.gis.utils.Prefs;
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.android.MapView;
 import com.nutiteq.cache.Cache;
@@ -43,9 +51,9 @@ import com.nutiteq.ui.ThreadDrivenPanning;
 
 public class Map extends Activity {
 
-    protected static final String D = "C2C:";
-    protected static final String APP = "c2c-android-gis";
-    protected static final String PKG = "com.camptocamp.android.gis";
+    public static final String D = "C2C:";
+    public static final String APP = "c2c-android-gis";
+    public static final String PKG = "com.camptocamp.android.gis";
     private static final String TAG = D + "Map";
     private static final String PLACEHOLDER = "placeholder";
     private static final String OSM_MAPNIK_URL = "http://tile.openstreetmap.org/";

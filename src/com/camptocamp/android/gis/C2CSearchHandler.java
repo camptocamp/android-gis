@@ -4,6 +4,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.camptocamp.android.gis.providers.SwisstopoSearch;
+
 import android.app.Activity;
 import android.app.SearchManager;
 import android.app.AlertDialog.Builder;

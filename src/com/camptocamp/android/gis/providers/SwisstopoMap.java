@@ -1,4 +1,4 @@
-package com.camptocamp.android.gis;
+package com.camptocamp.android.gis.providers;
 
 //http://trac.openlayers.org/browser/trunk/openlayers/lib/OpenLayers/Util.js#L1259
 
@@ -8,6 +8,7 @@ import java.util.HashMap;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
+import com.camptocamp.android.gis.utils.CH1903;
 import com.nutiteq.components.MapPos;
 import com.nutiteq.maps.UnstreamedMap;
 

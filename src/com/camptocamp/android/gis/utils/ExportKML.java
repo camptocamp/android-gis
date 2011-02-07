@@ -1,4 +1,4 @@
-package com.camptocamp.android.gis;
+package com.camptocamp.android.gis.utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -9,6 +9,8 @@ import org.xmlpull.v1.XmlSerializer;
 
 import android.util.Xml;
 
+import com.camptocamp.android.gis.C2CExportTrace;
+import com.camptocamp.android.gis.C2CLine;
 import com.nutiteq.components.WgsPoint;
 
 // https://code.google.com/intl/en/apis/kml/documentation/

@@ -1,7 +1,8 @@
-package com.camptocamp.android.gis;
+package com.camptocamp.android.gis.providers;
 
 import java.util.HashMap;
 
+import com.camptocamp.android.gis.C2COverlay;
 import com.nutiteq.components.MapTile;
 
 public class SwisstopoOverlay extends C2COverlay {

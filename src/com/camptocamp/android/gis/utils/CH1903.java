@@ -1,4 +1,4 @@
-package com.camptocamp.android.gis;
+package com.camptocamp.android.gis.utils;
 
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.Point;
