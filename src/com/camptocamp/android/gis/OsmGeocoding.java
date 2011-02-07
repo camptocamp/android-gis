@@ -18,6 +18,7 @@ import com.nutiteq.components.Place;
 
 //http://ws.geonames.org/postalCodeSearch?placename=Lausanne&maxRows=1
 //http://wiki.openstreetmap.org/wiki/Geocoding
+// TODO: Implements OpenGeoCoding.org
 
 public class OsmGeocoding {
 
