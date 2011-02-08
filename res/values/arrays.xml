@@ -2,15 +2,11 @@
 <resources>
 
     <string-array name="providers_name">
-        <item>@string/menu_swisstopo_pixel</item>
-        <item>@string/menu_swisstopo_ortho</item>
         <item>@string/menu_osm</item>
     </string-array>
     
     <string-array name="providers_value">
         <item>0</item>
-        <item>1</item>
-        <item>2</item>
     </string-array>
 
     <string-array name="trace_format_name">
