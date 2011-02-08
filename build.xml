@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="android-gis" default="help">
+<project name="android-gis">
     <property file="local.properties"/>
     <property file="build.properties"/>
     <property file="default.properties"/>
