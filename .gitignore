@@ -1,8 +1,6 @@
 bin
 gen
 .settings
-patches/00_swisstopo-hack.patch
-
 src/com/java4ever/
 src/com/mgmaps/
 src/com/nutiteq/
