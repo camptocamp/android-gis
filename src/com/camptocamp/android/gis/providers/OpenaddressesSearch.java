@@ -6,10 +6,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.camptocamp.android.gis.C2CSearch;
-import com.camptocamp.android.gis.Map;
-import com.camptocamp.android.gis.R;
-
 import android.app.SearchManager;
 import android.content.Context;
 import android.database.Cursor;
@@ -18,9 +14,13 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import com.camptocamp.android.gis.BaseMap;
+import com.camptocamp.android.gis.C2CSearch;
+import com.camptocamp.android.gis.R;
+
 public class OpenaddressesSearch extends C2CSearch {
 
-    private static final String TAG = Map.D + "OpenaddressesSearch";
+    private static final String TAG = BaseMap.D + "OpenaddressesSearch";
 
     public OpenaddressesSearch() {
         super();

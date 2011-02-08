@@ -16,7 +16,7 @@ public abstract class C2CExportTrace {
     protected final static String UTF8 = "utf-8";
     protected static final String PATH = Environment.getExternalStorageDirectory()
             .getAbsolutePath()
-            + "/Android/data/" + Map.PKG + "/traces/";
+            + "/Android/data/" + BaseMap.PKG + "/traces/";
     protected String name = "";
 
     public C2CExportTrace() {

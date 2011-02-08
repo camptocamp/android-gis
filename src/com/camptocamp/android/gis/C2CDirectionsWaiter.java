@@ -11,21 +11,21 @@ import com.nutiteq.services.DirectionsWaiter;
 
 public class C2CDirectionsWaiter implements DirectionsWaiter {
 
-    private static final String TAG = Map.D + "C2CDirectionsWaiter";
-    private WeakReference<Map> mActivity;
+    private static final String TAG = BaseMap.D + "C2CDirectionsWaiter";
+    private WeakReference<BaseMap> mActivity;
 
-    public C2CDirectionsWaiter(Map activity) {
-        mActivity = new WeakReference<Map>(activity);
+    public C2CDirectionsWaiter(BaseMap activity) {
+        mActivity = new WeakReference<BaseMap>(activity);
     }
 
     @Override
     public void routingParsingError(String message) {
         Log.e(TAG, "routingParsingError: " + message);
         // Toast
-        final Map a = mActivity.get();
+        final BaseMap a = mActivity.get();
         if (a != null) {
-            Intent i = new Intent(Map.ACTION_TOAST);
-            i.putExtra(Map.EXTRA_MSG, message);
+            Intent i = new Intent(BaseMap.ACTION_TOAST);
+            i.putExtra(BaseMap.EXTRA_MSG, message);
             a.sendBroadcast(i);
         }
     }
@@ -33,7 +33,7 @@ public class C2CDirectionsWaiter implements DirectionsWaiter {
     @Override
     public void routingErrors(int errors) {
         String msg = "routingErrors: ";
-        final Map a = mActivity.get();
+        final BaseMap a = mActivity.get();
         if (a != null) {
             switch (errors) {
             case DirectionsService.ERROR_DESTINATION_ADDRESS_NOT_FOUND:
@@ -52,8 +52,8 @@ public class C2CDirectionsWaiter implements DirectionsWaiter {
                 msg += a.getString(R.string.toast_route_unknown);
             }
             // Toast
-            Intent i = new Intent(Map.ACTION_TOAST);
-            i.putExtra(Map.EXTRA_MSG, msg);
+            Intent i = new Intent(BaseMap.ACTION_TOAST);
+            i.putExtra(BaseMap.EXTRA_MSG, msg);
             a.sendBroadcast(i);
         } else {
             msg += errors;
@@ -63,7 +63,7 @@ public class C2CDirectionsWaiter implements DirectionsWaiter {
 
     @Override
     public void routeFound(Route route) {
-        final Map a = mActivity.get();
+        final BaseMap a = mActivity.get();
         if (a != null) {
             // TODO: Remove last route
             a.mapComponent.addLine(route.getRouteLine());
@@ -77,10 +77,10 @@ public class C2CDirectionsWaiter implements DirectionsWaiter {
         final String msg = "networkError";
         Log.e(TAG, msg);
         // Toast
-        final Map a = mActivity.get();
+        final BaseMap a = mActivity.get();
         if (a != null) {
-            Intent i = new Intent(Map.ACTION_TOAST);
-            i.putExtra(Map.EXTRA_MSG, msg);
+            Intent i = new Intent(BaseMap.ACTION_TOAST);
+            i.putExtra(BaseMap.EXTRA_MSG, msg);
             a.sendBroadcast(i);
         }
     }

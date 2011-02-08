@@ -38,15 +38,15 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
     private C2CLocationMarker marker_simple;
     private LocationManager manager;
     private Location location = null;
-    private WeakReference<Map> mMap;
+    private WeakReference<BaseMap> mMap;
     private int status = STATUS_CONNECTING;
 
     protected List<C2CLine> trace = new ArrayList<C2CLine>();
     protected boolean record = false;
     protected boolean track = true;
 
-    public C2CGpsProvider(Map a) {
-        mMap = new WeakReference<Map>(a);
+    public C2CGpsProvider(BaseMap a) {
+        mMap = new WeakReference<BaseMap>(a);
         manager = (LocationManager) a.getSystemService(Context.LOCATION_SERVICE);
         marker_simple = new C2CLocationMarker(new PlaceIcon(Utils
                 .createImage("/res/drawable/marker.png")), new PlaceIcon(Utils
@@ -79,7 +79,7 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
             // Update trace
             // TODO: Cut if signal lost ?
             if (record) {
-                Map a = mMap.get();
+                BaseMap a = mMap.get();
                 if (a != null && location != null) {
                     C2CLine line = new C2CLine(new WgsPoint[] {
                             new WgsPoint(location.getLongitude(), location.getLatitude()),
@@ -109,7 +109,7 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
 
     @Override
     public void onProviderDisabled(final String provider) {
-        final Map a = mMap.get();
+        final BaseMap a = mMap.get();
         // GPS provider is disabled
         if (a != null && LocationManager.GPS_PROVIDER.equals(provider)) {
             // TODO: allow location from cellid/wifi only
@@ -147,7 +147,7 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
         this.marker = (C2CLocationMarker) marker;
         marker.setLocationSource(this);
         // FIXME: what if this is null ?
-        final Map a = mMap.get();
+        final BaseMap a = mMap.get();
         if (a != null) {
             marker.setMapComponent(a.mapComponent);
         } else {

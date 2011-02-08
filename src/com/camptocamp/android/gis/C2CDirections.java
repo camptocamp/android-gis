@@ -27,7 +27,7 @@ import com.nutiteq.services.YourNavigationDirections;
 
 public class C2CDirections extends Activity {
 
-    private static final String TAG = Map.D + "C2CDirections";
+    private static final String TAG = BaseMap.D + "C2CDirections";
     protected static final int PICK = 0;
 
     private final List<WgsPoint> pts = new ArrayList<WgsPoint>();
@@ -64,9 +64,9 @@ public class C2CDirections extends Activity {
     @Override
     protected void onNewIntent(Intent intent) {
         // GPS coordinate from map
-        if (Map.ACTION_PICK.equals(intent.getAction())) {
-            new SearchTask(intent.getIntExtra(Map.EXTRA_FIELD, R.id.start), intent
-                    .getStringExtra(Map.EXTRA_COORD)).execute();
+        if (BaseMap.ACTION_PICK.equals(intent.getAction())) {
+            new SearchTask(intent.getIntExtra(BaseMap.EXTRA_FIELD, R.id.start), intent
+                    .getStringExtra(BaseMap.EXTRA_COORD)).execute();
         }
     }
 
@@ -100,10 +100,9 @@ public class C2CDirections extends Activity {
                     break;
                 case 1:
                     // Show map and start/end marker
-                    Intent i2 = new Intent(C2CDirections.this, Map.class);
-                    i2.setAction(Map.ACTION_PICK);
+                    Intent i2 = new Intent(BaseMap.ACTION_PICK);
                     i2.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    i2.putExtra(Map.EXTRA_FIELD, field);
+                    i2.putExtra(BaseMap.EXTRA_FIELD, field);
                     startActivityForResult(i2, 0);
                     break;
                 default:
@@ -118,14 +117,13 @@ public class C2CDirections extends Activity {
         if (pts.size() == 2) {
             final WgsPoint p1 = pts.get(0);
             final WgsPoint p2 = pts.get(1);
-            Intent i = new Intent(C2CDirections.this, Map.class);
+            Intent i = new Intent(BaseMap.ACTION_ROUTE);
             i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            i.setAction(Map.ACTION_ROUTE);
-            i.putExtra(Map.EXTRA_MINLON, p1.getLon());
-            i.putExtra(Map.EXTRA_MINLAT, p1.getLat());
-            i.putExtra(Map.EXTRA_MAXLON, p2.getLon());
-            i.putExtra(Map.EXTRA_MAXLAT, p2.getLat());
-            i.putExtra(Map.EXTRA_TYPE, YourNavigationDirections.MOVE_METHOD_CAR);
+            i.putExtra(BaseMap.EXTRA_MINLON, p1.getLon());
+            i.putExtra(BaseMap.EXTRA_MINLAT, p1.getLat());
+            i.putExtra(BaseMap.EXTRA_MAXLON, p2.getLon());
+            i.putExtra(BaseMap.EXTRA_MAXLAT, p2.getLat());
+            i.putExtra(BaseMap.EXTRA_TYPE, YourNavigationDirections.MOVE_METHOD_CAR);
             startActivity(i);
             finish();
         } else {
@@ -166,7 +164,7 @@ public class C2CDirections extends Activity {
             // Add point
             if (result != null) {
                 Log.i(TAG, "got a point as lon,lat string (from map obviously)");
-                //FIXME: Reverse geocode
+                // FIXME: Reverse geocode
                 addToField(field, result.getLon() + "," + result.getLat(), result);
 
             } else {
@@ -189,9 +187,8 @@ public class C2CDirections extends Activity {
                     dialog.show();
                 } else {
                     Log.i(TAG, "no suggestion");
-                    Toast
-                            .makeText(C2CDirections.this, "FIXME: No suggestions",
-                                    Toast.LENGTH_SHORT).show();
+                    Toast.makeText(C2CDirections.this, "FIXME: No suggestions", Toast.LENGTH_SHORT)
+                            .show();
                 }
 
             }

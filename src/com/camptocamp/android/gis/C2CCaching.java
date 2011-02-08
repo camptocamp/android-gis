@@ -17,13 +17,13 @@ import com.nutiteq.cache.MemoryCache;
 
 public class C2CCaching extends CachingChain {
 
-    private static final String TAG = Map.D + "C2CCaching";
+    private static final String TAG = BaseMap.D + "C2CCaching";
 
     // An image is ~25kB => 1MB = 40 cached images
     private static final int MEMORYCACHE = 1024 * 1024; // Bytes
     public static final File FSCACHEDIR = new File(Environment.getExternalStorageDirectory()
             .getAbsolutePath()
-            + "/Android/data/" + Map.PKG + "/cache");
+            + "/Android/data/" + BaseMap.PKG + "/cache");
 
     public C2CCaching(final Context ctxt) {
         super(createCacheLevels(ctxt));
@@ -41,7 +41,7 @@ public class C2CCaching extends CachingChain {
                 int size = prefs.getInt(Prefs.KEY_FS_CACHING_SIZE, Prefs.DEFAULT_FS_CACHING_SIZE);
                 Log.v(TAG, "fs caching on, size=" + size);
                 cl = new Cache[] { new MemoryCache(MEMORYCACHE),
-                        new AndroidFileSystemCache(ctxt, Map.APP, FSCACHEDIR, size) };
+                        new AndroidFileSystemCache(ctxt, BaseMap.APP, FSCACHEDIR, size) };
             }
         }
 

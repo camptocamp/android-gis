@@ -14,7 +14,7 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
-import com.camptocamp.android.gis.Map;
+import com.camptocamp.android.gis.BaseMap;
 import com.nutiteq.components.Place;
 
 //http://ws.geonames.org/postalCodeSearch?placename=Lausanne&maxRows=1
@@ -23,7 +23,7 @@ import com.nutiteq.components.Place;
 
 public class OsmGeocoding {
 
-    private static final String TAG = Map.D + "OsmGeocoding";
+    private static final String TAG = BaseMap.D + "OsmGeocoding";
     private static final String UAK = "User-Agent";
     private static final String UAV = "Android GIS (http://camptocamp.com)";
     private static final int LIM = 10;

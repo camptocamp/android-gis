@@ -33,7 +33,7 @@ public class C2CMapComponent extends BasicMapComponent {
     private long lasttouch;
 
     public C2CMapComponent(WgsPoint middlePoint, int width, int height, int zoom) {
-        super(KEY, VDR, Map.APP, width, height, middlePoint, (zoom != -1 ? zoom : ZOOM));
+        super(KEY, VDR, BaseMap.APP, width, height, middlePoint, (zoom != -1 ? zoom : ZOOM));
         setZoomLevelIndicator(new C2CZoomIndicator(0, 18));
         ycos = Math.cos(middlePoint.getLat());
     }

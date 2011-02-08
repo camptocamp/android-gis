@@ -4,8 +4,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.camptocamp.android.gis.providers.SwisstopoSearch;
-
 import android.app.Activity;
 import android.app.SearchManager;
 import android.app.AlertDialog.Builder;
@@ -18,9 +16,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.camptocamp.android.gis.providers.SwisstopoSearch;
+
 public class C2CSearchHandler extends Activity {
 
-    private static final String TAG = Map.D + "C2CSearchHandler";
+    private static final String TAG = BaseMap.D + "C2CSearchHandler";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,7 +36,7 @@ public class C2CSearchHandler extends Activity {
             // C2CSearch search = new
             // OpenaddressesSearch(getApplicationContext());
 
-            final Cursor c = search.query(Uri.parse("content://" + Map.PKG
+            final Cursor c = search.query(Uri.parse("content://" + BaseMap.PKG
                     + ".C2CSearch/search_suggest_query/" + query + "?limit=50"), null, null, null,
                     null);
             if (c != null) {
@@ -71,19 +71,18 @@ public class C2CSearchHandler extends Activity {
     }
 
     private void showResultActivity(String jstring) {
-        Intent newintent = new Intent(C2CSearchHandler.this, Map.class);
-        newintent.setAction(Map.ACTION_GOTO);
+        Intent newintent = new Intent(BaseMap.ACTION_GOTO);
         try {
             JSONObject json = new JSONObject(jstring);
             JSONArray a = json.getJSONArray("bbox");
             newintent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            newintent.putExtra(Map.EXTRA_LABEL, json.getString("label"));
+            newintent.putExtra(BaseMap.EXTRA_LABEL, json.getString("label"));
 
             // Bbox
-            newintent.putExtra(Map.EXTRA_MINLON, a.getDouble(0));
-            newintent.putExtra(Map.EXTRA_MINLAT, a.getDouble(1));
-            newintent.putExtra(Map.EXTRA_MAXLON, a.getDouble(2));
-            newintent.putExtra(Map.EXTRA_MAXLAT, a.getDouble(3));
+            newintent.putExtra(BaseMap.EXTRA_MINLON, a.getDouble(0));
+            newintent.putExtra(BaseMap.EXTRA_MINLAT, a.getDouble(1));
+            newintent.putExtra(BaseMap.EXTRA_MAXLON, a.getDouble(2));
+            newintent.putExtra(BaseMap.EXTRA_MAXLAT, a.getDouble(3));
 
         } catch (JSONException e) {
             e.printStackTrace();

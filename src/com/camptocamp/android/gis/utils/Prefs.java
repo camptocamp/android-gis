@@ -24,14 +24,14 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.camptocamp.android.gis.BaseMap;
 import com.camptocamp.android.gis.C2CCaching;
-import com.camptocamp.android.gis.Map;
 import com.camptocamp.android.gis.R;
 import com.nutiteq.cache.CacheIndexDatabaseHelper;
 
 public class Prefs extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
-    private static final String TAG = Map.D + "Prefs";
+    private static final String TAG = BaseMap.D + "Prefs";
     private PreferenceScreen ps;
 
     public final static String KEY_PROVIDER = "provider";
@@ -117,7 +117,7 @@ public class Prefs extends PreferenceActivity implements OnSharedPreferenceChang
             final Activity a = mActivity.get();
             if (a != null) {
                 // Remove images on db and sdcard
-                CacheIndexDatabaseHelper db = new CacheIndexDatabaseHelper(a, Map.APP);
+                CacheIndexDatabaseHelper db = new CacheIndexDatabaseHelper(a, BaseMap.APP);
                 db.open();
                 final Cursor c = db.database.query(CacheIndexDatabaseHelper.CACHE_INDEX_TABLE,
                         new String[] { CacheIndexDatabaseHelper.KEY_RESOURCE_PATH,

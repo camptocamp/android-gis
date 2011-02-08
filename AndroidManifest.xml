@@ -10,7 +10,7 @@
         android:theme="@android:style/Theme.Black">
         
         <activity
-            android:name=".Map"
+            android:name=".OSMMap"
             android:label="@string/app_name">
                   
             <intent-filter>
@@ -19,7 +19,10 @@
             </intent-filter>
                   
             <intent-filter>
-                <action android:name="action_toast" />
+                <action android:name="com.camptocamp.android.gis.action.GOTO" />
+                <action android:name="com.camptocamp.android.gis.action.ROUTE" />
+                <action android:name="com.camptocamp.android.gis.action.PICK" />
+                <action android:name="com.camptocamp.android.gis.action.TOAST" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             

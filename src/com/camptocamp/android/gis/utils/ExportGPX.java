@@ -12,9 +12,9 @@ import org.xmlpull.v1.XmlSerializer;
 
 import android.util.Xml;
 
+import com.camptocamp.android.gis.BaseMap;
 import com.camptocamp.android.gis.C2CExportTrace;
 import com.camptocamp.android.gis.C2CLine;
-import com.camptocamp.android.gis.Map;
 import com.nutiteq.components.WgsPoint;
 
 // http://www.topografix.com/gpx.asp
@@ -59,7 +59,7 @@ public class ExportGPX extends C2CExportTrace {
                 xml.attribute(null, GPX_XMLNS, VAL_XMLNS);
                 xml.attribute(null, GPX_XMLNSXSI, VAL_XMLNSXSI);
                 xml.attribute(null, GPX_XSI, VAL_XSI);
-                xml.attribute(null, GPX_CREATOR, Map.PKG);
+                xml.attribute(null, GPX_CREATOR, BaseMap.PKG);
 
                 xml.startTag(null, GPX_METADATA);
                 xml.startTag(null, GPX_TIME);
