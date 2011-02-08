@@ -86,8 +86,6 @@ public abstract class BaseMap extends Activity {
 
     abstract protected void setDefaultMap();
 
-    abstract protected void selectMap(int provider_id);
-
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
