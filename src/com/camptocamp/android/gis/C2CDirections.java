@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
@@ -71,7 +72,7 @@ public class C2CDirections extends Activity {
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK && Integer.parseInt(Build.VERSION.SDK) >= 5) {
             // Address from contact
             String addr = "";
             Cursor c = managedQuery(data.getData(), null, null, null, null);
@@ -94,9 +95,11 @@ public class C2CDirections extends Activity {
                 switch (which) {
                 case 0:
                     // List contact with geographic information
-                    Intent i1 = new Intent(Intent.ACTION_PICK);
-                    i1.setType(ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_TYPE);
-                    startActivityForResult(i1, field);
+                    if (Integer.parseInt(Build.VERSION.SDK) >= 5) {
+                        Intent i1 = new Intent(Intent.ACTION_PICK);
+                        i1.setType(ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_TYPE);
+                        startActivityForResult(i1, field);
+                    }
                     break;
                 case 1:
                     // Show map and start/end marker

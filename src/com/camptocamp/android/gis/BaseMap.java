@@ -14,6 +14,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
@@ -32,7 +33,6 @@ import com.camptocamp.android.gis.utils.ExportGPX;
 import com.camptocamp.android.gis.utils.ExportKML;
 import com.camptocamp.android.gis.utils.Prefs;
 import com.nutiteq.BasicMapComponent;
-import com.nutiteq.android.MapView;
 import com.nutiteq.cache.Cache;
 import com.nutiteq.components.WgsBoundingBox;
 import com.nutiteq.components.WgsPoint;
@@ -49,7 +49,7 @@ public abstract class BaseMap extends Activity {
     public static final String D = "C2C:";
     public static final String PKG = "com.camptocamp.android.gis";
     public static final String APP = "c2c-android-gis";
-    private static final String TAG = D + "MapInterface";
+    private static final String TAG = D + "BaseMap";
     private static final String PLACEHOLDER = "placeholder";
 
     protected static final String ACTION_GOTO = PKG + ".action.GOTO";
@@ -73,7 +73,7 @@ public abstract class BaseMap extends Activity {
     protected int mHeight = 1;
     protected Context ctxt;
     private RelativeLayout mapLayout;
-    private MapView mapView = null;
+    private C2CMapView mapView = null;
     private String search_query = "";
     private C2CDirectionsWaiter waiter;
     private static final int MENU_PREFS = 3;
@@ -92,6 +92,7 @@ public abstract class BaseMap extends Activity {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ctxt = getApplicationContext();
+        prefs = PreferenceManager.getDefaultSharedPreferences(ctxt);
 
         com.nutiteq.log.Log.setLogger(new AndroidLogger(APP));
         com.nutiteq.log.Log.enableAll();
@@ -268,7 +269,6 @@ public abstract class BaseMap extends Activity {
         bmc.startMapping();
         bmc.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
         mapComponent = bmc;
-        // return bmc;
     }
 
     protected void saveTrace(C2CGpsProvider pr) {

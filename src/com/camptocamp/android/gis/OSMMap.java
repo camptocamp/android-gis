@@ -1,17 +1,15 @@
 package com.camptocamp.android.gis;
 
-import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.camptocamp.android.gis.providers.OpenStreetMap;
-import com.camptocamp.android.gis.utils.Prefs;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.location.LocationSource;
 
 public class OSMMap extends BaseMap {
 
-    private static final String TAG = D + "Map";
+    private static final String TAG = D + "OSMMap";
     private static final String OSM_MAPNIK_URL = "http://tile.openstreetmap.org/";
     private static final double LAT = 46.858423; // X: 190'000
     private static final double LNG = 8.225458; // Y: 660'000
@@ -19,8 +17,9 @@ public class OSMMap extends BaseMap {
 
     @Override
     protected void setDefaultMap() {
-        prefs = PreferenceManager.getDefaultSharedPreferences(ctxt);
-        selectMap(Integer.parseInt(prefs.getString(Prefs.KEY_PROVIDER, Prefs.DEFAULT_PROVIDER)));
+        // selectMap(Integer.parseInt(prefs.getString(Prefs.KEY_PROVIDER,
+        // Prefs.DEFAULT_PROVIDER)));
+        selectMap(MENU_MAP_OSM);
     }
 
     @Override
