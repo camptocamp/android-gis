@@ -3,7 +3,6 @@ package com.camptocamp.android.gis;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -30,6 +29,7 @@ import android.widget.Toast;
 import com.camptocamp.android.gis.utils.ExportGPX;
 import com.camptocamp.android.gis.utils.ExportKML;
 import com.camptocamp.android.gis.utils.Prefs;
+import com.google.android.maps.MapActivity;
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.cache.Cache;
 import com.nutiteq.components.WgsBoundingBox;
@@ -42,7 +42,7 @@ import com.nutiteq.ui.NutiteqDownloadDisplay;
 import com.nutiteq.ui.ThreadDrivenPanning;
 
 //FIXME: Rename to Map, then Map to ~MapOpenStreetMap
-public abstract class BaseMap extends Activity {
+public abstract class BaseMap extends MapActivity {
 
     public static final String D = "C2C:";
     public static final String PKG = "com.camptocamp.android.gis";
@@ -69,10 +69,10 @@ public abstract class BaseMap extends Activity {
     protected int mWidth = 1;
     protected int mHeight = 1;
     protected Context ctxt;
+    protected RelativeLayout mapLayout;
+    private C2CMapView mapView = null;
     private List<String> mSelectedLayers = new ArrayList<String>();
     private boolean onRetainCalled = false;
-    private RelativeLayout mapLayout;
-    private C2CMapView mapView = null;
     private C2CDirectionsWaiter waiter;
     private static final int MENU_PREFS = 3;
     private static final int MENU_RECORD = 4;
@@ -112,16 +112,18 @@ public abstract class BaseMap extends Activity {
         btn_gps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isTrackingPosition) {
-                    Toast.makeText(BaseMap.this, R.string.toast_gps_stop, Toast.LENGTH_SHORT)
-                            .show();
-                    locationSource.quit();
-                } else {
-                    Toast.makeText(BaseMap.this, R.string.toast_gps_start, Toast.LENGTH_SHORT)
-                            .show();
-                    mapComponent.setLocationSource(locationSource);
+                if (mapComponent != null) {
+                    if (isTrackingPosition) {
+                        Toast.makeText(BaseMap.this, R.string.toast_gps_stop, Toast.LENGTH_SHORT)
+                                .show();
+                        locationSource.quit();
+                    } else {
+                        Toast.makeText(BaseMap.this, R.string.toast_gps_start, Toast.LENGTH_SHORT)
+                                .show();
+                        mapComponent.setLocationSource(locationSource);
+                    }
+                    isTrackingPosition = !isTrackingPosition;
                 }
-                isTrackingPosition = !isTrackingPosition;
             }
         });
 
@@ -174,9 +176,14 @@ public abstract class BaseMap extends Activity {
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
+    public void onNewIntent(Intent intent) {
         setIntent(intent);
         handleIntent();
+    }
+
+    @Override
+    protected boolean isRouteDisplayed() {
+        return false;
     }
 
     @Override
