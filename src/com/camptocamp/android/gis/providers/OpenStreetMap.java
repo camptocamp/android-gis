@@ -5,19 +5,18 @@ import java.io.IOException;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
-import com.nutiteq.ui.Copyright;
-
 public class OpenStreetMap extends com.nutiteq.maps.OpenStreetMap {
 
     private Image missingTile;
+    private static final String OSM_MAPNIK_URL = "http://tile.openstreetmap.org/";
+    private static final int MAX_ZOOM = 18;
 
     public OpenStreetMap(String baseUrl, int tileSize, int minZoom, int maxZoom) {
         super(baseUrl, tileSize, minZoom, maxZoom);
     }
 
-    public OpenStreetMap(final Copyright copyright, final String baseUrl, final int tileSize,
-            final int minZoom, final int maxZoom) {
-        super(copyright, baseUrl, tileSize, minZoom, maxZoom);
+    public OpenStreetMap() {
+        super(OSM_MAPNIK_URL, TILE_SIZE, MIN_ZOOM, MAX_ZOOM);
     }
 
     @Override

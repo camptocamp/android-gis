@@ -183,7 +183,7 @@ public abstract class BaseMap extends MapActivity {
 
     @Override
     protected boolean isRouteDisplayed() {
-        return false;
+        return true;
     }
 
     @Override

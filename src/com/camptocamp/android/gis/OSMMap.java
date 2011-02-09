@@ -12,7 +12,6 @@ import com.nutiteq.location.LocationSource;
 public class OSMMap extends BaseMap {
 
     private static final String TAG = D + "OSMMap";
-    private static final String OSM_MAPNIK_URL = "http://tile.openstreetmap.org/";
     private static final double LAT = 46.858423; // X: 190'000
     private static final double LNG = 8.225458; // Y: 660'000
     private static final int MENU_MAP_OSM = 0;
@@ -21,27 +20,29 @@ public class OSMMap extends BaseMap {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        // Zoom
-//        final ZoomControls zoomControls = (ZoomControls) findViewById(R.id.zoom);
-//        zoomControls.setOnZoomInClickListener(new View.OnClickListener() {
-//            public void onClick(final View v) {
-//                mapComponent.zoomIn();
-//            }
-//        });
-//        zoomControls.setOnZoomOutClickListener(new View.OnClickListener() {
-//            public void onClick(final View v) {
-//                mapComponent.zoomOut();
-//            }
-//        });
+        // // Zoom
+        // final ZoomControls zoomControls = (ZoomControls)
+        // findViewById(R.id.zoom);
+        // zoomControls.setOnZoomInClickListener(new View.OnClickListener() {
+        // public void onClick(final View v) {
+        // mapComponent.zoomIn();
+        // }
+        // });
+        // zoomControls.setOnZoomOutClickListener(new View.OnClickListener() {
+        // public void onClick(final View v) {
+        // mapComponent.zoomOut();
+        // }
+        // });
 
-//        // Set overlay
-//        final ImageButton btn_overlay = (ImageButton) findViewById(R.id.switch_overlay_test);
-//        btn_overlay.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                setOverlay(new OsmOverlay(getString(R.string.osm_overlay)));
-//            }
-//        });
+        // // Set overlay
+        // final ImageButton btn_overlay = (ImageButton)
+        // findViewById(R.id.switch_overlay_test);
+        // btn_overlay.setOnClickListener(new View.OnClickListener() {
+        // @Override
+        // public void onClick(View v) {
+        // setOverlay(new OsmOverlay(getString(R.string.osm_overlay)));
+        // }
+        // });
 
         // Search Bar
         findViewById(R.id.search_bar).setOnClickListener(new View.OnClickListener() {
@@ -100,8 +101,7 @@ public class OSMMap extends BaseMap {
             switch (provider_id) {
             case MENU_MAP_OSM:
             default:
-                setMapComponent(new C2CMapComponent(pt, mWidth, mHeight, zoom), new OpenStreetMap(
-                        OSM_MAPNIK_URL, OpenStreetMap.TILE_SIZE, OpenStreetMap.MIN_ZOOM, 18));
+                setMapComponent(new C2CMapComponent(pt, mWidth, mHeight, zoom), new OpenStreetMap());
                 break;
             }
             if (loc != null) {
