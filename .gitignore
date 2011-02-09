@@ -8,3 +8,5 @@ src/henson/
 src/javax/
 src/net/
 src/org/
+res/drawable/mode_drive.png
+res/drawable/mode_walk.png
