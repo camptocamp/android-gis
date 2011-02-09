@@ -1,7 +1,9 @@
 package com.camptocamp.android.gis;
 
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.camptocamp.android.gis.providers.OpenStreetMap;
 import com.nutiteq.components.WgsPoint;
@@ -14,6 +16,41 @@ public class OSMMap extends BaseMap {
     private static final double LAT = 46.858423; // X: 190'000
     private static final double LNG = 8.225458; // Y: 660'000
     private static final int MENU_MAP_OSM = 0;
+
+    @Override
+    public void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+//        // Zoom
+//        final ZoomControls zoomControls = (ZoomControls) findViewById(R.id.zoom);
+//        zoomControls.setOnZoomInClickListener(new View.OnClickListener() {
+//            public void onClick(final View v) {
+//                mapComponent.zoomIn();
+//            }
+//        });
+//        zoomControls.setOnZoomOutClickListener(new View.OnClickListener() {
+//            public void onClick(final View v) {
+//                mapComponent.zoomOut();
+//            }
+//        });
+
+//        // Set overlay
+//        final ImageButton btn_overlay = (ImageButton) findViewById(R.id.switch_overlay_test);
+//        btn_overlay.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                setOverlay(new OsmOverlay(getString(R.string.osm_overlay)));
+//            }
+//        });
+
+        // Search Bar
+        findViewById(R.id.search_bar).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startSearch(search_query, false, null, false);
+            }
+        });
+    }
 
     @Override
     protected void setDefaultMap() {

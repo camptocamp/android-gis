@@ -26,9 +26,7 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ZoomControls;
 
-import com.camptocamp.android.gis.providers.OsmOverlay;
 import com.camptocamp.android.gis.utils.ExportGPX;
 import com.camptocamp.android.gis.utils.ExportKML;
 import com.camptocamp.android.gis.utils.Prefs;
@@ -67,14 +65,14 @@ public abstract class BaseMap extends Activity {
     protected static final String EXTRA_COORD = "extra_coord";
 
     protected SharedPreferences prefs;
-    private List<String> mSelectedLayers = new ArrayList<String>();
-    private boolean onRetainCalled = false;
+    protected String search_query = "";
     protected int mWidth = 1;
     protected int mHeight = 1;
     protected Context ctxt;
+    private List<String> mSelectedLayers = new ArrayList<String>();
+    private boolean onRetainCalled = false;
     private RelativeLayout mapLayout;
     private C2CMapView mapView = null;
-    private String search_query = "";
     private C2CDirectionsWaiter waiter;
     private static final int MENU_PREFS = 3;
     private static final int MENU_RECORD = 4;
@@ -108,19 +106,6 @@ public abstract class BaseMap extends Activity {
 
         setDefaultMap();
 
-        // Zoom
-        final ZoomControls zoomControls = (ZoomControls) findViewById(R.id.zoom);
-        zoomControls.setOnZoomInClickListener(new View.OnClickListener() {
-            public void onClick(final View v) {
-                mapComponent.zoomIn();
-            }
-        });
-        zoomControls.setOnZoomOutClickListener(new View.OnClickListener() {
-            public void onClick(final View v) {
-                mapComponent.zoomOut();
-            }
-        });
-
         // GPS Location tracking
         final C2CGpsProvider locationSource = new C2CGpsProvider(BaseMap.this);
         final ImageButton btn_gps = (ImageButton) findViewById(R.id.position_track);
@@ -137,23 +122,6 @@ public abstract class BaseMap extends Activity {
                     mapComponent.setLocationSource(locationSource);
                 }
                 isTrackingPosition = !isTrackingPosition;
-            }
-        });
-
-        // Set overlay
-        final ImageButton btn_overlay = (ImageButton) findViewById(R.id.switch_overlay_test);
-        btn_overlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setOverlay(new OsmOverlay(getString(R.string.osm_overlay)));
-            }
-        });
-
-        // Search Bar
-        findViewById(R.id.search_bar).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startSearch(search_query, false, null, false);
             }
         });
 
