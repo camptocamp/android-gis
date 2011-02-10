@@ -1,12 +1,4 @@
 bin
 gen
 .settings
-src/com/java4ever/
-src/com/mgmaps/
-src/com/nutiteq/
-src/henson/
-src/javax/
-src/net/
-src/org/
-res/drawable/mode_drive.png
-res/drawable/mode_walk.png
+local.properties

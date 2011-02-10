@@ -30,4 +30,21 @@
 		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>maps-lib-nutiteq_android_src</name>
+			<type>2</type>
+			<locationURI>_android_maps_lib_nutiteq_f7e7b6a6/android/src</locationURI>
+		</link>
+		<link>
+			<name>maps-lib-nutiteq_src</name>
+			<type>2</type>
+			<locationURI>_android_maps_lib_nutiteq_f7e7b6a6/src</locationURI>
+		</link>
+		<link>
+			<name>maps-lib-nutiteq_thirdparty_src</name>
+			<type>2</type>
+			<locationURI>_android_maps_lib_nutiteq_f7e7b6a6/thirdparty/src</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>
