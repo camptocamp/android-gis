@@ -1,7 +1,5 @@
 package com.camptocamp.android.gis.layer;
 
-import javax.microedition.io.HttpConnection;
-
 import com.nutiteq.maps.projections.Projection;
 import com.nutiteq.ui.Copyright;
 import com.nutiteq.ui.StringCopyright;
@@ -21,7 +19,7 @@ public class TMSMap extends ProjectedUnstreamedMap {
      * @param tileSize
      *            Size of tile image in pixels, usually 256
      * @param format
-     *            Tile image format, usually "png" or "jpg".
+     *            Tile image format, usually ".png" or ".jpg".
      * @param minZoom
      *            Minimum (world) zoom level for service. Could be 0
      * @param maxZoom
@@ -46,7 +44,7 @@ public class TMSMap extends ProjectedUnstreamedMap {
      * @param tileSize
      *            Size of tile image in pixels, usually 256
      * @param format
-     *            Tile image format, usually "png" or "jpg".
+     *            Tile image format, usually ".png" or ".jpg".
      * @param minZoom
      *            Minimum (world) zoom level for service. Could be 0
      * @param maxZoom
@@ -75,9 +73,5 @@ public class TMSMap extends ProjectedUnstreamedMap {
         url.append(format);
 
         return url.toString();
-    }
-
-    public void setRequestHeaders(HttpConnection conn) {
-
     }
 }
