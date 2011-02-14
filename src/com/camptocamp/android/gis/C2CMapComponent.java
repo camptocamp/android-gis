@@ -7,6 +7,7 @@ import android.view.animation.DecelerateInterpolator;
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.cache.Cache;
 import com.nutiteq.components.MapPos;
+import com.nutiteq.components.WgsBoundingBox;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.location.LocationSource;
 import com.nutiteq.maps.OpenStreetMap;
@@ -24,6 +25,8 @@ public class C2CMapComponent extends BasicMapComponent {
     private static final int ZOOM = 7;
     private static final double C = 40076592d; // m
 
+    protected WgsBoundingBox maxExtent = null;
+
     private final int[] lastpanx = new int[2];
     private final int[] lastpany = new int[2];
 
@@ -34,8 +37,17 @@ public class C2CMapComponent extends BasicMapComponent {
 
     public C2CMapComponent(WgsPoint middlePoint, int width, int height, int zoom) {
         super(KEY, VDR, BaseMap.APP, width, height, middlePoint, (zoom != -1 ? zoom : ZOOM));
+        // FIXME: must set according to min/max zoom levels
         setZoomLevelIndicator(new C2CZoomIndicator(0, 18));
         ycos = Math.cos(middlePoint.getLat());
+    }
+
+    public C2CMapComponent(WgsBoundingBox bbox, WgsPoint middlePoint, int width, int height,
+            int zoom) {
+        super(KEY, VDR, BaseMap.APP, width, height, middlePoint, (zoom != -1 ? zoom : ZOOM));
+        setZoomLevelIndicator(new C2CZoomIndicator(0, 18));
+        ycos = Math.cos(middlePoint.getLat());
+        maxExtent = bbox;
     }
 
     @Override
@@ -54,6 +66,26 @@ public class C2CMapComponent extends BasicMapComponent {
         if ((pos.getY() > displayedMap.getMapHeight(zoom) - quarty && panY > 0)
                 || (pos.getY() < quarty && panY < 0)) {
             panY = 0;
+        }
+
+        // Don't pan outside max extent
+        if (maxExtent != null) {
+            final MapPos currentmin = getMap().wgsToMapPos(
+                    getBoundingBox().getWgsMin().toInternalWgs(), getZoom());
+            final MapPos currentmax = getMap().wgsToMapPos(
+                    getBoundingBox().getWgsMax().toInternalWgs(), getZoom());
+            final MapPos min = getMap().wgsToMapPos(maxExtent.getWgsMin().toInternalWgs(),
+                    getZoom());
+            final MapPos max = getMap().wgsToMapPos(maxExtent.getWgsMax().toInternalWgs(),
+                    getZoom());
+
+            if (currentmin.getX() > min.getX() || currentmax.getX() < max.getX()) {
+                panX = -lastpanx[0];
+            }
+            if (currentmin.getY() < min.getY() || currentmax.getY() > max.getY()) {
+                panY = -lastpany[0];
+            }
+
         }
 
         // Save last two pan value
@@ -126,7 +158,7 @@ public class C2CMapComponent extends BasicMapComponent {
         // FIXME: Get missing overlay tiles
     }
 
-    public LocationSource getLocationSource(){
+    public LocationSource getLocationSource() {
         return locationSource;
     }
 

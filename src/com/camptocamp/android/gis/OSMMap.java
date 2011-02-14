@@ -43,7 +43,7 @@ public class OSMMap extends BaseMap {
         // setOverlay(new OsmOverlay(getString(R.string.osm_overlay)));
         // }
         // });
-
+        
         // Search Bar
         findViewById(R.id.search_bar).setOnClickListener(new View.OnClickListener() {
             @Override

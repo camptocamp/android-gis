@@ -89,9 +89,8 @@ public abstract class BaseMap extends MapActivity {
         ctxt = getApplicationContext();
         prefs = PreferenceManager.getDefaultSharedPreferences(ctxt);
 
-        // com.nutiteq.log.Log.setLogger(new
-        // com.nutiteq.log.AndroidLogger(APP));
-        // com.nutiteq.log.Log.enableAll();
+//        com.nutiteq.log.Log.setLogger(new com.nutiteq.log.AndroidLogger(APP));
+//        com.nutiteq.log.Log.enableAll();
 
         onRetainCalled = false;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
