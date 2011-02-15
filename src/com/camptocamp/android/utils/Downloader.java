@@ -9,8 +9,8 @@ import javax.microedition.io.HttpConnection;
 import android.util.Log;
 
 public class Downloader {
-    private static final String UAK = "User-Agent";
-    private static final String UAV = "Android GIS (http://camptocamp.com)";
+	public static final String USERAGENT_KEY = "User-Agent";
+	public static final String USERAGENT = "Android GIS (http://camptocamp.com)";
 
     public static String getStringResponse(String url) {
         HttpConnection conn = null;
@@ -18,15 +18,17 @@ public class Downloader {
         StringBuffer sb = new StringBuffer();
         try {
             conn = (HttpConnection) Connector.open(url, Connector.READ);
-            conn.setRequestProperty(UAK, UAV);
+            conn.setRequestProperty(USERAGENT_KEY, USERAGENT);
             is = conn.openInputStream();
             int chr;
             while ((chr = is.read()) != -1) {
                 sb.append((char) chr);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
+        }
+        catch (IOException e) {
+            Log.e(Downloader.class.getName(), e.getClass().getName() + " - " + e.getMessage());
+        }
+        finally {
             try {
                 if (is != null) {
                     is.close();
@@ -34,8 +36,9 @@ public class Downloader {
                 if (conn != null) {
                     conn.close();
                 }
-            } catch (Exception e) {
-                Log.e(Downloader.class.getName(), e.getMessage());
+            }
+            catch (Exception e) {
+                Log.e(Downloader.class.getName(), e.getClass().getName() + " - " + e.getMessage());
             }
         }
         return sb.toString();
