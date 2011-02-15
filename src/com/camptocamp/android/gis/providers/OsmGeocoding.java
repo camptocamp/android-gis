@@ -15,6 +15,7 @@ import org.json.JSONObject;
 import android.util.Log;
 
 import com.camptocamp.android.gis.BaseMap;
+import com.camptocamp.android.utils.Downloader;
 import com.nutiteq.components.Place;
 
 //http://ws.geonames.org/postalCodeSearch?placename=Lausanne&maxRows=1
@@ -23,9 +24,6 @@ import com.nutiteq.components.Place;
 
 public class OsmGeocoding {
 
-    private static final String TAG = BaseMap.D + "OsmGeocoding";
-    private static final String UAK = "User-Agent";
-    private static final String UAV = "Android GIS (http://camptocamp.com)";
     private static final int LIM = 10;
     private static final String URL = "http://nominatim.openstreetmap.org/search?"
             + "format=json&email=aubort.jeanbaptiste@gmail.com&limit=" + LIM + "&"
@@ -55,13 +53,13 @@ public class OsmGeocoding {
         } else {
             searchUrl = URL + URLEncoder.encode(query);
         }
-        Log.v(TAG, searchUrl);
+        Log.v(getClass().getName(), searchUrl);
     }
 
     public Place[] getPoints() {
         Place[] places = null;
         try {
-            final String res = getResponse();
+            final String res = Downloader.getStringResponse(searchUrl);
             if (reverse) {
                 places = new Place[0];
                 final JSONObject o = new JSONObject(res);
@@ -87,34 +85,5 @@ public class OsmGeocoding {
             return null;
         }
         return places;
-    }
-
-    private String getResponse() {
-        HttpConnection conn = null;
-        InputStream is = null;
-        StringBuffer sb = new StringBuffer();
-        try {
-            conn = (HttpConnection) Connector.open(searchUrl, Connector.READ);
-            conn.setRequestProperty(UAK, UAV);
-            is = conn.openInputStream();
-            int chr;
-            while ((chr = is.read()) != -1) {
-                sb.append((char) chr);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (is != null) {
-                    is.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (Exception e) {
-                Log.e(TAG, e.getMessage());
-            }
-        }
-        return sb.toString();
     }
 }
