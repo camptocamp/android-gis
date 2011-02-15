@@ -6,5 +6,6 @@
 	<classpathentry kind="src" path="maps-lib-nutiteq_src"/>
 	<classpathentry kind="src" path="maps-lib-nutiteq_android_src"/>
 	<classpathentry kind="src" path="maps-lib-nutiteq_thirdparty_src"/>
+	<classpathentry kind="src" path="maps-lib-nutiteq_resources_images"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

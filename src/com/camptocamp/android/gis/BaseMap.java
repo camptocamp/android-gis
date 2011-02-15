@@ -35,7 +35,6 @@ import com.nutiteq.cache.Cache;
 import com.nutiteq.components.WgsBoundingBox;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.controls.AndroidKeysHandler;
-import com.nutiteq.log.AndroidLogger;
 import com.nutiteq.maps.GeoMap;
 import com.nutiteq.services.YourNavigationDirections;
 import com.nutiteq.ui.NutiteqDownloadDisplay;
@@ -90,8 +89,8 @@ public abstract class BaseMap extends MapActivity {
         ctxt = getApplicationContext();
         prefs = PreferenceManager.getDefaultSharedPreferences(ctxt);
 
-        com.nutiteq.log.Log.setLogger(new AndroidLogger(APP));
-        com.nutiteq.log.Log.enableAll();
+//        com.nutiteq.log.Log.setLogger(new com.nutiteq.log.AndroidLogger(APP));
+//        com.nutiteq.log.Log.enableAll();
 
         onRetainCalled = false;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -236,6 +235,7 @@ public abstract class BaseMap extends MapActivity {
         bmc.setNetworkCache(new C2CCaching(ctxt));
         // bmc.setImageProcessor(new NightModeImageProcessor());
         bmc.setPanningStrategy(new ThreadDrivenPanning());
+        // bmc.setPanningStrategy(new EventDrivenPanning());
         bmc.setControlKeysHandler(new AndroidKeysHandler());
         bmc.setDownloadCounter(new C2CDownloadCounter());
         bmc.setDownloadDisplay(new NutiteqDownloadDisplay());
@@ -287,7 +287,7 @@ public abstract class BaseMap extends MapActivity {
 
         if (ACTION_PICK.equals(action)) {
             // Select place mode
-            Toast.makeText(ctxt, "FIXME: Tap your point on the map!", Toast.LENGTH_SHORT);
+            Toast.makeText(ctxt, "FIXME: Tap your point on the map!", Toast.LENGTH_SHORT).show();
 
             mapComponent.setMapListener(new C2CMapView(ctxt, mapComponent) {
                 @Override
