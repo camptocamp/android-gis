@@ -45,6 +45,7 @@
     <string name="toast_route_same">From and destination address are the same!</string>
     <string name="toast_route_not_found">Route not found!</string>
     <string name="toast_route_unknown">Unknown error!</string>
+    <string name="toast_no_search_provider">No search provider!</string>
     
     <string name="osm_overlay"></string>
     <string name="osm_search_url">http://openaddresses.org/addresses/?limit=50&amp;attrs=street,city,country&amp;no_geom=true&amp;query=%s</string>

@@ -15,7 +15,7 @@ import org.json.JSONObject;
 import android.util.Log;
 
 import com.camptocamp.android.gis.BaseMap;
-import com.camptocamp.android.utils.Downloader;
+import com.camptocamp.android.gis.utils.Downloader;
 import com.nutiteq.components.Place;
 
 //http://ws.geonames.org/postalCodeSearch?placename=Lausanne&maxRows=1
