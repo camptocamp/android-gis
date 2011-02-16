@@ -55,11 +55,6 @@ public class GoogleMapComponent extends C2CMapComponent {
 			neededTile = null;
 		}
 		if (displayTile != null && displayTile.image != null) {
-			android.util.Log.d(getClass().getName(), "paintTile");
-			android.util.Log.d(getClass().getName(), "x"
-					+ displayTile.middlePoint.getX());
-			android.util.Log.d(getClass().getName(), "x" + centerCopy.getX());
-
 			g.drawImage(displayTile.image, displayWidth / 2
 					+ displayTile.middlePoint.getX() - centerCopy.getX(),
 					displayHeight / 2 + displayTile.middlePoint.getY()
@@ -71,18 +66,6 @@ public class GoogleMapComponent extends C2CMapComponent {
 	}
 
 	protected void enqueueTiles() {
-		android.util.Log.d(getClass().getName(), "enqueueTiles");
-
-		/*
-		 * if ((screenCache.find(mt) > 0) || neededTiles.contains(mt)) { return;
-		 * }
-		 */
-
-		/*
-		 * if (networkCache != null && networkCache.contains(mt.getIDString(),
-		 * Cache.CACHE_LEVEL_MEMORY)) { return; }
-		 */
-
 		if (neededTile != null) {
 			if (neededTile.middlePoint.equals(middlePoint)) {
 				return;
@@ -103,11 +86,10 @@ public class GoogleMapComponent extends C2CMapComponent {
 			ResourceStreamWaiter {
 		private final MapTilesRequestor tilesRequestor;
 		private final TasksRunner taskRunner;
-		private GoogleTile toRetrieve;
+		private final GoogleTile toRetrieve;
 
 		public GoogleTileTask(final MapTilesRequestor tilesRequestor,
 				final TasksRunner taskRunner, final GoogleTile toRetrieve) {
-			android.util.Log.d(getClass().getName(), "GoogleTileTask");
 			this.tilesRequestor = tilesRequestor;
 			this.taskRunner = taskRunner;
 			this.toRetrieve = toRetrieve;
@@ -130,11 +112,11 @@ public class GoogleMapComponent extends C2CMapComponent {
 			if (toRetrieve.isValid()) {
 				String url = MessageFormat
 						.format(
-								"http://maps.google.com/maps/api/staticmap?center={0,number,0.0},{1,number,0.0}&zoom={2,number,0}&size={3,number,0}x{4,number,0}&maptype=roadmap&sensor=false",
+								"http://maps.google.com/maps/api/staticmap?center={0,number,0.0000000},{1,number,0.0000000}&zoom={2,number,0}&size={3,number,0}x{4,number,0}&maptype=roadmap&sensor=false",
 								toRetrieve.center.getLat(), toRetrieve.center
 										.getLon(), toRetrieve.zoom,
 								toRetrieve.width, toRetrieve.height);
-				android.util.Log.d(getClass().getName(), url);
+//				android.util.Log.d(getClass().getName(), url);
 				return url;
 			} else {
 				return null;
@@ -143,7 +125,6 @@ public class GoogleMapComponent extends C2CMapComponent {
 
 		@Override
 		public void notifyError() {
-			android.util.Log.d(getClass().getName(), "notifyError");
 		}
 
 		@Override
@@ -155,9 +136,11 @@ public class GoogleMapComponent extends C2CMapComponent {
 		public void streamOpened(InputStream stream, DownloadCounter counter,
 				Cache networkCache) throws IOException {
 			if (toRetrieve.isValid()) {
-				android.util.Log.d(getClass().getName(), "streamOpened");
 				toRetrieve.image = Image.createImage(stream);
 				cleanMapBuffer();
+				repaint();
+			} else {
+				stream.close();
 			}
 		}
 	}
@@ -173,7 +156,6 @@ public class GoogleMapComponent extends C2CMapComponent {
 
 		private GoogleTile(final int width, final int height, final int zoom,
 				final WgsPoint center, MapPos middlePoint) {
-			android.util.Log.d(getClass().getName(), "GoogleTile");
 			this.width = width;
 			this.height = height;
 			this.zoom = zoom;
