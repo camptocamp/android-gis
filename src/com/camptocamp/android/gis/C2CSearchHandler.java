@@ -16,11 +16,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.camptocamp.android.gis.providers.SwisstopoSearch;
-
 public class C2CSearchHandler extends Activity {
 
     private static final String TAG = BaseMap.D + "C2CSearchHandler";
+    protected C2CSearch search = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,36 +31,36 @@ public class C2CSearchHandler extends Activity {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
 
-            C2CSearch search = new SwisstopoSearch(getApplicationContext());
-            // C2CSearch search = new
-            // OpenaddressesSearch(getApplicationContext());
-
-            final Cursor c = search.query(Uri.parse("content://" + BaseMap.PKG
-                    + ".C2CSearch/search_suggest_query/" + query + "?limit=50"), null, null, null,
-                    null);
-            if (c != null) {
-                if (c.getCount() > 0) {
-                    if (c.getCount() == 1) {
-                        c.moveToFirst();
-                        showResultActivity(c.getString(3));
-                        c.close();
+            if (search != null) {
+                final Cursor c = search.query(Uri.parse("content://" + BaseMap.PKG
+                        + ".C2CSearch/search_suggest_query/" + query + "?limit=50"), null, null,
+                        null, null);
+                if (c != null) {
+                    if (c.getCount() > 0) {
+                        if (c.getCount() == 1) {
+                            c.moveToFirst();
+                            showResultActivity(c.getString(3));
+                            c.close();
+                        } else {
+                            Builder d = new Builder(C2CSearchHandler.this);
+                            d.setCursor(c, new OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    showResultActivity(c.getString(3));
+                                    c.close();
+                                }
+                            }, SearchManager.SUGGEST_COLUMN_TEXT_1);
+                            d.create().show();
+                        }
                     } else {
-                        Builder d = new Builder(C2CSearchHandler.this);
-                        d.setCursor(c, new OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                showResultActivity(c.getString(3));
-                                c.close();
-                            }
-                        }, SearchManager.SUGGEST_COLUMN_TEXT_1);
-                        d.create().show();
+                        Toast.makeText(getApplicationContext(), "FIXME: No result!",
+                                Toast.LENGTH_SHORT).show();
+                        finish();
                     }
-                } else {
-                    Toast
-                            .makeText(getApplicationContext(), "FIXME: No result!",
-                                    Toast.LENGTH_SHORT).show();
-                    finish();
                 }
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.toast_no_search_provider,
+                        Toast.LENGTH_SHORT).show();
             }
         }
         // Handle suggestions query (just send geo data)
