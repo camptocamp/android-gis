@@ -71,15 +71,30 @@ public class GoogleMapComponent extends C2CMapComponent {
 				return;
 			}
 			neededTile.invalidate();
-		}
-		else if (displayTile != null) {
+		} else if (displayTile != null) {
 			if (displayTile.middlePoint.equals(middlePoint)) {
 				return;
 			}
 		}
-		neededTile = new GoogleTile(4 * displayWidth,
-				2 * displayHeight, getZoom(), getCenterPoint(), middlePoint);
-		taskRunner.enqueue(new GoogleTileTask(this, taskRunner, neededTile));
+		neededTile = new GoogleTile(4 * displayWidth, 2 * displayHeight,
+				getZoom(), getCenterPoint(), middlePoint);
+		try {
+			taskRunner
+					.enqueue(new GoogleTileTask(this, taskRunner, neededTile, 3));
+		} catch (IllegalMonitorStateException e) {
+			try {
+				Thread.sleep(20);
+			} catch (InterruptedException e3) {
+				e3.printStackTrace();
+			} finally {
+				try {
+					taskRunner.enqueue(new GoogleTileTask(this, taskRunner,
+							neededTile, 3));
+				} catch (IllegalMonitorStateException e2) {
+					e2.printStackTrace();
+				}
+			}
+		}
 	}
 
 	public class GoogleTileTask implements Task, ResourceRequestor,
@@ -87,12 +102,15 @@ public class GoogleMapComponent extends C2CMapComponent {
 		private final MapTilesRequestor tilesRequestor;
 		private final TasksRunner taskRunner;
 		private final GoogleTile toRetrieve;
+		private final int retryLeft;
 
 		public GoogleTileTask(final MapTilesRequestor tilesRequestor,
-				final TasksRunner taskRunner, final GoogleTile toRetrieve) {
+				final TasksRunner taskRunner, final GoogleTile toRetrieve,
+				final int retryLeft) {
 			this.tilesRequestor = tilesRequestor;
 			this.taskRunner = taskRunner;
 			this.toRetrieve = toRetrieve;
+			this.retryLeft = retryLeft;
 		}
 
 		public void execute() {
@@ -103,8 +121,10 @@ public class GoogleMapComponent extends C2CMapComponent {
 		}
 
 		public void retrieveErrorFor(final GoogleTile errorTile) {
-			taskRunner.enqueue(new GoogleTileTask(tilesRequestor, taskRunner,
-					errorTile));
+			if (retryLeft != 0) {
+				taskRunner.enqueue(new GoogleTileTask(tilesRequestor,
+						taskRunner, errorTile, retryLeft - 1));
+			}
 		}
 
 		@Override
@@ -116,7 +136,7 @@ public class GoogleMapComponent extends C2CMapComponent {
 								toRetrieve.center.getLat(), toRetrieve.center
 										.getLon(), toRetrieve.zoom,
 								toRetrieve.width, toRetrieve.height);
-//				android.util.Log.d(getClass().getName(), url);
+				// android.util.Log.d(getClass().getName(), url);
 				return url;
 			} else {
 				return null;
