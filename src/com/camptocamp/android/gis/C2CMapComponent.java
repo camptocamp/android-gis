@@ -25,8 +25,7 @@ public class C2CMapComponent extends BasicMapComponent {
     private static final int ZOOM = 7;
     private static final double C = 40076592d; // m
 
-    protected WgsBoundingBox maxExtent = null;
-
+    private WgsBoundingBox maxExtent = null;
     private final int[] lastpanx = new int[2];
     private final int[] lastpany = new int[2];
 
@@ -52,47 +51,41 @@ public class C2CMapComponent extends BasicMapComponent {
 
     @Override
     public void panMap(int panX, int panY) {
-        int zoom = getZoom();
-        MapPos pos = getInternalMiddlePoint();
-
-        int quartx = getWidth() / 4;
-        int quarty = getHeight() / 4;
-
-        // Don't pan outside of map size
-        if ((pos.getX() > displayedMap.getMapWidth(zoom) - quartx && panX > 0)
-                || (pos.getX() < quartx && panX < 0)) {
-            panX = 0;
-        }
-        if ((pos.getY() > displayedMap.getMapHeight(zoom) - quarty && panY > 0)
-                || (pos.getY() < quarty && panY < 0)) {
-            panY = 0;
-        }
-
-        // Don't pan outside max extent
-        if (maxExtent != null) {
-            final MapPos currentmin = getMap().wgsToMapPos(
-                    getBoundingBox().getWgsMin().toInternalWgs(), getZoom());
-            final MapPos currentmax = getMap().wgsToMapPos(
-                    getBoundingBox().getWgsMax().toInternalWgs(), getZoom());
-            final MapPos min = getMap().wgsToMapPos(maxExtent.getWgsMin().toInternalWgs(),
-                    getZoom());
-            final MapPos max = getMap().wgsToMapPos(maxExtent.getWgsMax().toInternalWgs(),
-                    getZoom());
-
-            if (currentmin.getX() > min.getX() || currentmax.getX() < max.getX()) {
-                panX = -lastpanx[0];
-            }
-            if (currentmin.getY() < min.getY() || currentmax.getY() > max.getY()) {
-                panY = -lastpany[0];
-            }
-
-        }
-
         // Save last two pan value
         lastpanx[1] = lastpanx[0];
         lastpany[1] = lastpany[0];
         lastpanx[0] = panX;
         lastpany[0] = panY;
+
+        final int zoom = getZoom();
+        if (maxExtent != null) {
+            // Don't pan outside max extent
+            WgsBoundingBox bbox = getBoundingBox();
+            MapPos currentmin = displayedMap.wgsToMapPos(bbox.getWgsMin().toInternalWgs(), zoom);
+            MapPos currentmax = displayedMap.wgsToMapPos(bbox.getWgsMax().toInternalWgs(), zoom);
+            MapPos min = displayedMap.wgsToMapPos(maxExtent.getWgsMin().toInternalWgs(), zoom);
+            MapPos max = displayedMap.wgsToMapPos(maxExtent.getWgsMax().toInternalWgs(), zoom);
+
+            if (currentmin.getX() + panX <= min.getX() || currentmax.getX() + panX >= max.getX()) {
+                panX = 0;
+            }
+            if (currentmin.getY() + panY >= min.getY() || currentmax.getY() + panY <= max.getY()) {
+                panY = 0;
+            }
+        } else {
+            // Don't pan outside of map size
+            MapPos pos = getInternalMiddlePoint();
+            int quartx = getWidth() / 4;
+            int quarty = getHeight() / 4;
+            if ((pos.getX() > displayedMap.getMapWidth(zoom) - quartx && panX > 0)
+                    || (pos.getX() < quartx && panX < 0)) {
+                panX = 0;
+            }
+            if ((pos.getY() > displayedMap.getMapHeight(zoom) - quarty && panY > 0)
+                    || (pos.getY() < quarty && panY < 0)) {
+                panY = 0;
+            }
+        }
 
         super.panMap(panX, panY);
         ycos = Math.cos(getMiddlePoint().getLat());
@@ -121,7 +114,10 @@ public class C2CMapComponent extends BasicMapComponent {
     @Override
     public void pointerPressed(final int x, final int y) {
         super.pointerPressed(x, y);
-        // Reset Easing
+        resetEasing();
+    }
+
+    private void resetEasing() {
         mHandler.removeMessages(MOVE);
         posx = 0;
         posy = 0;
@@ -148,7 +144,7 @@ public class C2CMapComponent extends BasicMapComponent {
             zoomIn();
         }
         // Initiate Easing
-        else {
+        else if (panx > 0 || pany > 0) {
             mHandler.sendMessageDelayed(Message.obtain(mHandler, MOVE, panx, pany), DELAY);
         }
         lasttouch = now;
