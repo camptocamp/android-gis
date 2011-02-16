@@ -66,10 +66,10 @@ public class C2CMapComponent extends BasicMapComponent {
             MapPos min = displayedMap.wgsToMapPos(maxExtent.getWgsMin().toInternalWgs(), zoom);
             MapPos max = displayedMap.wgsToMapPos(maxExtent.getWgsMax().toInternalWgs(), zoom);
 
-            if (currentmin.getX() + panX <= min.getX() || currentmax.getX() + panX >= max.getX()) {
+            if (currentmin.getX() + panX <= min.getX() ^ currentmax.getX() + panX >= max.getX()) {
                 panX = 0;
             }
-            if (currentmin.getY() + panY >= min.getY() || currentmax.getY() + panY <= max.getY()) {
+            if (currentmin.getY() + panY >= min.getY() ^ currentmax.getY() + panY <= max.getY()) {
                 panY = 0;
             }
         } else {
