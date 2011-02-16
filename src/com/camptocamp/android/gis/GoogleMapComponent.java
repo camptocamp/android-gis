@@ -26,16 +26,17 @@ public class GoogleMapComponent extends C2CMapComponent {
 	private GoogleTile displayTile;
 	private GoogleTile neededTile;
 	private Image logo;
+	private final String baseUrl;
 
-	public GoogleMapComponent(WgsBoundingBox bbox, WgsPoint middlePoint,
+	public GoogleMapComponent(String baseUrl, WgsBoundingBox bbox, WgsPoint middlePoint,
 			int width, int height, int zoom) {
 		super(bbox, middlePoint, width, height, zoom);
+		this.baseUrl = baseUrl;
 		try {
 			logo = Image.createImage("/images/google_logo_small.png");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	protected Rectangle paintMap(final ImageBuffer buffer) {
@@ -143,7 +144,7 @@ public class GoogleMapComponent extends C2CMapComponent {
 			if (toRetrieve.isValid()) {
 				String url = MessageFormat
 						.format(
-								"http://maps.google.com/maps/api/staticmap?center={0,number,0.0000000},{1,number,0.0000000}&zoom={2,number,0}&size={3,number,0}x{4,number,0}&maptype=roadmap&sensor=false",
+								baseUrl,
 								toRetrieve.center.getLat(), toRetrieve.center
 										.getLon(), toRetrieve.zoom,
 								toRetrieve.width, toRetrieve.height);

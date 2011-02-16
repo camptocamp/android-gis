@@ -1,4 +1,4 @@
-package com.camptocamp.android.gis.utils;
+package com.camptocamp.android.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
