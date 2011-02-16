@@ -3,6 +3,7 @@ package com.camptocamp.android.gis;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -29,7 +30,6 @@ import android.widget.Toast;
 import com.camptocamp.android.gis.utils.ExportGPX;
 import com.camptocamp.android.gis.utils.ExportKML;
 import com.camptocamp.android.gis.utils.Prefs;
-import com.google.android.maps.MapActivity;
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.cache.Cache;
 import com.nutiteq.components.WgsBoundingBox;
@@ -41,7 +41,7 @@ import com.nutiteq.ui.NutiteqDownloadDisplay;
 import com.nutiteq.ui.ThreadDrivenPanning;
 
 //FIXME: Rename to Map, then Map to ~MapOpenStreetMap
-public abstract class BaseMap extends MapActivity {
+public abstract class BaseMap extends Activity {
 
     public static final String D = "C2C:";
     public static final String PKG = "com.camptocamp.android.gis";
@@ -178,11 +178,6 @@ public abstract class BaseMap extends MapActivity {
     public void onNewIntent(Intent intent) {
         setIntent(intent);
         handleIntent();
-    }
-
-    @Override
-    protected boolean isRouteDisplayed() {
-        return true;
     }
 
     @Override
