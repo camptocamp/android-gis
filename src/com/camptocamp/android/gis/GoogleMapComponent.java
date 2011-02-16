@@ -25,10 +25,17 @@ public class GoogleMapComponent extends C2CMapComponent {
 
 	private GoogleTile displayTile;
 	private GoogleTile neededTile;
+	private Image logo;
 
 	public GoogleMapComponent(WgsBoundingBox bbox, WgsPoint middlePoint,
 			int width, int height, int zoom) {
 		super(bbox, middlePoint, width, height, zoom);
+		try {
+			logo = Image.createImage("/images/google_logo_small.png");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	protected Rectangle paintMap(final ImageBuffer buffer) {
@@ -60,9 +67,13 @@ public class GoogleMapComponent extends C2CMapComponent {
 					displayHeight / 2 + displayTile.middlePoint.getY()
 							- centerCopy.getY(), Graphics.HCENTER
 							| Graphics.VCENTER);
-			return true;
 		}
-		return false;
+		if (logo != null) {
+			g
+					.drawImage(logo, 5, displayHeight, Graphics.LEFT
+							| Graphics.BOTTOM);
+		}
+		return displayTile != null && displayTile.image != null;
 	}
 
 	protected void enqueueTiles() {
@@ -79,8 +90,8 @@ public class GoogleMapComponent extends C2CMapComponent {
 		neededTile = new GoogleTile(4 * displayWidth, 2 * displayHeight,
 				getZoom(), getCenterPoint(), middlePoint);
 		try {
-			taskRunner
-					.enqueue(new GoogleTileTask(this, taskRunner, neededTile, 3));
+			taskRunner.enqueue(new GoogleTileTask(this, taskRunner, neededTile,
+					3));
 		} catch (IllegalMonitorStateException e) {
 			try {
 				Thread.sleep(20);
