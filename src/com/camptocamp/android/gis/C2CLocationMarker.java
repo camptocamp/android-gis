@@ -68,7 +68,7 @@ public class C2CLocationMarker extends NutiteqLocationMarker {
         }
         super.paint(g, mp, screenCenterX, screenCenterY);
     }
-    
+
     @Override
     public void quit() {
         super.quit();
