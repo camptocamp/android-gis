@@ -44,7 +44,7 @@ public class SeekbarPreference extends DialogPreference implements OnSeekBarChan
                 Prefs.DEFAULT_FS_CACHING_SIZE) / 1024 / 1024);
 
         // Prepare SeekBar
-        mValue.setText(current + " / " + mMax + " MB");
+        mValue.setText(current + " / " + mMax + " Mio");
         SeekBar sb = (SeekBar) v.findViewById(R.id.prefs_size_sb);
         sb.setMax(mMax);
         sb.setProgress(current);
@@ -55,7 +55,7 @@ public class SeekbarPreference extends DialogPreference implements OnSeekBarChan
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        mValue.setText(progress + " / " + mMax + " MB");
+        mValue.setText(progress + " / " + mMax + " Mio");
 
         // Save value in SharedPrefs
         // Limit is 2147483647 Bytes (2048 MBytes)
