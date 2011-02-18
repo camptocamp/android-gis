@@ -3,6 +3,8 @@ package com.camptocamp.android.gis.providers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
@@ -27,10 +29,12 @@ import com.nutiteq.task.TasksRunner;
 
 public class GoogleMapComponent extends MapComponent {
 
-    private GoogleTile displayTile;
-    private GoogleTile neededTile;
-    private Image logo;
-    private final String baseUrl;
+    protected GoogleTile displayTile;
+    protected GoogleTile neededTile;
+    protected Image logo;
+    protected final String baseUrl;
+
+    protected Timer timer = new Timer();
 
     public GoogleMapComponent(String baseUrl, WgsBoundingBox bbox, WgsPoint middlePoint, int width,
             int height, int zoom) {
@@ -93,25 +97,34 @@ public class GoogleMapComponent extends MapComponent {
         }
         neededTile = new GoogleTile(4 * displayWidth, 2 * displayHeight, getZoom(),
                 getCenterPoint(), middlePoint);
-        try {
-            taskRunner.enqueue(new GoogleTileTask(this, taskRunner, neededTile, 3));
-        }
-        catch (IllegalMonitorStateException e) {
-            try {
-                Thread.sleep(20);
-            }
-            catch (InterruptedException e3) {
-                e3.printStackTrace();
-            }
-            finally {
-                try {
-                    taskRunner.enqueue(new GoogleTileTask(this, taskRunner, neededTile, 3));
+        final MapTilesRequestor mapTilesRequestor = this;
+        timer.schedule(new TimerTask() {
+            GoogleTile tile = neededTile;
+            @Override
+            public void run() {
+                if (tile.isValid()) {
+                    try {
+                        taskRunner.enqueue(new GoogleTileTask(mapTilesRequestor, taskRunner, tile, 3));
+                    }
+                    catch (IllegalMonitorStateException e) {
+                        try {
+                            Thread.sleep(20);
+                        }
+                        catch (InterruptedException e3) {
+                            e3.printStackTrace();
+                        }
+                        finally {
+                            try {
+                                taskRunner.enqueue(new GoogleTileTask(mapTilesRequestor, taskRunner, tile, 3));
+                            }
+                            catch (IllegalMonitorStateException e2) {
+                                e2.printStackTrace();
+                            }
+                        }
+                    }
                 }
-                catch (IllegalMonitorStateException e2) {
-                    e2.printStackTrace();
-                }
             }
-        }
+        }, 50);
     }
 
     public class GoogleTileTask implements Task, ResourceRequestor, ResourceStreamWaiter {
