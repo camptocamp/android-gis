@@ -48,6 +48,14 @@ public class GoogleMapComponent extends MapComponent {
         }
     }
 
+    public void paint(final Graphics g) {
+        super.paint(g);
+        if (logo != null) {
+            // -45 to be over the zoom
+            g.drawImage(logo, 5, displayHeight - 45, Graphics.LEFT | Graphics.BOTTOM);
+        }
+    }
+
     protected Rectangle paintMap(final ImageBuffer buffer) {
         tileW = 1;
         tileH = 1;
@@ -75,10 +83,6 @@ public class GoogleMapComponent extends MapComponent {
             g.drawImage(displayTile.image, displayWidth / 2 + displayTile.middlePoint.getX()
                     - centerCopy.getX(), displayHeight / 2 + displayTile.middlePoint.getY()
                     - centerCopy.getY(), Graphics.HCENTER | Graphics.VCENTER);
-        }
-        if (logo != null) {
-            // -45 to be over the zoom
-            g.drawImage(logo, 5, displayHeight - 45, Graphics.LEFT | Graphics.BOTTOM);
         }
         return displayTile != null && displayTile.image != null;
     }
