@@ -73,7 +73,8 @@ public class GoogleMapComponent extends MapComponent {
                     - centerCopy.getY(), Graphics.HCENTER | Graphics.VCENTER);
         }
         if (logo != null) {
-            g.drawImage(logo, 5, displayHeight, Graphics.LEFT | Graphics.BOTTOM);
+            // -45 to be over the zoom
+            g.drawImage(logo, 5, displayHeight - 45, Graphics.LEFT | Graphics.BOTTOM);
         }
         return displayTile != null && displayTile.image != null;
     }
