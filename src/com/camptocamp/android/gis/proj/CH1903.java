@@ -1,4 +1,6 @@
-package com.camptocamp.android.gis.utils;
+package com.camptocamp.android.gis.proj;
+
+import java.util.HashMap;
 
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.Point;
@@ -16,7 +18,7 @@ import com.nutiteq.ui.Copyright;
 // http://www.swisstopo.admin.ch/internet/swisstopo/en/home/topics/survey/sys/refsys/swiss_grid.html
 // http://spatialreference.org/ref/epsg/4149/
 
-public abstract class CH1903 extends BaseMap implements Projection {
+public class CH1903 implements Projection {
 
     // private static final String TAG = Map.D + "CH1903";
     protected static double MIN_X = 485869.5728;
@@ -24,28 +26,39 @@ public abstract class CH1903 extends BaseMap implements Projection {
     protected static double MIN_Y = 76443.1884;
     protected static double MAX_Y = 299941.7864;
 
-    public CH1903(final Copyright copyright, final int tileSize, final int minZoom,
-            final int maxZoom, final int initialZoom) {
-        super(copyright, tileSize, minZoom, maxZoom);
+    protected final HashMap<Integer, Double> resolutions;
+
+    protected double yShift;
+
+    
+    public CH1903(HashMap<Integer, Double> resolutions) {
+        this.resolutions = resolutions;
+    }
+    
+    public void setyShift(double yShift) {
+        this.yShift = yShift;
     }
 
-    public CH1903(final String copyright, final int tileSize, final int minZoom, final int maxZoom,
-            final int initialZoom) {
-        super(copyright, tileSize, minZoom, maxZoom);
+    public double CHxtoPIX(double pt, int zoom) {
+        return (pt - MIN_X) / resolutions.get(zoom);
     }
 
-    /**
-     * Pixel to CH (in meters) and vice versa. Need to implement meter to pixel
-     * calculation according to tiles resolution by zoom level.
-     */
-    public abstract double CHxtoPIX(double pt, int zoom);
+    public double CHytoPIX(double pt, int zoom) {
+        return ((MAX_Y - pt) / resolutions.get(zoom)) + yShift;
+    }
 
-    public abstract double CHytoPIX(double pt, int zoom);
+    public double PIXtoCHx(double px, int zoom) {
+        return MIN_X + (px * resolutions.get(zoom));
+    }
 
-    public abstract double PIXtoCHx(double px, int zoom);
-
-    public abstract double PIXtoCHy(double px, int zoom);
-
+    public double PIXtoCHy(double px, int zoom) {
+        return MAX_Y - ((px - yShift) * resolutions.get(zoom));
+    }
+    
+    public double getResolution(int zoom) {
+        return resolutions.get(zoom);
+    }
+    
     public Point mapPosToWgs(MapPos pos) {
         // Convert from CH1903 to pixel
         // (X and Y are inverted in the CH1903 notation)

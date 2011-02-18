@@ -2,17 +2,18 @@ package com.camptocamp.android.gis.providers;
 
 import java.util.HashMap;
 
-import com.camptocamp.android.gis.C2COverlay;
+import com.camptocamp.android.gis.layer.Overlay;
+import com.camptocamp.android.gis.proj.CH1903;
 import com.nutiteq.components.MapTile;
 
-public class SwisstopoOverlay extends C2COverlay {
+public class SwisstopoOverlay extends Overlay {
     // private static final String TAG = Map.D + "TestOverlay";
     private static final int TILESIZE = 256;
     private String baseUrl;
 
     public SwisstopoOverlay(final String baseUrl) {
         this.baseUrl = baseUrl;
-        layers_all = new HashMap<String, String>() {
+        layersAll = new HashMap<String, String>() {
             private static final long serialVersionUID = 1L;
             {
                 put(
@@ -48,7 +49,7 @@ public class SwisstopoOverlay extends C2COverlay {
         double y1 = map.PIXtoCHy(ty);
         double x2 = map.PIXtoCHx(tx + TILESIZE);
         double y2 = map.PIXtoCHy(ty + TILESIZE);
-        return String.format(baseUrl, layers_selected, x1, y1, x2, y2);
+        return String.format(baseUrl, layersSelected, x1, y1, x2, y2);
     }
 
 }

@@ -15,10 +15,10 @@ import android.provider.BaseColumns;
 import android.util.Log;
 
 import com.camptocamp.android.gis.BaseMap;
-import com.camptocamp.android.gis.C2CSearch;
 import com.camptocamp.android.gis.R;
+import com.camptocamp.android.gis.control.Search;
 
-public class OpenaddressesSearch extends C2CSearch {
+public class OpenaddressesSearch extends Search {
 
     private static final String TAG = BaseMap.D + "OpenaddressesSearch";
 

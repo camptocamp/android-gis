@@ -1,11 +1,15 @@
-package com.camptocamp.android.gis;
+package com.camptocamp.android.gis.providers;
 
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.camptocamp.android.gis.providers.OpenStreetMap;
+import com.camptocamp.android.gis.BaseMap;
+import com.camptocamp.android.gis.MapComponent;
+import com.camptocamp.android.gis.R;
+import com.camptocamp.android.gis.R.id;
+import com.camptocamp.android.gis.R.string;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.location.LocationSource;
 
@@ -19,30 +23,6 @@ public class OSMMap extends BaseMap {
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // // Zoom
-        // final ZoomControls zoomControls = (ZoomControls)
-        // findViewById(R.id.zoom);
-        // zoomControls.setOnZoomInClickListener(new View.OnClickListener() {
-        // public void onClick(final View v) {
-        // mapComponent.zoomIn();
-        // }
-        // });
-        // zoomControls.setOnZoomOutClickListener(new View.OnClickListener() {
-        // public void onClick(final View v) {
-        // mapComponent.zoomOut();
-        // }
-        // });
-
-        // // Set overlay
-        // final ImageButton btn_overlay = (ImageButton)
-        // findViewById(R.id.switch_overlay_test);
-        // btn_overlay.setOnClickListener(new View.OnClickListener() {
-        // @Override
-        // public void onClick(View v) {
-        // setOverlay(new OsmOverlay(getString(R.string.osm_overlay)));
-        // }
-        // });
         
         // Search Bar
         findViewById(R.id.search_bar).setOnClickListener(new View.OnClickListener() {
@@ -101,7 +81,7 @@ public class OSMMap extends BaseMap {
             switch (provider_id) {
             case MENU_MAP_OSM:
             default:
-                setMapComponent(new C2CMapComponent(pt, mWidth, mHeight, zoom), new OpenStreetMap());
+                setMapComponent(new MapComponent(pt, mWidth, mHeight, zoom), new OpenStreetMap());
                 break;
             }
             if (loc != null) {
@@ -109,7 +89,7 @@ public class OSMMap extends BaseMap {
             }
         } else {
             android.util.Log.v(TAG, "using savedMapComponent");
-            mapComponent = (C2CMapComponent) savedMapComponent;
+            mapComponent = (MapComponent) savedMapComponent;
         }
         setMapView();
     }

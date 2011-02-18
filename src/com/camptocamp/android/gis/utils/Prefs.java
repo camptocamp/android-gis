@@ -25,7 +25,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.camptocamp.android.gis.BaseMap;
-import com.camptocamp.android.gis.C2CCaching;
 import com.camptocamp.android.gis.R;
 import com.nutiteq.cache.CacheIndexDatabaseHelper;
 
@@ -133,7 +132,7 @@ public class Prefs extends PreferenceActivity implements OnSharedPreferenceChang
             }
 
             // Remove remaining directories and files on sdcard
-            deleteAll(new File(C2CCaching.FSCACHEDIR.getPath()));
+            deleteAll(new File(Caching.FSCACHEDIR.getPath()));
 
             return null;
         }

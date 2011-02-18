@@ -13,13 +13,12 @@ import org.xmlpull.v1.XmlSerializer;
 import android.util.Xml;
 
 import com.camptocamp.android.gis.BaseMap;
-import com.camptocamp.android.gis.C2CExportTrace;
-import com.camptocamp.android.gis.C2CLine;
+import com.camptocamp.android.gis.Line;
 import com.nutiteq.components.WgsPoint;
 
 // http://www.topografix.com/gpx.asp
 
-public class ExportGPX extends C2CExportTrace {
+public class ExportGPX extends ExportTrace {
 
     private final static String ISO8601 = "yyyy-MM-dd HH:mm:ss.SSSZ";
 
@@ -46,7 +45,7 @@ public class ExportGPX extends C2CExportTrace {
     private final static String VAL_XSI = "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd";
 
     @Override
-    public String export(List<C2CLine> trace) {
+    public String export(List<Line> trace) {
         final File file = new File(PATH + name + ".gpx");
         if (!file.exists()) {
             DateFormat df = new SimpleDateFormat(ISO8601);
@@ -72,7 +71,7 @@ public class ExportGPX extends C2CExportTrace {
                 xml.text(name);
                 xml.endTag(null, GPX_NAME);
                 xml.startTag(null, GPX_TRKSEG);
-                for (C2CLine line : trace) {
+                for (Line line : trace) {
                     WgsPoint pt = line.getPoints()[0];
                     xml.startTag(null, GPX_TRKPT);
                     xml.attribute(null, GPX_LAT, "" + pt.getLat());

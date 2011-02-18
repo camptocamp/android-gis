@@ -1,11 +1,11 @@
 package com.camptocamp.android.gis.providers;
 
-import com.camptocamp.android.gis.C2CLocationMarker;
-import com.camptocamp.android.gis.C2CMapComponent;
-import com.camptocamp.android.gis.C2CZoomIndicator;
+import com.camptocamp.android.gis.MapComponent;
+import com.camptocamp.android.gis.control.ZoomIndicator;
+import com.camptocamp.android.gis.layer.LocationMarker;
 import com.nutiteq.components.WgsPoint;
 
-public class SwisstopoComponent extends C2CMapComponent {
+public class SwisstopoComponent extends MapComponent {
 
     // private static final String TAG = Map.D + "SwisstopoComponent";
 
@@ -13,7 +13,7 @@ public class SwisstopoComponent extends C2CMapComponent {
 
     public SwisstopoComponent(WgsPoint middlePoint, int width, int height, int zoom) {
         super(middlePoint, width, height, (zoom != -1 ? zoom : ZOOM));
-        setZoomLevelIndicator(new C2CZoomIndicator(SwisstopoMap.MIN_ZOOM, SwisstopoMap.MAX_ZOOM));
+        setZoomLevelIndicator(new ZoomIndicator(SwisstopoMap.MIN_ZOOM, SwisstopoMap.MAX_ZOOM));
     }
 
     @Override
@@ -27,14 +27,14 @@ public class SwisstopoComponent extends C2CMapComponent {
         tileMapBounds = displayedMap.getTileMapBounds(middlePoint.getZoom());
 
         // Zoom buffer according to map resolution
-        double ratio = ((SwisstopoMap) displayedMap).resolutions.get(z1)
-                / ((SwisstopoMap) displayedMap).resolutions.get(middlePoint.getZoom());
+        double ratio = ((SwisstopoMap) displayedMap).getResolution(z1)
+                / ((SwisstopoMap) displayedMap).getResolution(middlePoint.getZoom());
 
         createZoomBufferAndUpdateScreen(Math.log(ratio) / Math.log(2), true, false);
 
         // Set precision radius if gps tracking is active
         if (locationSource != null) {
-            ((C2CLocationMarker) locationSource.getLocationMarker()).setRadius();
+            ((LocationMarker) locationSource.getLocationMarker()).setRadius();
         }
     }
 
@@ -49,14 +49,14 @@ public class SwisstopoComponent extends C2CMapComponent {
         tileMapBounds = displayedMap.getTileMapBounds(middlePoint.getZoom());
 
         // Zoom buffer according to map resolution
-        double ratio = ((SwisstopoMap) displayedMap).resolutions.get(middlePoint.getZoom())
-                / ((SwisstopoMap) displayedMap).resolutions.get(z1);
+        double ratio = ((SwisstopoMap) displayedMap).getResolution(middlePoint.getZoom())
+                / ((SwisstopoMap) displayedMap).getResolution(z1);
 
         createZoomBufferAndUpdateScreen(Math.log(ratio) / Math.log(2), true, true);
 
         // Set precision radius if gps tracking is active
         if (locationSource != null) {
-            ((C2CLocationMarker) locationSource.getLocationMarker()).setRadius();
+            ((LocationMarker) locationSource.getLocationMarker()).setRadius();
         }
     }
 
@@ -68,8 +68,8 @@ public class SwisstopoComponent extends C2CMapComponent {
         }
         cleanMapBuffer();
 
-        double ratio = ((SwisstopoMap) displayedMap).resolutions.get(newZoom)
-                / ((SwisstopoMap) displayedMap).resolutions.get(currentZoom);
+        double ratio = ((SwisstopoMap) displayedMap).getResolution(newZoom)
+                / ((SwisstopoMap) displayedMap).getResolution(currentZoom);
         double scale = Math.log(ratio) / Math.log(2);
         int dif = 0;
 
@@ -88,6 +88,6 @@ public class SwisstopoComponent extends C2CMapComponent {
 
     @Override
     public double getMetersPerPixel() {
-        return ((SwisstopoMap) displayedMap).resolutions.get(middlePoint.getZoom());
+        return ((SwisstopoMap) displayedMap).getResolution(middlePoint.getZoom());
     }
 }

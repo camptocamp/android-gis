@@ -8,18 +8,17 @@ import java.util.HashMap;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
-import com.camptocamp.android.gis.utils.CH1903;
+import com.camptocamp.android.gis.layer.ProjectedUnstreamedMap;
+import com.camptocamp.android.gis.proj.CH1903;
 import com.nutiteq.components.MapPos;
-import com.nutiteq.maps.UnstreamedMap;
 
-public class SwisstopoMap extends CH1903 implements UnstreamedMap {
+public class SwisstopoMap extends ProjectedUnstreamedMap {
 
     // private static final String TAG = Map.D + "SwisstopoMap";
     protected static final int MIN_ZOOM = 14;
     protected static final int MAX_ZOOM = 24;
     private static final int TILESIZE = 256;
     private static final String EXT = ".jpeg";
-    private double y_shift;
     private String baseUrl;
     private int y;
     private int x;
@@ -35,28 +34,25 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
     protected static double MIN_Y = 30000;
     protected static double MAX_Y = 350000;
 
-    // Swisstopo resolutions
-    public final HashMap<Integer, Double> resolutions = new HashMap<Integer, Double>() {
-        private static final long serialVersionUID = 1L;
-        {
-            put(14, 650.0);
-            put(15, 500.0);
-            put(16, 250.0);
-            put(17, 100.0);
-            put(18, 50.0);
-            put(19, 20.0);
-            put(20, 10.0);
-            put(21, 5.0);
-            put(22, 2.5);
-            put(23, 2.0);
-            put(24, 1.5);
-            // put(25, 1.0);
-            // put(26, 0.5);
-        }
-    };
-
     public SwisstopoMap(String baseUrl, String copyright, final int initialZoom) {
-        super(copyright, TILESIZE, MIN_ZOOM, MAX_ZOOM, initialZoom);
+        super(copyright, TILESIZE, MIN_ZOOM, MAX_ZOOM, new CH1903(new HashMap<Integer, Double>() {
+            private static final long serialVersionUID = 1L;
+            {
+                put(14, 650.0);
+                put(15, 500.0);
+                put(16, 250.0);
+                put(17, 100.0);
+                put(18, 50.0);
+                put(19, 20.0);
+                put(20, 10.0);
+                put(21, 5.0);
+                put(22, 2.5);
+                put(23, 2.0);
+                put(24, 1.5);
+                // put(25, 1.0);
+                // put(26, 0.5);
+            }
+        }));
         this.baseUrl = baseUrl;
         this.zoom = initialZoom;
         setValues();
@@ -81,9 +77,29 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
         return new MapPos((int) Math.round(CHxtoPIX(xx)), (int) Math.round(CHytoPIX(yy)), zoom);
     }
 
+    public double getResolution(int zoom) {
+        return ((CH1903)projection).getResolution(zoom);
+    }
+    
+    public double PIXtoCHx(double pixel) {
+        return ((CH1903)projection).PIXtoCHx(pixel, zoom);
+    }
+    
+    public double PIXtoCHy(double pixel) {
+        return ((CH1903)projection).PIXtoCHy(pixel, zoom);
+    }
+    
+    public double CHxtoPIX(double metre) {
+        return ((CH1903)projection).CHxtoPIX(metre, zoom);
+    }
+
+    public double CHytoPIX(double metre) {
+        return ((CH1903)projection).CHytoPIX(metre, zoom);
+    }
+    
     @Override
     public int getMapWidth(final int zoom) {
-        return (int) (Math.ceil((MAX_X - MIN_X) / resolutions.get(zoom) / TILESIZE) * TILESIZE);
+        return (int) (Math.ceil((MAX_X - MIN_X) / getResolution(zoom) / TILESIZE) * TILESIZE);
     }
 
     @Override
@@ -93,46 +109,14 @@ public class SwisstopoMap extends CH1903 implements UnstreamedMap {
     }
 
     public double getRealMapHeight(final int zoom) {
-        return (MAX_Y - MIN_Y) / resolutions.get(zoom);
-    }
-
-    public double CHxtoPIX(double pt) {
-        return CHxtoPIX(pt, zoom);
-    }
-
-    public double CHxtoPIX(double pt, int zoom) {
-        return (pt - MIN_X) / resolutions.get(zoom);
-    }
-
-    public double CHytoPIX(double pt) {
-        return CHytoPIX(pt, zoom);
-    }
-
-    public double CHytoPIX(double pt, int zoom) {
-        return ((MAX_Y - pt) / resolutions.get(zoom)) + y_shift;
-    }
-
-    public double PIXtoCHx(double px) {
-        return PIXtoCHx(px, zoom);
-    }
-
-    public double PIXtoCHx(double px, int zoom) {
-        return MIN_X + (px * resolutions.get(zoom));
-    }
-
-    public double PIXtoCHy(double px) {
-        return PIXtoCHy(px, zoom);
-    }
-
-    public double PIXtoCHy(double px, int zoom) {
-        return MAX_Y - ((px - y_shift) * resolutions.get(zoom));
+        return (MAX_Y - MIN_Y) / getResolution(zoom);
     }
 
     protected void setValues() {
         if (zoom < MIN_ZOOM || zoom > MAX_ZOOM) {
             zoom = MIN_ZOOM;
         }
-        y_shift = getMapHeight(zoom) - getRealMapHeight(zoom);
+        ((CH1903)projection).setyShift(getMapHeight(zoom) - getRealMapHeight(zoom));
     }
 
     @Override

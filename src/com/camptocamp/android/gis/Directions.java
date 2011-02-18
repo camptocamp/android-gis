@@ -26,7 +26,7 @@ import com.nutiteq.services.YourNavigationDirections;
 
 // TODO: Implement http://www.cyclestreets.net/api/
 
-public class C2CDirections extends Activity {
+public class Directions extends Activity {
 
     private static final String TAG = BaseMap.D + "C2CDirections";
     protected static final int PICK = 0;
@@ -131,7 +131,7 @@ public class C2CDirections extends Activity {
             finish();
         } else {
             // FIXME: change the color of the field bg to red
-            Toast.makeText(C2CDirections.this, "FIXME: Invalid route", Toast.LENGTH_SHORT).show();
+            Toast.makeText(Directions.this, "FIXME: Invalid route", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -178,7 +178,7 @@ public class C2CDirections extends Activity {
                 } else if (places.length > 1) {
                     Log.i(TAG, "multiple suggestions");
                     final CharSequence[] items = toArray(places);
-                    final AlertDialog.Builder dialog = new AlertDialog.Builder(C2CDirections.this);
+                    final AlertDialog.Builder dialog = new AlertDialog.Builder(Directions.this);
                     dialog.setTitle("FIXME: From/To:");
                     dialog.setItems(items, new DialogInterface.OnClickListener() {
                         @Override
@@ -190,7 +190,7 @@ public class C2CDirections extends Activity {
                     dialog.show();
                 } else {
                     Log.i(TAG, "no suggestion");
-                    Toast.makeText(C2CDirections.this, "FIXME: No suggestions", Toast.LENGTH_SHORT)
+                    Toast.makeText(Directions.this, "FIXME: No suggestions", Toast.LENGTH_SHORT)
                             .show();
                 }
 

@@ -1,4 +1,4 @@
-package com.camptocamp.android.gis;
+package com.camptocamp.android.gis.providers;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,6 +7,7 @@ import java.text.MessageFormat;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
+import com.camptocamp.android.gis.MapComponent;
 import com.nutiteq.cache.Cache;
 import com.nutiteq.components.ImageBuffer;
 import com.nutiteq.components.MapPos;
@@ -24,7 +25,7 @@ import com.nutiteq.task.TasksRunner;
 // https://code.google.com/intl/en/apis/maps/documentation/staticmaps/#Limits
 // https://code.google.com/intl/en/apis/maps/faq.html#tos_nonweb
 
-public class GoogleMapComponent extends C2CMapComponent {
+public class GoogleMapComponent extends MapComponent {
 
     private GoogleTile displayTile;
     private GoogleTile neededTile;

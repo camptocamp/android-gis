@@ -15,12 +15,12 @@ import android.provider.BaseColumns;
 import android.util.Log;
 
 import com.camptocamp.android.gis.BaseMap;
-import com.camptocamp.android.gis.C2CSearch;
 import com.camptocamp.android.gis.R;
+import com.camptocamp.android.gis.control.Search;
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.WgsPoint;
 
-public class SwisstopoSearch extends C2CSearch {
+public class SwisstopoSearch extends Search {
 
     private static final String TAG = BaseMap.D + "SwisstopoSearch";
 

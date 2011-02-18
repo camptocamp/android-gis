@@ -1,4 +1,4 @@
-package com.camptocamp.android.gis;
+package com.camptocamp.android.gis.utils;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -18,14 +18,18 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.camptocamp.android.gis.BaseMap;
+import com.camptocamp.android.gis.Line;
+import com.camptocamp.android.gis.R;
+import com.camptocamp.android.gis.R.string;
+import com.camptocamp.android.gis.layer.LocationMarker;
 import com.nutiteq.components.PlaceIcon;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.location.LocationListener;
-import com.nutiteq.location.LocationMarker;
 import com.nutiteq.location.LocationSource;
 import com.nutiteq.utils.Utils;
 
-public class C2CGpsProvider implements LocationSource, android.location.LocationListener {
+public class GpsProvider implements LocationSource, android.location.LocationListener {
 
     private static final String TAG = "C2CGpsProvider";
     private static final int DT_GPS = 1000 * 60 * 2; // 2mn
@@ -34,24 +38,29 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
     private static final long UP_ACTIVE = 1000L;
     private static final float UP_DIST = 5F;
 
-    private C2CLocationMarker marker;
-    private C2CLocationMarker marker_simple;
+    private LocationMarker marker;
+    private LocationMarker marker_simple;
     private LocationManager manager;
     private Location location = null;
     private WeakReference<BaseMap> mMap;
     private int status = STATUS_CONNECTING;
 
-    protected List<C2CLine> trace = new ArrayList<C2CLine>();
+    protected List<Line> trace = new ArrayList<Line>();
     protected boolean record = false;
+
     protected boolean track = true;
 
-    public C2CGpsProvider(BaseMap a) {
+    public GpsProvider(BaseMap a) {
         mMap = new WeakReference<BaseMap>(a);
         manager = (LocationManager) a.getSystemService(Context.LOCATION_SERVICE);
-        marker_simple = new C2CLocationMarker(new PlaceIcon(Utils
+        marker_simple = new LocationMarker(new PlaceIcon(Utils
                 .createImage("/res/drawable/marker.png")), new PlaceIcon(Utils
                 .createImage("/res/drawable/marker_offline.png")), 0, track);
         setLocationMarker(marker_simple);
+    }
+
+    public boolean isRecord() {
+        return record;
     }
 
     /**
@@ -65,10 +74,10 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
             // Update Bearing
             // FIXME THIS IS BULLSHIT
             if (loc.hasBearing()) {
-                setLocationMarker(new C2CLocationMarker(new PlaceIcon(rotateImage(Utils
+                setLocationMarker(new LocationMarker(new PlaceIcon(rotateImage(Utils
                         .createImage("/res/drawable/direction.png"))), 0, track));
-
-            } else {
+            }
+            else {
                 setLocationMarker(marker_simple);
             }
 
@@ -79,23 +88,23 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
             // Update trace
             // TODO: Cut if signal lost ?
             if (record) {
-                BaseMap a = mMap.get();
-                if (a != null && location != null) {
-                    C2CLine line = new C2CLine(new WgsPoint[] {
+                BaseMap map = mMap.get();
+                if (map != null && location != null) {
+                    Line line = new Line(new WgsPoint[] {
                             new WgsPoint(location.getLongitude(), location.getLatitude()),
                             new WgsPoint(loc.getLongitude(), loc.getLatitude()) });
-                    a.mapComponent.addLine(line);
+                    map.getMapComponent().addLine(line);
                     trace.add(line);
                 }
             }
             // Network location no more needed as primary source
             if (LocationManager.GPS_PROVIDER.equals(loc.getProvider()) && location != null
                     && LocationManager.NETWORK_PROVIDER.equals(location)) {
-                manager.removeUpdates(C2CGpsProvider.this);
+                manager.removeUpdates(GpsProvider.this);
                 manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, UP_ACTIVE, UP_DIST,
-                        C2CGpsProvider.this);
+                        GpsProvider.this);
                 manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, UP_IDLE, UP_DIST,
-                        C2CGpsProvider.this);
+                        GpsProvider.this);
             }
             location = loc;
         }
@@ -109,13 +118,13 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
 
     @Override
     public void onProviderDisabled(final String provider) {
-        final BaseMap a = mMap.get();
+        final BaseMap map = mMap.get();
         // GPS provider is disabled
-        if (a != null && LocationManager.GPS_PROVIDER.equals(provider)) {
+        if (map != null && LocationManager.GPS_PROVIDER.equals(provider)) {
             // TODO: allow location from cellid/wifi only
-            a.isTrackingPosition = false;
-            a.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-            Toast.makeText(a, R.string.toast_gps_disabled, Toast.LENGTH_SHORT).show();
+            map.setTrackingPosition(false);
+            map.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+            Toast.makeText(map, R.string.toast_gps_disabled, Toast.LENGTH_SHORT).show();
         }
         status = STATUS_CONNECTION_LOST;
     }
@@ -124,7 +133,8 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
     public void onStatusChanged(String provider, int status, Bundle extras) {
         if (status == LocationProvider.AVAILABLE) {
             this.status = STATUS_CONNECTED;
-        } else {
+        }
+        else {
             this.status = STATUS_CONNECTION_LOST;
         }
     }
@@ -143,14 +153,15 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
     }
 
     @Override
-    public void setLocationMarker(LocationMarker marker) {
-        this.marker = (C2CLocationMarker) marker;
+    public void setLocationMarker(com.nutiteq.location.LocationMarker marker) {
+        this.marker = (LocationMarker) marker;
         marker.setLocationSource(this);
         // FIXME: what if this is null ?
-        final BaseMap a = mMap.get();
-        if (a != null) {
-            marker.setMapComponent(a.mapComponent);
-        } else {
+        final BaseMap map = mMap.get();
+        if (map != null) {
+            marker.setMapComponent(map.getMapComponent());
+        }
+        else {
             marker.quit();
         }
     }
@@ -171,15 +182,15 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
         }
         // Register for location updates
         manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, UP_IDLE, UP_DIST,
-                C2CGpsProvider.this);
+                GpsProvider.this);
         manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, UP_ACTIVE, UP_DIST,
-                C2CGpsProvider.this);
+                GpsProvider.this);
     }
 
     @Override
     public void quit() {
         status = STATUS_CONNECTION_LOST;
-        manager.removeUpdates(C2CGpsProvider.this);
+        manager.removeUpdates(GpsProvider.this);
         if (marker != null) {
             marker.quit();
             // FIXME: Marker needs to repaint
@@ -220,7 +231,8 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
         if (LocationManager.GPS_PROVIDER.equals(loc.getProvider())) {
             isSignificantlyNewer = timeDelta > DT_GPS;
             isSignificantlyOlder = timeDelta < -DT_GPS;
-        } else {
+        }
+        else {
             isSignificantlyNewer = timeDelta > DT_NETWORK;
             isSignificantlyOlder = timeDelta < -DT_NETWORK;
         }
@@ -230,7 +242,8 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
         if (isSignificantlyNewer) {
             Log.v(TAG, "isSignificantlyNewer");
             return true;
-        } else if (isSignificantlyOlder) {
+        }
+        else if (isSignificantlyOlder) {
             Log.v(TAG, "isSignificantlyOlder");
             return false;
         }
@@ -246,10 +259,12 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
         if (isMoreAccurate) {
             Log.v(TAG, "isMoreAccurate");
             return true;
-        } else if (isNewer && !isLessAccurate) {
+        }
+        else if (isNewer && !isLessAccurate) {
             Log.v(TAG, "isNewer");
             return true;
-        } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
+        }
+        else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
             Log.v(TAG, "isNewer && isFromSameProvider");
             return true;
         }
@@ -266,5 +281,9 @@ public class C2CGpsProvider implements LocationSource, android.location.Location
 
     public void setRecord(boolean rec) {
         record = rec;
+    }
+
+    public List<Line> getTrace() {
+        return trace;
     }
 }

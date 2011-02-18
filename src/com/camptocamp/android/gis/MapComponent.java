@@ -2,8 +2,11 @@ package com.camptocamp.android.gis;
 
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.animation.DecelerateInterpolator;
 
+import com.camptocamp.android.gis.control.ZoomIndicator;
+import com.camptocamp.android.gis.layer.LocationMarker;
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.cache.Cache;
 import com.nutiteq.components.MapPos;
@@ -12,7 +15,7 @@ import com.nutiteq.components.WgsPoint;
 import com.nutiteq.location.LocationSource;
 import com.nutiteq.maps.OpenStreetMap;
 
-public class C2CMapComponent extends BasicMapComponent {
+public class MapComponent extends BasicMapComponent {
 
     // private static final String TAG = Map.D + "MyMapComponent";
     private static final String KEY = "182be0c5cdcd5072bb1864cdee4d3d6e4c593f89365962.70956542";
@@ -34,17 +37,18 @@ public class C2CMapComponent extends BasicMapComponent {
     private int lastposy = 0;
     private long lasttouch;
 
-    public C2CMapComponent(WgsPoint middlePoint, int width, int height, int zoom) {
+    public MapComponent(WgsPoint middlePoint, int width, int height, int zoom) {
         super(KEY, VDR, BaseMap.APP, width, height, middlePoint, (zoom != -1 ? zoom : ZOOM));
         // FIXME: must set according to min/max zoom levels
-        setZoomLevelIndicator(new C2CZoomIndicator(0, 18));
+        setZoomLevelIndicator(new ZoomIndicator(0, 18));
         ycos = Math.cos(middlePoint.getLat());
     }
 
-    public C2CMapComponent(WgsBoundingBox bbox, WgsPoint middlePoint, int width, int height,
+    public MapComponent(WgsBoundingBox bbox, WgsPoint middlePoint, int width, int height,
             int zoom) {
         super(KEY, VDR, BaseMap.APP, width, height, middlePoint, (zoom != -1 ? zoom : ZOOM));
-        setZoomLevelIndicator(new C2CZoomIndicator(0, 18));
+
+        setZoomLevelIndicator(new ZoomIndicator(0, 18));
         ycos = Math.cos(middlePoint.getLat());
         maxExtent = bbox;
     }
@@ -97,7 +101,7 @@ public class C2CMapComponent extends BasicMapComponent {
 
         // Set precision radius if gps tracking is active
         if (locationSource != null) {
-            ((C2CLocationMarker) locationSource.getLocationMarker()).setRadius();
+            ((LocationMarker) locationSource.getLocationMarker()).setRadius();
         }
     }
 
@@ -107,7 +111,7 @@ public class C2CMapComponent extends BasicMapComponent {
 
         // Set precision radius if gps tracking is active
         if (locationSource != null) {
-            ((C2CLocationMarker) locationSource.getLocationMarker()).setRadius();
+            ((LocationMarker) locationSource.getLocationMarker()).setRadius();
         }
     }
 

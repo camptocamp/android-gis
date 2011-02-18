@@ -27,15 +27,22 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.camptocamp.android.gis.control.DirectionsWaiter;
+import com.camptocamp.android.gis.layer.Overlay;
+import com.camptocamp.android.gis.utils.Caching;
 import com.camptocamp.android.gis.utils.ExportGPX;
 import com.camptocamp.android.gis.utils.ExportKML;
+import com.camptocamp.android.gis.utils.ExportTrace;
+import com.camptocamp.android.gis.utils.GpsProvider;
 import com.camptocamp.android.gis.utils.Prefs;
 import com.nutiteq.BasicMapComponent;
+import com.nutiteq.android.MapView;
 import com.nutiteq.cache.Cache;
 import com.nutiteq.components.WgsBoundingBox;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.controls.AndroidKeysHandler;
 import com.nutiteq.maps.GeoMap;
+import com.nutiteq.net.NutiteqDownloadCounter;
 import com.nutiteq.services.YourNavigationDirections;
 import com.nutiteq.ui.NutiteqDownloadDisplay;
 import com.nutiteq.ui.ThreadDrivenPanning;
@@ -49,19 +56,19 @@ public abstract class BaseMap extends Activity {
     private static final String TAG = D + "BaseMap";
     private static final String PLACEHOLDER = "placeholder";
 
-    protected static final String ACTION_GOTO = PKG + ".action.GOTO";
-    protected static final String ACTION_ROUTE = PKG + ".action.ROUTE";
-    protected static final String ACTION_TOAST = PKG + ".action.TOAST";
-    protected static final String ACTION_PICK = PKG + ".action.PICK";
-    protected static final String EXTRA_LABEL = "extra_label";
-    protected static final String EXTRA_MINLON = "extra_minx";
-    protected static final String EXTRA_MINLAT = "extra_miny";
-    protected static final String EXTRA_MAXLON = "extra_maxx";
-    protected static final String EXTRA_MAXLAT = "extra_maxy";
-    protected static final String EXTRA_TYPE = "extra_type";
-    protected static final String EXTRA_MSG = "extra_msg";
-    protected static final String EXTRA_FIELD = "extra_field";
-    protected static final String EXTRA_COORD = "extra_coord";
+    public static final String ACTION_GOTO = PKG + ".action.GOTO";
+    public static final String ACTION_ROUTE = PKG + ".action.ROUTE";
+    public static final String ACTION_TOAST = PKG + ".action.TOAST";
+    public static final String ACTION_PICK = PKG + ".action.PICK";
+    public static final String EXTRA_LABEL = "extra_label";
+    public static final String EXTRA_MINLON = "extra_minx";
+    public static final String EXTRA_MINLAT = "extra_miny";
+    public static final String EXTRA_MAXLON = "extra_maxx";
+    public static final String EXTRA_MAXLAT = "extra_maxy";
+    public static final String EXTRA_TYPE = "extra_type";
+    public static final String EXTRA_MSG = "extra_msg";
+    public static final String EXTRA_FIELD = "extra_field";
+    public static final String EXTRA_COORD = "extra_coord";
 
     protected SharedPreferences prefs;
     protected String search_query = "";
@@ -69,16 +76,18 @@ public abstract class BaseMap extends Activity {
     protected int mHeight = 1;
     protected Context ctxt;
     protected RelativeLayout mapLayout;
-    private C2CMapView mapView = null;
+    private MapView mapView = null;
     private List<String> mSelectedLayers = new ArrayList<String>();
     private boolean onRetainCalled = false;
-    private C2CDirectionsWaiter waiter;
+    private DirectionsWaiter waiter;
     private static final int MENU_PREFS = 3;
     private static final int MENU_RECORD = 4;
     private static final int MENU_DIRECTION = 5;
 
-    protected C2CMapComponent mapComponent = null;
+    protected MapComponent mapComponent = null;
+
     protected boolean isTrackingPosition = false;
+    
     protected int mProvider;
 
     abstract protected void setDefaultMap();
@@ -96,7 +105,7 @@ public abstract class BaseMap extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
         mapLayout = ((RelativeLayout) findViewById(R.id.map));
-        waiter = new C2CDirectionsWaiter(BaseMap.this);
+        waiter = new DirectionsWaiter(BaseMap.this);
 
         // Width and Height
         Display display = getWindowManager().getDefaultDisplay();
@@ -106,7 +115,7 @@ public abstract class BaseMap extends Activity {
         setDefaultMap();
 
         // GPS Location tracking
-        final C2CGpsProvider locationSource = new C2CGpsProvider(BaseMap.this);
+        final GpsProvider locationSource = new GpsProvider(BaseMap.this);
         final ImageButton btn_gps = (ImageButton) findViewById(R.id.position_track);
         btn_gps.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -198,9 +207,9 @@ public abstract class BaseMap extends Activity {
             startActivity(new Intent(BaseMap.this, Prefs.class));
         } else if (itemid == MENU_RECORD) {
             // Record GPS trace
-            final C2CGpsProvider pr = (C2CGpsProvider) mapComponent.getLocationSource();
-            if (pr != null && pr.record) {
-                pr.setRecord(false);
+            final GpsProvider gpsProvider = (GpsProvider) mapComponent.getLocationSource();
+            if (gpsProvider != null && gpsProvider.isRecord()) {
+                gpsProvider.setRecord(false);
                 item.setTitle(R.string.menu_record_start);
                 item.setIcon(android.R.drawable.ic_media_play);
                 // Save Traces dialog
@@ -208,43 +217,43 @@ public abstract class BaseMap extends Activity {
                 dialog.setMessage(R.string.dialog_save_trace);
                 dialog.setPositiveButton(R.string.btn_yes, new AlertDialog.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        saveTrace(pr);
+                        saveTrace(gpsProvider);
                     }
                 });
                 dialog.setNegativeButton(R.string.btn_no, null);
                 dialog.show();
             } else if (isTrackingPosition) {
-                pr.setRecord(true);
+                gpsProvider.setRecord(true);
                 item.setTitle(R.string.menu_record_stop);
                 item.setIcon(android.R.drawable.ic_media_pause);
             }
         } else if (itemid == MENU_DIRECTION) {
-            startActivity(new Intent(BaseMap.this, C2CDirections.class));
+            startActivity(new Intent(BaseMap.this, Directions.class));
         }
         return true;
     }
 
-    protected void setMapComponent(final C2CMapComponent bmc, final GeoMap gm) {
+    protected void setMapComponent(final MapComponent bmc, final GeoMap gm) {
         cleanCaches();
         bmc.setMap(gm);
-        bmc.setNetworkCache(new C2CCaching(ctxt));
+        bmc.setNetworkCache(new Caching(ctxt));
         // bmc.setImageProcessor(new NightModeImageProcessor());
         bmc.setPanningStrategy(new ThreadDrivenPanning());
         // bmc.setPanningStrategy(new EventDrivenPanning());
         bmc.setControlKeysHandler(new AndroidKeysHandler());
-        bmc.setDownloadCounter(new C2CDownloadCounter());
+        bmc.setDownloadCounter(new NutiteqDownloadCounter());
         bmc.setDownloadDisplay(new NutiteqDownloadDisplay());
         bmc.startMapping();
         bmc.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
         mapComponent = bmc;
     }
 
-    protected void saveTrace(C2CGpsProvider pr) {
-        if (pr.trace.size() > 0) {
+    protected void saveTrace(GpsProvider gpsProvider) {
+        if (gpsProvider.getTrace().size() > 0) {
             // Choose format
             int format = Integer.parseInt(prefs.getString(Prefs.KEY_TRACE_FORMAT,
                     Prefs.DEFAULT_TRACE_FORMAT));
-            C2CExportTrace export;
+            ExportTrace export;
             switch (format) {
             case 0:
                 export = new ExportGPX();
@@ -257,7 +266,7 @@ public abstract class BaseMap extends Activity {
             }
             // Export
             String file = "";
-            if (export != null && (file = export.export(pr.trace)) != "") {
+            if (export != null && (file = export.export(gpsProvider.getTrace())) != "") {
                 Toast.makeText(ctxt, String.format(getString(R.string.toast_trace_saved), file),
                         Toast.LENGTH_LONG).show();
             } else {
@@ -284,11 +293,11 @@ public abstract class BaseMap extends Activity {
             // Select place mode
             Toast.makeText(ctxt, "FIXME: Tap your point on the map!", Toast.LENGTH_SHORT).show();
 
-            mapComponent.setMapListener(new C2CMapView(ctxt, mapComponent) {
+            mapComponent.setMapListener(new MapView(ctxt, mapComponent) {
                 @Override
                 public void mapClicked(WgsPoint p) {
                     mapComponent.setMapListener(mapView);
-                    Intent i = new Intent(BaseMap.this, C2CDirections.class);
+                    Intent i = new Intent(BaseMap.this, Directions.class);
                     i.putExtra(EXTRA_FIELD, intent.getIntExtra(EXTRA_FIELD, R.id.start));
                     i.putExtra(EXTRA_COORD, p.getLon() + "," + p.getLat());
                     i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -372,16 +381,16 @@ public abstract class BaseMap extends Activity {
             mapLayout.removeView(mapView);
             mapView = null;
         }
-        mapView = new C2CMapView(ctxt, mapComponent);
+        mapView = new MapView(ctxt, mapComponent);
         mapLayout.addView(mapView);
         mapView.setClickable(true);
         mapView.setEnabled(true);
     }
 
-    protected void setOverlay(final C2COverlay overlay) {
-        if (overlay.layers_all != null) {
-            int len = overlay.layers_all.size();
-            final String[] layers_keys = (String[]) overlay.layers_all.keySet().toArray(
+    protected void setOverlay(final Overlay overlay) {
+        if (overlay.getLayersAll() != null) {
+            int len = overlay.getLayersAll().size();
+            final String[] layers_keys = (String[]) overlay.getLayersAll().keySet().toArray(
                     new String[len]);
             // Replace with string resource
             Resources r = getResources();
@@ -397,7 +406,7 @@ public abstract class BaseMap extends Activity {
             // Get overlays status
             boolean[] layers_states = new boolean[len];
             for (int i = 0; i < len; i++) {
-                layers_states[i] = mSelectedLayers.contains(overlay.layers_all.get(layers_keys[i]));
+                layers_states[i] = mSelectedLayers.contains(overlay.getLayersAll().get(layers_keys[i]));
             }
             final AlertDialog.Builder dialog = new AlertDialog.Builder(BaseMap.this);
             dialog.setTitle(R.string.dialog_layer_title);
@@ -406,9 +415,9 @@ public abstract class BaseMap extends Activity {
                         @Override
                         public void onClick(DialogInterface dialog, int which, boolean isChecked) {
                             if (isChecked) {
-                                mSelectedLayers.add(overlay.layers_all.get(layers_keys[which]));
+                                mSelectedLayers.add(overlay.getLayersAll().get(layers_keys[which]));
                             } else {
-                                mSelectedLayers.remove(overlay.layers_all.get(layers_keys[which]));
+                                mSelectedLayers.remove(overlay.getLayersAll().get(layers_keys[which]));
                             }
                         }
                     });
@@ -417,7 +426,7 @@ public abstract class BaseMap extends Activity {
                 public void onClick(DialogInterface dialog, int which) {
                     GeoMap gm = mapComponent.getMap();
                     if (mSelectedLayers.size() > 0) {
-                        overlay.layers_selected = TextUtils.join(",", mSelectedLayers.toArray());
+                        overlay.setLayersSelected(TextUtils.join(",", mSelectedLayers.toArray()));
                         gm.addTileOverlay(overlay);
                     } else {
                         gm.addTileOverlay(null);
@@ -445,7 +454,7 @@ public abstract class BaseMap extends Activity {
 
     protected void cleanCaches() {
         if (mapComponent != null) {
-            C2CCaching cache = (C2CCaching) mapComponent.getCache();
+            Caching cache = (Caching) mapComponent.getCache();
             if (cache != null) {
                 final Cache[] cl = cache.getCacheLevels();
                 for (int i = 0; i < cl.length; i++) {
@@ -462,4 +471,15 @@ public abstract class BaseMap extends Activity {
         mapComponent.setBoundingBox(new WgsBoundingBox(min, max));
     }
 
+    public MapComponent getMapComponent() {
+        return mapComponent;
+    }
+
+    public boolean isTrackingPosition() {
+        return isTrackingPosition;
+    }
+
+    public void setTrackingPosition(boolean isTrackingPosition) {
+        this.isTrackingPosition = isTrackingPosition;
+    }
 }

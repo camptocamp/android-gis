@@ -1,4 +1,4 @@
-package com.camptocamp.android.gis;
+package com.camptocamp.android.gis.control;
 
 import java.io.IOException;
 
@@ -8,9 +8,8 @@ import javax.microedition.lcdui.Image;
 import com.nutiteq.components.Rectangle;
 import com.nutiteq.components.ZoomRange;
 import com.nutiteq.log.Log;
-import com.nutiteq.ui.ZoomIndicator;
 
-public class C2CZoomIndicator implements ZoomIndicator {
+public class ZoomIndicator implements com.nutiteq.ui.ZoomIndicator {
 
     private static final int WIDTH = 17;
     private static final int SLIDER_HEIGHT = 9;
@@ -23,7 +22,7 @@ public class C2CZoomIndicator implements ZoomIndicator {
     private Image mHorizontalPart;
     private Image mSlider;
 
-    public C2CZoomIndicator(final int min, final int max) {
+    public ZoomIndicator(final int min, final int max) {
         try {
             mVerticalPart = Image.createImage("/images/zoom2.png");
             mHorizontalPart = Image.createImage("/images/zoom3.png");

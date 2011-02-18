@@ -11,10 +11,19 @@ public abstract class ProjectedUnstreamedMap extends BaseMap implements Projecti
 	
 	protected Projection projection;
 	
-	public ProjectedUnstreamedMap(final Copyright copyright, final int tileSize, final int minZoom, final int maxZoom, Projection projection) {
-		super(copyright, tileSize, minZoom, maxZoom);
-		this.projection = projection;
-	}
+    public Projection getProjection() {
+        return projection;
+    }
+
+    public ProjectedUnstreamedMap(final Copyright copyright, final int tileSize, final int minZoom, final int maxZoom, Projection projection) {
+        super(copyright, tileSize, minZoom, maxZoom);
+        this.projection = projection;
+    }
+
+    public ProjectedUnstreamedMap(final String copyright, final int tileSize, final int minZoom, final int maxZoom, Projection projection) {
+        super(copyright, tileSize, minZoom, maxZoom);
+        this.projection = projection;
+    }
 
 	@Override
 	public Point mapPosToWgs(MapPos pos) {

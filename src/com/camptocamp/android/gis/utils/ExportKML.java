@@ -9,13 +9,12 @@ import org.xmlpull.v1.XmlSerializer;
 
 import android.util.Xml;
 
-import com.camptocamp.android.gis.C2CExportTrace;
-import com.camptocamp.android.gis.C2CLine;
+import com.camptocamp.android.gis.Line;
 import com.nutiteq.components.WgsPoint;
 
 // https://code.google.com/intl/en/apis/kml/documentation/
 
-public class ExportKML extends C2CExportTrace {
+public class ExportKML extends ExportTrace {
 
     private final static String KML = "kml";
     private final static String KML_XMLNS = "xmlns";
@@ -34,7 +33,7 @@ public class ExportKML extends C2CExportTrace {
     private final static String VAL_XMLNS = "http://www.opengis.net/kml/2.2";
 
     @Override
-    public String export(List<C2CLine> trace) {
+    public String export(List<Line> trace) {
         final File file = new File(PATH + name + ".kml");
         if (!file.exists()) {
             final XmlSerializer xml = Xml.newSerializer();
@@ -61,7 +60,7 @@ public class ExportKML extends C2CExportTrace {
                 xml.text(VAL_ALTITUDEMODE);
                 xml.endTag(null, KML_ALTITUDEMODE);
                 xml.startTag(null, KML_COORDINATES);
-                for (C2CLine line : trace) {
+                for (Line line : trace) {
                     WgsPoint pt = line.getPoints()[0];
                     xml.text(pt.getLon() + "," + pt.getLat() + ",0 ");
                 }

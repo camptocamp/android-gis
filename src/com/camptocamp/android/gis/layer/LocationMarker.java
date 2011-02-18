@@ -1,4 +1,4 @@
-package com.camptocamp.android.gis;
+package com.camptocamp.android.gis.layer;
 
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Bitmap.Config;
 
+import com.camptocamp.android.gis.MapComponent;
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.Placemark;
 import com.nutiteq.components.WgsBoundingBox;
@@ -17,7 +18,7 @@ import com.nutiteq.location.NutiteqLocationMarker;
 
 // http://davy-leggieri.developpez.com/tutoriels/android/creation-boussole
 
-public class C2CLocationMarker extends NutiteqLocationMarker {
+public class LocationMarker extends NutiteqLocationMarker {
 
     private Canvas canvas;
     private Paint paint;
@@ -25,7 +26,7 @@ public class C2CLocationMarker extends NutiteqLocationMarker {
     private float accuracy = 0; // m
     private int radius = 0; // px
 
-    public C2CLocationMarker(Placemark placemarkConnected, Placemark connectionLost,
+    public LocationMarker(Placemark placemarkConnected, Placemark connectionLost,
             int updateInterval, boolean track) {
         super(placemarkConnected, connectionLost, updateInterval, track);
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -33,7 +34,7 @@ public class C2CLocationMarker extends NutiteqLocationMarker {
         paint.setAlpha(50);
     }
 
-    public C2CLocationMarker(Placemark placemark, int updateInterval, boolean track) {
+    public LocationMarker(Placemark placemark, int updateInterval, boolean track) {
         super(placemark, placemark, updateInterval, track);
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setColor(Color.BLUE);
@@ -82,7 +83,7 @@ public class C2CLocationMarker extends NutiteqLocationMarker {
 
     public void setRadius() {
         // FIXME: Check (int)
-        radius = (int) Math.round(accuracy / ((C2CMapComponent) mapComponent).getMetersPerPixel());
+        radius = (int) Math.round(accuracy / ((MapComponent) mapComponent).getMetersPerPixel());
     }
 
 }

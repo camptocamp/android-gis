@@ -1,20 +1,22 @@
-package com.camptocamp.android.gis;
+package com.camptocamp.android.gis.control;
 
 import java.lang.ref.WeakReference;
 
 import android.content.Intent;
 import android.util.Log;
 
+import com.camptocamp.android.gis.BaseMap;
+import com.camptocamp.android.gis.R;
+import com.camptocamp.android.gis.R.string;
 import com.nutiteq.components.Route;
 import com.nutiteq.services.DirectionsService;
-import com.nutiteq.services.DirectionsWaiter;
 
-public class C2CDirectionsWaiter implements DirectionsWaiter {
+public class DirectionsWaiter implements com.nutiteq.services.DirectionsWaiter {
 
     private static final String TAG = BaseMap.D + "C2CDirectionsWaiter";
     private WeakReference<BaseMap> mActivity;
 
-    public C2CDirectionsWaiter(BaseMap activity) {
+    public DirectionsWaiter(BaseMap activity) {
         mActivity = new WeakReference<BaseMap>(activity);
     }
 
@@ -63,10 +65,10 @@ public class C2CDirectionsWaiter implements DirectionsWaiter {
 
     @Override
     public void routeFound(Route route) {
-        final BaseMap a = mActivity.get();
-        if (a != null) {
+        final BaseMap map = mActivity.get();
+        if (map != null) {
             // TODO: Remove last route
-            a.mapComponent.addLine(route.getRouteLine());
+            map.getMapComponent().addLine(route.getRouteLine());
         } else {
             Log.e(TAG, "routeFound: Map activity is not reachable");
         }

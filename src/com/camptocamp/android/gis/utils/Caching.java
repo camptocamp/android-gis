@@ -1,4 +1,4 @@
-package com.camptocamp.android.gis;
+package com.camptocamp.android.gis.utils;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -9,13 +9,13 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.camptocamp.android.gis.utils.Prefs;
+import com.camptocamp.android.gis.BaseMap;
 import com.nutiteq.cache.AndroidFileSystemCache;
 import com.nutiteq.cache.Cache;
 import com.nutiteq.cache.CachingChain;
 import com.nutiteq.cache.MemoryCache;
 
-public class C2CCaching extends CachingChain {
+public class Caching extends CachingChain {
 
     private static final String TAG = BaseMap.D + "C2CCaching";
 
@@ -25,7 +25,7 @@ public class C2CCaching extends CachingChain {
             .getAbsolutePath()
             + "/Android/data/" + BaseMap.PKG + "/cache");
 
-    public C2CCaching(final Context ctxt) {
+    public Caching(final Context ctxt) {
         super(createCacheLevels(ctxt));
     }
 

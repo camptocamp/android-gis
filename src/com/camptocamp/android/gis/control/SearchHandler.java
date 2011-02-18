@@ -1,8 +1,12 @@
-package com.camptocamp.android.gis;
+package com.camptocamp.android.gis.control;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.camptocamp.android.gis.BaseMap;
+import com.camptocamp.android.gis.R;
+import com.camptocamp.android.gis.R.string;
 
 import android.app.Activity;
 import android.app.SearchManager;
@@ -16,10 +20,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-public class C2CSearchHandler extends Activity {
+public class SearchHandler extends Activity {
 
     private static final String TAG = BaseMap.D + "C2CSearchHandler";
-    protected C2CSearch search = null;
+    protected Search search = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,7 +46,7 @@ public class C2CSearchHandler extends Activity {
                             showResultActivity(c.getString(3));
                             c.close();
                         } else {
-                            Builder d = new Builder(C2CSearchHandler.this);
+                            Builder d = new Builder(SearchHandler.this);
                             d.setCursor(c, new OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {

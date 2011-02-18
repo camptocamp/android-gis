@@ -1,4 +1,4 @@
-package com.camptocamp.android.gis;
+package com.camptocamp.android.gis.control;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,15 +17,15 @@ import android.net.Uri;
 
 import com.nutiteq.utils.IOUtils;
 
-public abstract class C2CSearch extends ContentProvider {
+public abstract class Search extends ContentProvider {
 
     protected Context context;
 
-    public C2CSearch() {
+    public Search() {
         super();
     }
 
-    public C2CSearch(Context ctxt) {
+    public Search(Context ctxt) {
         super();
         context = ctxt;
     }
