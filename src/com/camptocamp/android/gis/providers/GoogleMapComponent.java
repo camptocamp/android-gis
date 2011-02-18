@@ -98,30 +98,13 @@ public class GoogleMapComponent extends MapComponent {
         neededTile = new GoogleTile(4 * displayWidth, 2 * displayHeight, getZoom(),
                 getCenterPoint(), middlePoint);
         final MapTilesRequestor mapTilesRequestor = this;
+        timer.cancel();
         timer.schedule(new TimerTask() {
             GoogleTile tile = neededTile;
             @Override
             public void run() {
                 if (tile.isValid()) {
-                    try {
-                        taskRunner.enqueue(new GoogleTileTask(mapTilesRequestor, taskRunner, tile, 3));
-                    }
-                    catch (IllegalMonitorStateException e) {
-                        try {
-                            Thread.sleep(20);
-                        }
-                        catch (InterruptedException e3) {
-                            e3.printStackTrace();
-                        }
-                        finally {
-                            try {
-                                taskRunner.enqueue(new GoogleTileTask(mapTilesRequestor, taskRunner, tile, 3));
-                            }
-                            catch (IllegalMonitorStateException e2) {
-                                e2.printStackTrace();
-                            }
-                        }
-                    }
+                    taskRunner.enqueue(new GoogleTileTask(mapTilesRequestor, taskRunner, tile, 3));
                 }
             }
         }, 50);
