@@ -98,7 +98,6 @@ public class GoogleMapComponent extends MapComponent {
         neededTile = new GoogleTile(4 * displayWidth, 2 * displayHeight, getZoom(),
                 getCenterPoint(), middlePoint);
         final MapTilesRequestor mapTilesRequestor = this;
-        timer.cancel();
         timer.schedule(new TimerTask() {
             GoogleTile tile = neededTile;
             @Override
