@@ -283,7 +283,7 @@ public abstract class BaseMap extends Activity {
         }
     };
 
-    private void handleIntent() {
+    protected void handleIntent() {
         final Intent intent = getIntent();
         String action = intent.getAction();
 

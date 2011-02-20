@@ -72,7 +72,7 @@ public class SearchHandler extends Activity {
         }
     }
 
-    private void showResultActivity(String jstring) {
+    protected void showResultActivity(String jstring) {
         Intent newintent = new Intent(BaseMap.ACTION_GOTO);
         try {
             JSONObject json = new JSONObject(jstring);
