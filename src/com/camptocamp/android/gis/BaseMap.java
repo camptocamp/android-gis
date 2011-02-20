@@ -87,7 +87,7 @@ public abstract class BaseMap extends Activity {
     protected MapComponent mapComponent = null;
 
     protected boolean isTrackingPosition = false;
-    
+
     protected int mProvider;
 
     abstract protected void setDefaultMap();
@@ -98,8 +98,9 @@ public abstract class BaseMap extends Activity {
         ctxt = getApplicationContext();
         prefs = PreferenceManager.getDefaultSharedPreferences(ctxt);
 
-//        com.nutiteq.log.Log.setLogger(new com.nutiteq.log.AndroidLogger(APP));
-//        com.nutiteq.log.Log.enableAll();
+        // com.nutiteq.log.Log.setLogger(new
+        // com.nutiteq.log.AndroidLogger(APP));
+        // com.nutiteq.log.Log.enableAll();
 
         onRetainCalled = false;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -255,14 +256,14 @@ public abstract class BaseMap extends Activity {
                     Prefs.DEFAULT_TRACE_FORMAT));
             ExportTrace export;
             switch (format) {
-            case 0:
-                export = new ExportGPX();
-                break;
-            case 1:
-                export = new ExportKML();
-                break;
-            default:
-                export = null;
+                case 0:
+                    export = new ExportGPX();
+                    break;
+                case 1:
+                    export = new ExportKML();
+                    break;
+                default:
+                    export = null;
             }
             // Export
             String file = "";
@@ -291,7 +292,7 @@ public abstract class BaseMap extends Activity {
 
         if (ACTION_PICK.equals(action)) {
             // Select place mode
-            Toast.makeText(ctxt, "FIXME: Tap your point on the map!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ctxt, R.string.toast_pick_point, Toast.LENGTH_SHORT).show();
 
             mapComponent.setMapListener(new MapView(ctxt, mapComponent) {
                 @Override
@@ -406,7 +407,8 @@ public abstract class BaseMap extends Activity {
             // Get overlays status
             boolean[] layers_states = new boolean[len];
             for (int i = 0; i < len; i++) {
-                layers_states[i] = mSelectedLayers.contains(overlay.getLayersAll().get(layers_keys[i]));
+                layers_states[i] = mSelectedLayers.contains(overlay.getLayersAll().get(
+                        layers_keys[i]));
             }
             final AlertDialog.Builder dialog = new AlertDialog.Builder(BaseMap.this);
             dialog.setTitle(R.string.dialog_layer_title);
@@ -417,7 +419,8 @@ public abstract class BaseMap extends Activity {
                             if (isChecked) {
                                 mSelectedLayers.add(overlay.getLayersAll().get(layers_keys[which]));
                             } else {
-                                mSelectedLayers.remove(overlay.getLayersAll().get(layers_keys[which]));
+                                mSelectedLayers.remove(overlay.getLayersAll().get(
+                                        layers_keys[which]));
                             }
                         }
                     });

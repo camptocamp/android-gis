@@ -6,7 +6,7 @@
     
     <string name="search_label">Location Search</string>   
     <string name="search_description">Search a location</string>   
-    <string name="search_bar_hint">Search location</string> 
+    <string name="search_bar_hint">Search location</string>
     
     <string name="vendor_xxx">XXX</string>
     
@@ -15,10 +15,12 @@
     <string name="dialog_save_trace">Do you want save this GPS trace ?</string>
     <string name="dialog_route_create_title">Routing</string>
     <string name="dialog_route_create_messg">Creating route...\nPlease wait!</string>
+    <string name="dialog_route_fromto">From/To:</string>
     
     <string name="btn_apply">Apply</string>
     <string name="btn_yes">Yes</string>
     <string name="btn_no">No</string>
+    <string name="btn_cancel">Cancel</string>
     
     <string name="menu_osm">OpenStreetMap</string>
     <string name="menu_prefs">Options</string>
@@ -44,8 +46,12 @@
     <string name="toast_route_src_not_found">From address not found!</string>
     <string name="toast_route_same">From and destination address are the same!</string>
     <string name="toast_route_not_found">Route not found!</string>
+    <string name="toast_route_no_suggestion">No suggestions!</string>
     <string name="toast_route_unknown">Unknown error!</string>
     <string name="toast_no_search_provider">No search provider!</string>
+    <string name="toast_no_result">No result!</string>
+    <string name="toast_route_invalid">Invalid route!</string>
+    <string name="toast_pick_point">Tap a point on the map</string>
     
     <string name="osm_overlay"></string>
     <string name="osm_search_url">http://openaddresses.org/addresses/?limit=50&amp;attrs=street,city,country&amp;no_geom=true&amp;query=%s</string>

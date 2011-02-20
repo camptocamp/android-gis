@@ -56,7 +56,7 @@ public class SearchHandler extends Activity {
                             d.create().show();
                         }
                     } else {
-                        Toast.makeText(getApplicationContext(), "FIXME: No result!",
+                        Toast.makeText(getApplicationContext(), R.string.toast_no_result,
                                 Toast.LENGTH_SHORT).show();
                         finish();
                     }

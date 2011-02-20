@@ -28,7 +28,7 @@ import com.nutiteq.services.YourNavigationDirections;
 
 public class Directions extends Activity {
 
-    private static final String TAG = BaseMap.D + "C2CDirections";
+    private static final String TAG = BaseMap.D + "Directions";
     protected static final int PICK = 0;
 
     private final List<WgsPoint> pts = new ArrayList<WgsPoint>();
@@ -93,22 +93,23 @@ public class Directions extends Activity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
-                case 0:
-                    // List contact with geographic information
-                    if (Integer.parseInt(Build.VERSION.SDK) >= 5) {
-                        Intent i1 = new Intent(Intent.ACTION_PICK);
-                        i1.setType(ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_TYPE);
-                        startActivityForResult(i1, field);
-                    }
-                    break;
-                case 1:
-                    // Show map and start/end marker
-                    Intent i2 = new Intent(BaseMap.ACTION_PICK);
-                    i2.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    i2.putExtra(BaseMap.EXTRA_FIELD, field);
-                    startActivityForResult(i2, 0);
-                    break;
-                default:
+                    case 0:
+                        // List contact with geographic information
+                        if (Integer.parseInt(Build.VERSION.SDK) >= 5) {
+                            Intent i1 = new Intent(Intent.ACTION_PICK);
+                            i1
+                                    .setType(ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_TYPE);
+                            startActivityForResult(i1, field);
+                        }
+                        break;
+                    case 1:
+                        // Show map and start/end marker
+                        Intent i2 = new Intent(BaseMap.ACTION_PICK);
+                        i2.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                        i2.putExtra(BaseMap.EXTRA_FIELD, field);
+                        startActivityForResult(i2, 0);
+                        break;
+                    default:
                 }
             }
         });
@@ -131,7 +132,8 @@ public class Directions extends Activity {
             finish();
         } else {
             // FIXME: change the color of the field bg to red
-            Toast.makeText(Directions.this, "FIXME: Invalid route", Toast.LENGTH_SHORT).show();
+            Toast.makeText(Directions.this, R.string.toast_route_invalid, Toast.LENGTH_SHORT)
+                    .show();
         }
     }
 
@@ -172,26 +174,23 @@ public class Directions extends Activity {
 
             } else {
                 if (places.length == 1) {
-                    Log.i(TAG, "only one suggestion");
                     addToField(field, places[0]);
 
                 } else if (places.length > 1) {
-                    Log.i(TAG, "multiple suggestions");
                     final CharSequence[] items = toArray(places);
                     final AlertDialog.Builder dialog = new AlertDialog.Builder(Directions.this);
-                    dialog.setTitle("FIXME: From/To:");
+                    dialog.setTitle(R.string.dialog_route_fromto);
                     dialog.setItems(items, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             addToField(field, places[which]);
                         }
                     });
-                    dialog.setNegativeButton("Cancel", null);
+                    dialog.setNegativeButton(R.string.btn_cancel, null);
                     dialog.show();
                 } else {
-                    Log.i(TAG, "no suggestion");
-                    Toast.makeText(Directions.this, "FIXME: No suggestions", Toast.LENGTH_SHORT)
-                            .show();
+                    Toast.makeText(Directions.this, R.string.toast_route_no_suggestion,
+                            Toast.LENGTH_SHORT).show();
                 }
 
             }
