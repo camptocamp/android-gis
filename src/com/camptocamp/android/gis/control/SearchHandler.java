@@ -4,10 +4,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.camptocamp.android.gis.BaseMap;
-import com.camptocamp.android.gis.R;
-import com.camptocamp.android.gis.R.string;
-
 import android.app.Activity;
 import android.app.SearchManager;
 import android.app.AlertDialog.Builder;
@@ -20,9 +16,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.camptocamp.android.gis.BaseMap;
+import com.camptocamp.android.gis.R;
+
 public class SearchHandler extends Activity {
 
     private static final String TAG = BaseMap.D + "C2CSearchHandler";
+    private static final String SRC = "content://%1$s.C2CSearch/search_suggest_query/%2$s?limit=50";
     protected Search search = null;
 
     @Override
@@ -36,9 +36,8 @@ public class SearchHandler extends Activity {
             String query = intent.getStringExtra(SearchManager.QUERY);
 
             if (search != null) {
-                final Cursor c = search.query(Uri.parse("content://" + BaseMap.PKG
-                        + ".C2CSearch/search_suggest_query/" + query + "?limit=50"), null, null,
-                        null, null);
+                final Cursor c = search.query(Uri.parse(String.format(SRC, BaseMap.PKG, query)),
+                        null, null, null, null);
                 if (c != null) {
                     if (c.getCount() > 0) {
                         if (c.getCount() == 1) {
