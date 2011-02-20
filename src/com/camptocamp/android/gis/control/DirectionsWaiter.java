@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.camptocamp.android.gis.BaseMap;
 import com.camptocamp.android.gis.R;
-import com.camptocamp.android.gis.R.string;
 import com.nutiteq.components.Route;
 import com.nutiteq.services.DirectionsService;
 

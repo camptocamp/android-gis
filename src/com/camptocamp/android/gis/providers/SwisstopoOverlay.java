@@ -3,7 +3,6 @@ package com.camptocamp.android.gis.providers;
 import java.util.HashMap;
 
 import com.camptocamp.android.gis.layer.Overlay;
-import com.camptocamp.android.gis.proj.CH1903;
 import com.nutiteq.components.MapTile;
 
 public class SwisstopoOverlay extends Overlay {

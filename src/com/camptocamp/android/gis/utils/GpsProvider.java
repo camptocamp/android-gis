@@ -21,7 +21,6 @@ import android.widget.Toast;
 import com.camptocamp.android.gis.BaseMap;
 import com.camptocamp.android.gis.Line;
 import com.camptocamp.android.gis.R;
-import com.camptocamp.android.gis.R.string;
 import com.camptocamp.android.gis.layer.LocationMarker;
 import com.nutiteq.components.PlaceIcon;
 import com.nutiteq.components.WgsPoint;

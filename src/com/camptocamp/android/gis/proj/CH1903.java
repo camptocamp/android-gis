@@ -5,9 +5,7 @@ import java.util.HashMap;
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.Point;
 import com.nutiteq.components.WgsPoint;
-import com.nutiteq.maps.BaseMap;
 import com.nutiteq.maps.projections.Projection;
-import com.nutiteq.ui.Copyright;
 
 /**
  * Abstract class for doing WGS84 coordinates calculations to map pixels in

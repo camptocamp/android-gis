@@ -8,8 +8,6 @@ import android.view.View;
 import com.camptocamp.android.gis.BaseMap;
 import com.camptocamp.android.gis.MapComponent;
 import com.camptocamp.android.gis.R;
-import com.camptocamp.android.gis.R.id;
-import com.camptocamp.android.gis.R.string;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.location.LocationSource;
 
