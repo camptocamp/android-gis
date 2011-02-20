@@ -86,9 +86,10 @@ public class Directions extends Activity {
     }
 
     private void chooseMethod(final int field) {
-        final CharSequence[] items = { "Contact", "Point on map" };
+        final CharSequence[] items = { getString(R.string.dialog_route_point_contact),
+                getString(R.string.dialog_route_point_onmap) };
         final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        dialog.setTitle("Choose point");
+        dialog.setTitle(R.string.dialog_route_point_title);
         dialog.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
