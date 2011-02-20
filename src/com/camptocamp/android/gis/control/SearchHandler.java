@@ -21,7 +21,7 @@ import com.camptocamp.android.gis.R;
 
 public class SearchHandler extends Activity {
 
-    private static final String TAG = BaseMap.D + "C2CSearchHandler";
+    private static final String TAG = BaseMap.D + "SearchHandler";
     private static final String SRC = "content://%1$s.C2CSearch/search_suggest_query/%2$s?limit=50";
     protected Search search = null;
 
@@ -45,15 +45,16 @@ public class SearchHandler extends Activity {
                             showResultActivity(c.getString(3));
                             c.close();
                         } else {
-                            Builder d = new Builder(SearchHandler.this);
-                            d.setCursor(c, new OnClickListener() {
+                            Builder alertDialog = new Builder(SearchHandler.this);
+                            alertDialog.setTitle(R.string.dialog_search_results);
+                            alertDialog.setCursor(c, new OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     showResultActivity(c.getString(3));
                                     c.close();
                                 }
                             }, SearchManager.SUGGEST_COLUMN_TEXT_1);
-                            d.create().show();
+                            alertDialog.create().show();
                         }
                     } else {
                         Toast.makeText(getApplicationContext(), R.string.toast_no_result,
