@@ -51,8 +51,7 @@ public class GoogleMapComponent extends MapComponent {
     public void paint(final Graphics g) {
         super.paint(g);
         if (logo != null) {
-            // -45 to be over the zoom
-            g.drawImage(logo, 5, displayHeight - 45, Graphics.LEFT | Graphics.BOTTOM);
+            g.drawImage(logo, 5, displayHeight, Graphics.LEFT | Graphics.BOTTOM);
         }
     }
 
