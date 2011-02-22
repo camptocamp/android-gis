@@ -23,6 +23,9 @@ public class SearchHandler extends Activity {
 
     private static final String TAG = BaseMap.D + "SearchHandler";
     private static final String SRC = "content://%1$s.C2CSearch/search_suggest_query/%2$s?limit=50";
+    public static final String JSON_BBOX = "bbox";
+    public static final String JSON_LABEL = "label";
+    
     protected Search search = null;
 
     @Override
@@ -84,9 +87,9 @@ public class SearchHandler extends Activity {
         Intent newintent = new Intent(BaseMap.ACTION_GOTO);
         try {
             JSONObject json = new JSONObject(jstring);
-            JSONArray a = json.getJSONArray("bbox");
+            JSONArray a = json.getJSONArray(JSON_BBOX);
             newintent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            newintent.putExtra(BaseMap.EXTRA_LABEL, json.getString("label"));
+            newintent.putExtra(BaseMap.EXTRA_LABEL, json.getString(JSON_LABEL));
 
             // Bbox
             newintent.putExtra(BaseMap.EXTRA_MINLON, a.getDouble(0));

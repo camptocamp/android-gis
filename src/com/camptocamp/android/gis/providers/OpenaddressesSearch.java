@@ -17,10 +17,19 @@ import android.util.Log;
 import com.camptocamp.android.gis.BaseMap;
 import com.camptocamp.android.gis.R;
 import com.camptocamp.android.gis.control.Search;
+import com.camptocamp.android.gis.control.SearchHandler;
 
 public class OpenaddressesSearch extends Search {
 
     private static final String TAG = BaseMap.D + "OpenaddressesSearch";
+    private static final String JSON_ID = "id";
+    private static final String JSON_PROP = "properties";
+    private static final String JSON_STREET = "street";
+    private static final String JSON_CITY = "city";
+    private static final String JSON_COUNTRY = "country";
+    private static final String JSON_FEATURES = "features";
+    private static final String LABEL = "%1$s, %2$s (%3$s)";
+    private static final String PLUS = "+";
 
     public OpenaddressesSearch() {
         super();
@@ -41,10 +50,10 @@ public class OpenaddressesSearch extends Search {
         // Build query
         // Log.v(TAG, "query()=" + uri.toString());
         String query = URLEncoder.encode(uri.getLastPathSegment().toLowerCase());
-        if (query.startsWith("+")) {
+        if (query.startsWith(PLUS)) {
             query = query.substring(1);
         }
-        if (query.endsWith("+")) {
+        if (query.endsWith(PLUS)) {
             query = query.substring(0, query.length() - 1);
         }
 
@@ -52,31 +61,32 @@ public class OpenaddressesSearch extends Search {
             // Get search results as JSON
             Context ctxt = (context == null) ? getContext() : context;
             String url = String.format(ctxt.getString(R.string.osm_search_url), query);
-            Log.v(TAG, "url=" + url);
             byte[] data = getData(url);
             // Parse JSON
             try {
                 JSONObject json = new JSONObject(new String(data));
-                JSONArray results = json.getJSONArray("features");
+                JSONArray results = json.getJSONArray(JSON_FEATURES);
                 for (int i = 0; i < results.length(); i++) {
                     JSONObject elem = results.getJSONObject(i);
 
                     // Base data
-                    String id = elem.getString("id");
-                    JSONObject prop = elem.getJSONObject("properties");
-                    String label = prop.getString("street") + ", " + prop.getString("city") + " ("
-                            + prop.getString("country") + ")";
+                    String id = elem.getString(JSON_ID);
+                    JSONObject prop = elem.getJSONObject(JSON_PROP);
+                    String label = String.format(LABEL, prop.getString(JSON_STREET), prop
+                            .getString(JSON_CITY), prop.getString(JSON_COUNTRY));
                     int icon = R.drawable.search;
                     JSONObject obj = new JSONObject();
-                    obj.put("label", label);
-                    obj.put("bbox", elem.getJSONArray("bbox"));
+                    obj.put(SearchHandler.JSON_LABEL, label);
+                    obj.put(SearchHandler.JSON_BBOX, elem.getJSONArray(SearchHandler.JSON_BBOX));
 
                     answer.addRow(new Object[] { id, label, icon, obj.toString() });
                 }
-            } catch (JSONException e) {
+            }
+            catch (JSONException e) {
                 e.printStackTrace();
             }
-        } else {
+        }
+        else {
             Log.v(TAG, "Invalid query");
         }
         return answer;
