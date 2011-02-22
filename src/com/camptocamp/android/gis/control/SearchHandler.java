@@ -4,7 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
+import android.app.ListActivity;
 import android.app.SearchManager;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
@@ -19,14 +19,15 @@ import android.widget.Toast;
 import com.camptocamp.android.gis.BaseMap;
 import com.camptocamp.android.gis.R;
 
-public class SearchHandler extends Activity {
+public abstract class SearchHandler extends ListActivity {
 
     private static final String TAG = BaseMap.D + "SearchHandler";
     private static final String SRC = "content://%1$s.C2CSearch/search_suggest_query/%2$s?limit=50";
     public static final String JSON_BBOX = "bbox";
     public static final String JSON_LABEL = "label";
-    
-    protected Search search = null;
+    public static final String JSON_ID = "label";
+
+    protected Search search = null; // abstract ?
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,6 +40,7 @@ public class SearchHandler extends Activity {
             String query = intent.getStringExtra(SearchManager.QUERY);
 
             if (search != null) {
+                // TODO: use managedQuery()
                 final Cursor c = search.query(Uri.parse(String.format(SRC, BaseMap.PKG, query)),
                         null, null, null, null);
                 showResult(c);
