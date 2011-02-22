@@ -28,6 +28,7 @@ public abstract class SearchHandler extends ListActivity {
     public static final String JSON_ID = "label";
 
     protected Search search = null; // abstract ?
+    protected String query = "";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,7 +38,7 @@ public abstract class SearchHandler extends ListActivity {
 
         // Handle search query (just send the query)
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
+            query = intent.getStringExtra(SearchManager.QUERY);
 
             if (search != null) {
                 // TODO: use managedQuery()
