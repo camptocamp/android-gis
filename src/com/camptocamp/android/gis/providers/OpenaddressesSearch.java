@@ -16,10 +16,10 @@ import android.util.Log;
 
 import com.camptocamp.android.gis.BaseMap;
 import com.camptocamp.android.gis.R;
-import com.camptocamp.android.gis.control.Search;
+import com.camptocamp.android.gis.control.SearchProvider;
 import com.camptocamp.android.gis.control.SearchHandler;
 
-public class OpenaddressesSearch extends Search {
+public class OpenaddressesSearch extends SearchProvider {
 
     private static final String TAG = BaseMap.D + "OpenaddressesSearch";
     private static final String JSON_ID = "id";

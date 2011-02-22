@@ -17,15 +17,15 @@ import android.net.Uri;
 
 import com.nutiteq.utils.IOUtils;
 
-public abstract class Search extends ContentProvider {
+public abstract class SearchProvider extends ContentProvider {
 
     protected Context context;
 
-    public Search() {
+    public SearchProvider() {
         super();
     }
 
-    public Search(Context ctxt) {
+    public SearchProvider(Context ctxt) {
         super();
         context = ctxt;
     }

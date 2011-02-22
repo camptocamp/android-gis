@@ -34,7 +34,7 @@ public abstract class SearchHandler extends ListActivity {
     public static final String JSON_LABEL = "label";
     public static final String JSON_ID = "label";
 
-    protected Search search = null; // abstract ?
+    protected SearchProvider search = null; // abstract ?
     protected String query = "";
 
     @Override

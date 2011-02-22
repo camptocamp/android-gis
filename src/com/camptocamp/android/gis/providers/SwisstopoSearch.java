@@ -16,11 +16,11 @@ import android.util.Log;
 
 import com.camptocamp.android.gis.BaseMap;
 import com.camptocamp.android.gis.R;
-import com.camptocamp.android.gis.control.Search;
+import com.camptocamp.android.gis.control.SearchProvider;
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.WgsPoint;
 
-public class SwisstopoSearch extends Search {
+public class SwisstopoSearch extends SearchProvider {
 
     private static final String TAG = BaseMap.D + "SwisstopoSearch";
 
