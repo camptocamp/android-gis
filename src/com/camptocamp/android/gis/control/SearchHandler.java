@@ -38,31 +38,9 @@ public class SearchHandler extends Activity {
             if (search != null) {
                 final Cursor c = search.query(Uri.parse(String.format(SRC, BaseMap.PKG, query)),
                         null, null, null, null);
-                if (c != null) {
-                    if (c.getCount() > 0) {
-                        if (c.getCount() == 1) {
-                            c.moveToFirst();
-                            showResultActivity(c.getString(3));
-                            c.close();
-                        } else {
-                            Builder alertDialog = new Builder(SearchHandler.this);
-                            alertDialog.setTitle(R.string.dialog_search_results);
-                            alertDialog.setCursor(c, new OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    showResultActivity(c.getString(3));
-                                    c.close();
-                                }
-                            }, SearchManager.SUGGEST_COLUMN_TEXT_1);
-                            alertDialog.create().show();
-                        }
-                    } else {
-                        Toast.makeText(getApplicationContext(), R.string.toast_no_result,
-                                Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                }
-            } else {
+                showResult(c);
+            }
+            else {
                 Toast.makeText(getApplicationContext(), R.string.toast_no_search_provider,
                         Toast.LENGTH_SHORT).show();
             }
@@ -70,6 +48,35 @@ public class SearchHandler extends Activity {
         // Handle suggestions query (just send geo data)
         else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             showResultActivity(intent.getDataString());
+        }
+    }
+
+    protected void showResult(final Cursor c) {
+        if (c != null) {
+            if (c.getCount() > 0) {
+                if (c.getCount() == 1) {
+                    c.moveToFirst();
+                    showResultActivity(c.getString(3));
+                    c.close();
+                }
+                else {
+                    Builder alertDialog = new Builder(SearchHandler.this);
+                    alertDialog.setTitle(R.string.dialog_search_results);
+                    alertDialog.setCursor(c, new OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            showResultActivity(c.getString(3));
+                            c.close();
+                        }
+                    }, SearchManager.SUGGEST_COLUMN_TEXT_1);
+                    alertDialog.create().show();
+                }
+            }
+            else {
+                Toast.makeText(getApplicationContext(), R.string.toast_no_result,
+                        Toast.LENGTH_SHORT).show();
+                finish();
+            }
         }
     }
 
@@ -87,9 +94,11 @@ public class SearchHandler extends Activity {
             newintent.putExtra(BaseMap.EXTRA_MAXLON, a.getDouble(2));
             newintent.putExtra(BaseMap.EXTRA_MAXLAT, a.getDouble(3));
 
-        } catch (JSONException e) {
+        }
+        catch (JSONException e) {
             e.printStackTrace();
-        } finally {
+        }
+        finally {
             startActivity(newintent);
             finish();
         }
