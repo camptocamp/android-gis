@@ -7,7 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.SearchManager;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
@@ -16,8 +15,8 @@ import android.util.Log;
 
 import com.camptocamp.android.gis.BaseMap;
 import com.camptocamp.android.gis.R;
-import com.camptocamp.android.gis.control.SearchProvider;
 import com.camptocamp.android.gis.control.SearchHandler;
+import com.camptocamp.android.gis.control.SearchProvider;
 
 public class OpenaddressesSearch extends SearchProvider {
 
@@ -30,14 +29,6 @@ public class OpenaddressesSearch extends SearchProvider {
     private static final String JSON_FEATURES = "features";
     private static final String LABEL = "%1$s, %2$s (%3$s)";
     private static final String PLUS = "+";
-
-    public OpenaddressesSearch() {
-        super();
-    }
-
-    public OpenaddressesSearch(final Context ctxt) {
-        super(ctxt);
-    }
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
@@ -59,8 +50,7 @@ public class OpenaddressesSearch extends SearchProvider {
 
         if (!SearchManager.SUGGEST_URI_PATH_QUERY.equals(query)) {
             // Get search results as JSON
-            Context ctxt = (context == null) ? getContext() : context;
-            String url = String.format(ctxt.getString(R.string.osm_search_url), query);
+            String url = String.format(getContext().getString(R.string.osm_search_url), query);
             byte[] data = getData(url);
             // Parse JSON
             try {

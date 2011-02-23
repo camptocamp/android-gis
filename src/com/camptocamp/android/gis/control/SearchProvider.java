@@ -11,24 +11,12 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 
 import com.nutiteq.utils.IOUtils;
 
 public abstract class SearchProvider extends ContentProvider {
-
-    protected Context context;
-
-    public SearchProvider() {
-        super();
-    }
-
-    public SearchProvider(Context ctxt) {
-        super();
-        context = ctxt;
-    }
 
     protected byte[] getData(String url) {
         HttpEntity entity = null;

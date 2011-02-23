@@ -7,7 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.SearchManager;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
@@ -23,14 +22,6 @@ import com.nutiteq.components.WgsPoint;
 public class SwisstopoSearch extends SearchProvider {
 
     private static final String TAG = BaseMap.D + "SwisstopoSearch";
-
-    public SwisstopoSearch() {
-        super();
-    }
-
-    public SwisstopoSearch(final Context ctxt) {
-        super(ctxt);
-    }
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
@@ -52,8 +43,7 @@ public class SwisstopoSearch extends SearchProvider {
 
         if (!SearchManager.SUGGEST_URI_PATH_QUERY.equals(query)) {
             // Get search results as JSON
-            Context ctxt = (context == null) ? getContext() : context;
-            String url = String.format(ctxt.getString(R.string.st_url_search), System
+            String url = String.format(getContext().getString(R.string.st_url_search), System
                     .currentTimeMillis(), query);
             byte[] data = getData(url);
 
@@ -73,7 +63,8 @@ public class SwisstopoSearch extends SearchProvider {
                     int icon;
                     if (new String("cities").equals(service)) {
                         icon = R.drawable.building;
-                    } else {
+                    }
+                    else {
                         icon = R.drawable.search;
                     }
 
@@ -97,10 +88,12 @@ public class SwisstopoSearch extends SearchProvider {
 
                     answer.addRow(new Object[] { id, label, icon, elem.toString() });
                 }
-            } catch (JSONException e) {
+            }
+            catch (JSONException e) {
                 e.printStackTrace();
             }
-        } else {
+        }
+        else {
             Log.v(TAG, "Invalid query=" + query);
         }
         return answer;
