@@ -334,8 +334,17 @@ public abstract class BaseMap extends Activity {
                 zoomToBbox(new WgsPoint(minx, miny), new WgsPoint(maxx, maxy));
             }
             else if (intent.hasExtra(EXTRA_LAT) && intent.hasExtra(EXTRA_LON)) {
+                // FIXME: There is a problem zooming by more than 1 level at once
+                mapComponent.zoomIn();
+                mapComponent.zoomIn();
+                mapComponent.zoomIn();
+                mapComponent.zoomIn();
+                // mapComponent.setZoom(mapComponent.getMap().getMaxZoom()-1);
                 mapComponent.setMiddlePoint(new WgsPoint(intent.getDoubleExtra(EXTRA_LON, 0),
                         intent.getDoubleExtra(EXTRA_LAT, 0)));
+
+                Log.v(TAG, "lon=" + intent.getDoubleExtra(EXTRA_LON, 0) + ", lat="
+                        + intent.getDoubleExtra(EXTRA_LAT, 0));
             }
 
         }
