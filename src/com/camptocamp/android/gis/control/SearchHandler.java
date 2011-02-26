@@ -123,7 +123,7 @@ public abstract class SearchHandler extends ListActivity {
         protected void onPreExecute() {
             final Activity a = mActivity.get();
             if (a != null) {
-                dialog = ProgressDialog.show(a, "", "FIXME: Searching");
+                dialog = ProgressDialog.show(a, "", getString(R.string.diaog_searching));
             }
         }
 

@@ -78,8 +78,9 @@ public abstract class BaseMap extends Activity {
     protected int mHeight = 1;
     protected Context ctxt;
     protected RelativeLayout mapLayout;
+    protected boolean firstStart = true;
     private MapView mapView = null;
-    private List<String> mSelectedLayers = new ArrayList<String>();
+    private List<String> mSelectedLayers;
     private boolean onRetainCalled = false;
     private DirectionsWaiter waiter;
     private static final int MENU_PREFS = 3;
@@ -96,19 +97,21 @@ public abstract class BaseMap extends Activity {
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.main);
+        
         super.onCreate(savedInstanceState);
+
         ctxt = getApplicationContext();
         prefs = PreferenceManager.getDefaultSharedPreferences(ctxt);
+        mSelectedLayers = new ArrayList<String>();
+        mapLayout = ((RelativeLayout) findViewById(R.id.map));
+        waiter = new DirectionsWaiter(BaseMap.this);
+        onRetainCalled = false;
 
         // com.nutiteq.log.Log.setLogger(new
         // com.nutiteq.log.AndroidLogger(APP));
         // com.nutiteq.log.Log.enableAll();
-
-        onRetainCalled = false;
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.main);
-        mapLayout = ((RelativeLayout) findViewById(R.id.map));
-        waiter = new DirectionsWaiter(BaseMap.this);
 
         // Width and Height
         Display display = getWindowManager().getDefaultDisplay();
@@ -246,10 +249,20 @@ public abstract class BaseMap extends Activity {
         // bmc.setPanningStrategy(new EventDrivenPanning());
         bmc.setControlKeysHandler(new AndroidKeysHandler());
         bmc.setDownloadCounter(new NutiteqDownloadCounter());
-        bmc.setDownloadDisplay(new NutiteqDownloadDisplay());
+        bmc.setDownloadDisplay(new NutiteqDownloadDisplay() {
+            @Override
+            public void downloadCompleted() {
+                downloadComplete();
+                super.downloadCompleted();
+            }
+        });
         bmc.startMapping();
         bmc.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
         mapComponent = bmc;
+    }
+
+    protected void downloadComplete() {
+        firstStart = false;
     }
 
     protected void saveTrace(GpsProvider gpsProvider) {

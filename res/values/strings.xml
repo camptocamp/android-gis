@@ -20,6 +20,7 @@
     <string name="dialog_route_point_contact">Contact</string>
     <string name="dialog_route_point_onmap">Point on map</string>
     <string name="dialog_search_results">Search results</string>
+    <string name="diaog_searching">Searching ...</string>
     
     <string name="btn_apply">Apply</string>
     <string name="btn_yes">Yes</string>
