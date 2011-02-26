@@ -48,7 +48,7 @@ import com.nutiteq.ui.NutiteqDownloadDisplay;
 import com.nutiteq.ui.ThreadDrivenPanning;
 
 //FIXME: Rename to Map, then Map to ~MapOpenStreetMap
-public abstract class BaseMap extends Activity {
+public class BaseMap extends Activity {
 
     public static final String D = "C2C:";
     public static final String PKG = "com.camptocamp.android.gis";
@@ -92,8 +92,6 @@ public abstract class BaseMap extends Activity {
     protected boolean isTrackingPosition = false;
 
     protected int mProvider;
-
-    abstract protected void setDefaultMap();
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -238,6 +236,10 @@ public abstract class BaseMap extends Activity {
             startActivity(new Intent(BaseMap.this, Directions.class));
         }
         return true;
+    }
+
+    protected void setDefaultMap(){
+        // Override me
     }
 
     protected void setMapComponent(final MapComponent bmc, final GeoMap gm) {

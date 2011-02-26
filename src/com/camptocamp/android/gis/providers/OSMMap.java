@@ -29,6 +29,17 @@ public class OSMMap extends BaseMap {
                 startSearch(search_query, false, null, false);
             }
         });
+//        // Zoom
+//        findViewById(R.id.zoom_up).setOnClickListener(new View.OnClickListener() {
+//            public void onClick(final View v) {
+//                mapComponent.zoomIn();
+//            }
+//        });
+//        findViewById(R.id.zoom_down).setOnClickListener(new View.OnClickListener() {
+//            public void onClick(final View v) {
+//                mapComponent.zoomOut();
+//            }
+//        });
     }
 
     @Override
