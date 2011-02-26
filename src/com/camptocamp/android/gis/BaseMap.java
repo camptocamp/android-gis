@@ -71,6 +71,10 @@ public class BaseMap extends Activity {
     public static final String EXTRA_COORD = "extra_coord";
     public static final String EXTRA_LAT = "extra_lat";
     public static final String EXTRA_LON = "extra_lon";
+    
+    protected static final int MENU_PREFS = 90;
+    protected static final int MENU_RECORD = 91;
+    protected static final int MENU_DIRECTION = 92;
 
     protected SharedPreferences prefs;
     protected String search_query = "";
@@ -83,9 +87,6 @@ public class BaseMap extends Activity {
     private List<String> mSelectedLayers;
     private boolean onRetainCalled = false;
     private DirectionsWaiter waiter;
-    private static final int MENU_PREFS = 3;
-    private static final int MENU_RECORD = 4;
-    private static final int MENU_DIRECTION = 5;
 
     protected MapComponent mapComponent = null;
 
