@@ -5,7 +5,6 @@ import java.lang.ref.WeakReference;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Debug;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -21,7 +20,7 @@ public class Caching extends CachingChain {
     private static final String TAG = BaseMap.D + "C2CCaching";
 
     // An image is ~25kB => 1MB = 40 cached images
-    private static final int MEMORYCACHE = (int) Debug.getNativeHeapFreeSize(); // Bytes
+    private static final int MEMORYCACHE = 1024 * 1024; // Bytes
     public static final File FSCACHEDIR = new File(Environment.getExternalStorageDirectory()
             .getAbsolutePath()
             + "/Android/data/" + BaseMap.PKG + "/cache");
