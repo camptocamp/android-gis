@@ -183,6 +183,16 @@ public class BaseMap extends Activity {
     }
 
     @Override
+    public void onLowMemory() {
+        Log.i(TAG, "onLowMemory()");
+        cleanCaches();
+        initCaches();
+        if (mapComponent != null) {
+            mapComponent.moveMap(mapComponent.getCenterPoint());
+        }
+    }
+
+    @Override
     public Object onRetainNonConfigurationInstance() {
         android.util.Log.v(TAG, "onRetainNonConfigurationInstance");
         onRetainCalled = true;
