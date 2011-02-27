@@ -71,7 +71,7 @@ public class BaseMap extends Activity {
     public static final String EXTRA_COORD = "extra_coord";
     public static final String EXTRA_LAT = "extra_lat";
     public static final String EXTRA_LON = "extra_lon";
-    
+
     protected static final int MENU_PREFS = 90;
     protected static final int MENU_RECORD = 91;
     protected static final int MENU_DIRECTION = 92;
@@ -98,7 +98,7 @@ public class BaseMap extends Activity {
     public void onCreate(final Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
-        
+
         super.onCreate(savedInstanceState);
 
         ctxt = getApplicationContext();
@@ -239,7 +239,7 @@ public class BaseMap extends Activity {
         return true;
     }
 
-    protected void setDefaultMap(){
+    protected void setDefaultMap() {
         // Override me
     }
 
@@ -498,8 +498,20 @@ public class BaseMap extends Activity {
                 for (int i = 0; i < cl.length; i++) {
                     cl[i].deinitialize();
                 }
-                cache = null;
+                // cache = null;
                 System.gc();
+            }
+        }
+    }
+
+    protected void initCaches() {
+        if (mapComponent != null) {
+            Caching cache = (Caching) mapComponent.getCache();
+            if (cache != null) {
+                final Cache[] cl = cache.getCacheLevels();
+                for (int i = 0; i < cl.length; i++) {
+                    cl[i].initialize();
+                }
             }
         }
     }
