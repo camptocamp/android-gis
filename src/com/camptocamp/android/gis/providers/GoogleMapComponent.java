@@ -55,7 +55,9 @@ public class GoogleMapComponent extends MapComponent {
         }
     }
 
+    @Override
     protected Rectangle paintMap(final ImageBuffer buffer) {
+        // paint only one tile
         tileW = 1;
         tileH = 1;
         return super.paintMap(buffer);
@@ -86,6 +88,9 @@ public class GoogleMapComponent extends MapComponent {
         return displayTile != null && displayTile.image != null;
     }
 
+    /**
+     * Enqueue tile to download.
+     */
     protected void enqueueTiles() {
         if (neededTile != null) {
             if (neededTile.middlePoint.equals(middlePoint)) {
@@ -98,18 +103,26 @@ public class GoogleMapComponent extends MapComponent {
                 return;
             }
         }
-        neededTile = new GoogleTile(4 * displayWidth, 2 * displayHeight, getZoom(),
-                getCenterPoint(), middlePoint);
-        final MapTilesRequestor mapTilesRequestor = this;
-        timer.schedule(new TimerTask() {
-            GoogleTile tile = neededTile;
-            @Override
-            public void run() {
-                if (tile.isValid()) {
-                    taskRunner.enqueue(new GoogleTileTask(mapTilesRequestor, taskRunner, tile, 3));
+
+        MapPos middle = middlePoint;
+        
+        if (displayTile == null || Math.abs(displayTile.middlePoint.getX() - middle.getX()) > displayWidth / 2
+                || Math.abs(displayTile.middlePoint.getY() - middle.getY()) > displayHeight / 2) {
+            
+            System.out.println(middlePoint);
+            neededTile = new GoogleTile(6 * displayWidth, 6 * displayHeight, 
+                    displayedMap.mapPosToWgs(middle).toWgsPoint(), middle);
+            final MapTilesRequestor mapTilesRequestor = this;
+            timer.schedule(new TimerTask() {
+                GoogleTile tile = neededTile;
+                @Override
+                public void run() {
+                    if (tile.isValid()) {
+                        taskRunner.enqueue(new GoogleTileTask(mapTilesRequestor, taskRunner, tile, 3));
+                    }
                 }
-            }
-        }, 50);
+            }, 50);
+        }
     }
 
     public class GoogleTileTask implements Task, ResourceRequestor, ResourceStreamWaiter {
@@ -144,9 +157,8 @@ public class GoogleMapComponent extends MapComponent {
         public String resourcePath() {
             if (toRetrieve.isValid()) {
                 String url = MessageFormat.format(baseUrl, toRetrieve.center.getLat(),
-                        toRetrieve.center.getLon(), toRetrieve.zoom, toRetrieve.width,
+                        toRetrieve.center.getLon(), toRetrieve.middlePoint.getZoom(), toRetrieve.width,
                         toRetrieve.height);
-                // android.util.Log.d(getClass().getName(), url);
                 return url;
             }
             else {
@@ -177,20 +189,24 @@ public class GoogleMapComponent extends MapComponent {
         }
     }
 
+    /**
+     * The Google tile (single).
+     * 
+     * @author sbrunner
+     *
+     */
     private class GoogleTile {
         private final int width;
         private final int height;
-        private final int zoom;
         private final WgsPoint center;
         private final MapPos middlePoint;
         private Image image;
         private boolean valid = true;
 
-        private GoogleTile(final int width, final int height, final int zoom,
+        private GoogleTile(final int width, final int height,
                 final WgsPoint center, MapPos middlePoint) {
             this.width = width;
             this.height = height;
-            this.zoom = zoom;
             this.center = center;
             this.middlePoint = middlePoint.copy();
         }
@@ -199,6 +215,9 @@ public class GoogleMapComponent extends MapComponent {
             return valid;
         }
 
+        /**
+         * Don't need to download this tile any more.
+         */
         public void invalidate() {
             this.valid = false;
         }
