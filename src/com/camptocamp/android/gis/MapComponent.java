@@ -147,7 +147,7 @@ public class MapComponent extends BasicMapComponent {
             zoomIn();
         }
         // Initiate Easing
-        else if (panx > 0 || pany > 0) {
+        else if (panx != 0 || pany != 0) {
             mHandler.sendMessageDelayed(Message.obtain(mHandler, MOVE, panx, pany), DELAY);
         }
         lasttouch = now;
