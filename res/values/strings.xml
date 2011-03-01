@@ -60,8 +60,4 @@
     
     <string name="osm_overlay"></string>
     <string name="osm_search_url">http://openaddresses.org/addresses/?limit=50&amp;attrs=street,city,country&amp;no_geom=true&amp;query=%s</string>
-<!--&amp;box=%s&amp;epsg=%s</string>-->
-    
-<!--    <string name=""></string>-->
-
 </resources>
