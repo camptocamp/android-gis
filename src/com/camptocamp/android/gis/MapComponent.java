@@ -130,6 +130,11 @@ public class MapComponent extends BasicMapComponent {
         lastpany[0] = 0;
         lastpany[1] = 0;
     }
+    
+    public void pointerReleasedManual(final int x, final int y){
+        android.util.Log.e("TEST", "x="+x+", y="+y);
+        super.pointerReleased(x, y);
+    }
 
     @Override
     public void pointerReleased(final int x, final int y) {
@@ -153,8 +158,6 @@ public class MapComponent extends BasicMapComponent {
         lasttouch = now;
         lastposx = x;
         lastposy = y;
-
-        // FIXME: Get missing overlay tiles
     }
 
     public LocationSource getLocationSource() {

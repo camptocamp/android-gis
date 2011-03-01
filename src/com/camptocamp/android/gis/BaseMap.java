@@ -98,7 +98,6 @@ public class BaseMap extends Activity {
     public void onCreate(final Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
-
         super.onCreate(savedInstanceState);
 
         ctxt = getApplicationContext();
@@ -130,7 +129,8 @@ public class BaseMap extends Activity {
                         Toast.makeText(BaseMap.this, R.string.toast_gps_stop, Toast.LENGTH_SHORT)
                                 .show();
                         locationSource.quit();
-                    } else {
+                    }
+                    else {
                         Toast.makeText(BaseMap.this, R.string.toast_gps_start, Toast.LENGTH_SHORT)
                                 .show();
                         mapComponent.setLocationSource(locationSource);
@@ -221,7 +221,8 @@ public class BaseMap extends Activity {
         final int itemid = item.getItemId();
         if (itemid == MENU_PREFS) {
             startActivity(new Intent(BaseMap.this, Prefs.class));
-        } else if (itemid == MENU_RECORD) {
+        }
+        else if (itemid == MENU_RECORD) {
             // Record GPS trace
             final GpsProvider gpsProvider = (GpsProvider) mapComponent.getLocationSource();
             if (gpsProvider != null && gpsProvider.isRecord()) {
@@ -238,12 +239,14 @@ public class BaseMap extends Activity {
                 });
                 dialog.setNegativeButton(R.string.btn_no, null);
                 dialog.show();
-            } else if (isTrackingPosition) {
+            }
+            else if (isTrackingPosition) {
                 gpsProvider.setRecord(true);
                 item.setTitle(R.string.menu_record_stop);
                 item.setIcon(android.R.drawable.ic_media_pause);
             }
-        } else if (itemid == MENU_DIRECTION) {
+        }
+        else if (itemid == MENU_DIRECTION) {
             startActivity(new Intent(BaseMap.this, Directions.class));
         }
         return true;
@@ -299,10 +302,12 @@ public class BaseMap extends Activity {
             if (export != null && (file = export.export(gpsProvider.getTrace())) != "") {
                 Toast.makeText(ctxt, String.format(getString(R.string.toast_trace_saved), file),
                         Toast.LENGTH_LONG).show();
-            } else {
+            }
+            else {
                 Toast.makeText(ctxt, R.string.toast_trace_error, Toast.LENGTH_SHORT).show();
             }
-        } else {
+        }
+        else {
             Toast.makeText(ctxt, R.string.toast_trace_empty, Toast.LENGTH_SHORT).show();
         }
     }
@@ -336,10 +341,12 @@ public class BaseMap extends Activity {
                 }
             });
 
-        } else if (ACTION_TOAST.equals(action)) {
+        }
+        else if (ACTION_TOAST.equals(action)) {
             Toast.makeText(ctxt, intent.getStringExtra(EXTRA_MSG), Toast.LENGTH_SHORT).show();
 
-        } else if (ACTION_GOTO.equals(action)) {
+        }
+        else if (ACTION_GOTO.equals(action)) {
 
             if (intent.hasExtra(EXTRA_LABEL)) {
                 search_query = intent.getStringExtra(EXTRA_LABEL);
@@ -351,22 +358,23 @@ public class BaseMap extends Activity {
                 final double maxx = intent.getDoubleExtra(EXTRA_MAXLON, 0);
                 final double maxy = intent.getDoubleExtra(EXTRA_MAXLAT, 0);
                 zoomToBbox(new WgsPoint(minx, miny), new WgsPoint(maxx, maxy));
-            } else if (intent.hasExtra(EXTRA_LAT) && intent.hasExtra(EXTRA_LON)) {
+            }
+            else if (intent.hasExtra(EXTRA_LAT) && intent.hasExtra(EXTRA_LON)) {
                 // FIXME: There is a problem zooming by more than 1 level at
                 // once
-                mapComponent.zoomIn();
-                mapComponent.zoomIn();
-                mapComponent.zoomIn();
-                mapComponent.zoomIn();
                 // mapComponent.setZoom(mapComponent.getMap().getMaxZoom()-1);
+                mapComponent.zoomIn();
+                mapComponent.zoomIn();
+                mapComponent.zoomIn();
+                mapComponent.zoomIn();
                 mapComponent.setMiddlePoint(new WgsPoint(intent.getDoubleExtra(EXTRA_LON, 0),
                         intent.getDoubleExtra(EXTRA_LAT, 0)));
-
-                Log.v(TAG, "lon=" + intent.getDoubleExtra(EXTRA_LON, 0) + ", lat="
-                        + intent.getDoubleExtra(EXTRA_LAT, 0));
+                mapComponent.pointerReleasedManual(mapComponent.getWidth() / 2, mapComponent
+                        .getHeight() / 2);
             }
 
-        } else if (ACTION_ROUTE.equals(action)) {
+        }
+        else if (ACTION_ROUTE.equals(action)) {
             // Modal dialog
             final ProgressDialog dialog = ProgressDialog.show(BaseMap.this,
                     getString(R.string.dialog_route_create_title),
@@ -407,12 +415,14 @@ public class BaseMap extends Activity {
             if (startx < endx && starty > endy) {
                 from = new WgsPoint(startx, endy);
                 to = new WgsPoint(endx, starty);
-            } else if (startx > endx) {
+            }
+            else if (startx > endx) {
                 if (starty > endy) {
                     final WgsPoint tmp = to;
                     to = from;
                     from = tmp;
-                } else {
+                }
+                else {
                     from = new WgsPoint(endx, starty);
                     to = new WgsPoint(startx, endy);
                 }
@@ -444,7 +454,8 @@ public class BaseMap extends Activity {
             for (int i = 0; i < len; i++) {
                 try {
                     layers_names[i] = getString(r.getIdentifier(layers_keys[i], "string", PKG));
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     android.util.Log.e(TAG, e.getMessage());
                 }
             }
@@ -463,7 +474,8 @@ public class BaseMap extends Activity {
                         public void onClick(DialogInterface dialog, int which, boolean isChecked) {
                             if (isChecked) {
                                 mSelectedLayers.add(overlay.getLayersAll().get(layers_keys[which]));
-                            } else {
+                            }
+                            else {
                                 mSelectedLayers.remove(overlay.getLayersAll().get(
                                         layers_keys[which]));
                             }
@@ -476,21 +488,24 @@ public class BaseMap extends Activity {
                     if (mSelectedLayers.size() > 0) {
                         overlay.setLayersSelected(TextUtils.join(",", mSelectedLayers.toArray()));
                         gm.addTileOverlay(overlay);
-                    } else {
+                    }
+                    else {
                         gm.addTileOverlay(null);
                     }
                     mapComponent.refreshTileOverlay();
                 }
             });
             dialog.show();
-        } else {
+        }
+        else {
             GeoMap gm = mapComponent.getMap();
             if (mSelectedLayers.size() == 0) {
                 mSelectedLayers.add(PLACEHOLDER);
                 Toast.makeText(BaseMap.this, R.string.toast_overlay_added, Toast.LENGTH_SHORT)
                         .show();
                 gm.addTileOverlay(overlay);
-            } else {
+            }
+            else {
                 mSelectedLayers.remove(PLACEHOLDER);
                 gm.addTileOverlay(null);
                 Toast.makeText(BaseMap.this, R.string.toast_overlay_removed, Toast.LENGTH_SHORT)
