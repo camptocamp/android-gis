@@ -58,59 +58,23 @@ public abstract class SearchHandler extends ListActivity {
         }
     }
 
-    // protected void showResult(final Cursor c) {
-    // if (c != null) {
-    // if (c.getCount() > 0) {
-    // if (c.getCount() == 1) {
-    // c.moveToFirst();
-    // showResultActivity(c.getString(3));
-    // c.close();
-    // }
-    // else {
-    // Builder alertDialog = new Builder(SearchHandler.this);
-    // alertDialog.setTitle(R.string.dialog_search_results);
-    // alertDialog.setCursor(c, new OnClickListener() {
-    // @Override
-    // public void onClick(DialogInterface dialog, int which) {
-    // showResultActivity(c.getString(3));
-    // c.close();
-    // }
-    // }, SearchManager.SUGGEST_COLUMN_TEXT_1);
-    // alertDialog.create().show();
-    // }
-    // }
-    // else {
-    // Toast.makeText(getApplicationContext(), R.string.toast_no_result,
-    // Toast.LENGTH_SHORT).show();
-    // finish();
-    // }
-    // }
-    // }
-
-    // protected void showResultActivity(String jstring) {
-    // Intent newintent = new Intent(BaseMap.ACTION_GOTO);
-    // try {
-    // JSONObject json = new JSONObject(jstring);
-    // JSONArray a = json.getJSONArray(JSON_BBOX);
-    // newintent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-    // newintent.putExtra(BaseMap.EXTRA_LABEL, json.getString(JSON_LABEL));
-    //
-    // // Bbox
-    // newintent.putExtra(BaseMap.EXTRA_MINLON, a.getDouble(0));
-    // newintent.putExtra(BaseMap.EXTRA_MINLAT, a.getDouble(1));
-    // newintent.putExtra(BaseMap.EXTRA_MAXLON, a.getDouble(2));
-    // newintent.putExtra(BaseMap.EXTRA_MAXLAT, a.getDouble(3));
-    //
-    // }
-    // catch (JSONException e) {
-    // e.printStackTrace();
-    // }
-    // finally {
-    // startActivity(newintent);
-    // finish();
-    // }
-    // }
-
+    /**
+     * The text display in the waiting dialogue
+     * @return the text resource id.
+     */
+    protected int getWaitingText() {
+        return R.string.dialog_searching;
+    }
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (dialog != null) {
+            dialog.dismiss();
+            dialog = null;
+        }
+    }
+    
     private class QueryTask extends AsyncTask<String, Void, Cursor> {
 
         private WeakReference<Activity> mActivity;
@@ -123,7 +87,7 @@ public abstract class SearchHandler extends ListActivity {
         protected void onPreExecute() {
             final Activity a = mActivity.get();
             if (a != null) {
-                dialog = ProgressDialog.show(a, "", getString(R.string.diaog_searching));
+                dialog = ProgressDialog.show(a, "", getString(getWaitingText()));
             }
         }
 
@@ -134,12 +98,13 @@ public abstract class SearchHandler extends ListActivity {
         }
 
         @Override
-        protected void onPostExecute(Cursor c) {
-            final Activity a = mActivity.get();
-            if (a != null) {
+        protected void onPostExecute(Cursor cursor) {
+            final Activity activity = mActivity.get();
+            if (activity != null && dialog != null) {
                 dialog.dismiss();
+                dialog = null;
             }
-            showResult(c);
+            showResult(cursor);
         }
 
     }
