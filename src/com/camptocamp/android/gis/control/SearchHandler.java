@@ -100,11 +100,11 @@ public abstract class SearchHandler extends ListActivity {
         @Override
         protected void onPostExecute(Cursor cursor) {
             final Activity activity = mActivity.get();
+            showResult(cursor);
             if (activity != null && dialog != null) {
                 dialog.dismiss();
                 dialog = null;
             }
-            showResult(cursor);
         }
 
     }
