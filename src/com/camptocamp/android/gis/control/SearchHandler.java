@@ -40,10 +40,11 @@ public abstract class SearchHandler extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-
         // Handle search query (just send the query)
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             query = intent.getStringExtra(SearchManager.QUERY);
+//            query = "三田";
+            
             if (search != null) {
                 new QueryTask(SearchHandler.this).execute(query);
             }
@@ -60,12 +61,13 @@ public abstract class SearchHandler extends ListActivity {
 
     /**
      * The text display in the waiting dialogue
+     * 
      * @return the text resource id.
      */
     protected int getWaitingText() {
         return R.string.dialog_searching;
     }
-    
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -74,7 +76,7 @@ public abstract class SearchHandler extends ListActivity {
             dialog = null;
         }
     }
-    
+
     private class QueryTask extends AsyncTask<String, Void, Cursor> {
 
         private WeakReference<Activity> mActivity;
