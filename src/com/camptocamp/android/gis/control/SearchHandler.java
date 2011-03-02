@@ -29,8 +29,8 @@ public abstract class SearchHandler extends ListActivity {
     public static final String JSON_LABEL = "label";
     public static final String JSON_ID = "label";
 
-    protected SearchProvider search = null;
-    protected String query = "";
+    protected SearchProvider mSearch = null;
+    protected String mQuery = "";
 
     abstract protected void showResult(final Cursor c);
 
@@ -42,11 +42,11 @@ public abstract class SearchHandler extends ListActivity {
         Intent intent = getIntent();
         // Handle search query (just send the query)
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            query = intent.getStringExtra(SearchManager.QUERY);
+            mQuery = intent.getStringExtra(SearchManager.QUERY);
 //            query = "三田";
             
-            if (search != null) {
-                new QueryTask(SearchHandler.this).execute(query);
+            if (mSearch != null) {
+                new QueryTask(SearchHandler.this).execute(mQuery);
             }
             else {
                 Toast.makeText(getApplicationContext(), R.string.toast_no_search_provider,
@@ -77,7 +77,7 @@ public abstract class SearchHandler extends ListActivity {
         }
     }
 
-    private class QueryTask extends AsyncTask<String, Void, Cursor> {
+    protected class QueryTask extends AsyncTask<String, Void, Cursor> {
 
         private WeakReference<Activity> mActivity;
 
@@ -95,7 +95,7 @@ public abstract class SearchHandler extends ListActivity {
 
         @Override
         protected Cursor doInBackground(String... query) {
-            return search.query(Uri.parse(String.format(SRC, BaseMap.PKG, query[0])), null, null,
+            return mSearch.query(Uri.parse(String.format(SRC, BaseMap.PKG, query[0])), null, null,
                     null, null);
         }
 

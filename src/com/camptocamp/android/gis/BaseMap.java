@@ -76,21 +76,21 @@ public class BaseMap extends Activity {
     protected static final int MENU_RECORD = 91;
     protected static final int MENU_DIRECTION = 92;
 
-    protected SharedPreferences prefs;
-    protected String search_query = "";
+    protected SharedPreferences mPreferances;
+    protected String mSearchQuery = "";
     protected int mWidth = 1;
     protected int mHeight = 1;
-    protected Context ctxt;
-    protected RelativeLayout mapLayout;
-    protected boolean firstStart = true;
-    private MapView mapView = null;
+    protected Window mWindow;
+    protected RelativeLayout mMapLayout;
+    protected boolean mFirstStart = true;
+    private MapView mMapView = null;
     private List<String> mSelectedLayers;
-    private boolean onRetainCalled = false;
-    private DirectionsWaiter waiter;
+    private boolean mRetainCalled = false;
+    private DirectionsWaiter mWaiter;
 
-    protected MapComponent mapComponent = null;
+    protected MapComponent mMapComponent = null;
 
-    protected boolean isTrackingPosition = false;
+    protected boolean mTrackingPosition = false;
 
     protected int mProvider;
 
@@ -100,12 +100,12 @@ public class BaseMap extends Activity {
         setContentView(R.layout.main);
         super.onCreate(savedInstanceState);
 
-        ctxt = getApplicationContext();
-        prefs = PreferenceManager.getDefaultSharedPreferences(ctxt);
+        mWindow = getWindow();
+        mPreferances = PreferenceManager.getDefaultSharedPreferences(mWindow.getContext());
         mSelectedLayers = new ArrayList<String>();
-        mapLayout = ((RelativeLayout) findViewById(R.id.map));
-        waiter = new DirectionsWaiter(BaseMap.this);
-        onRetainCalled = false;
+        mMapLayout = ((RelativeLayout) findViewById(R.id.map));
+        mWaiter = new DirectionsWaiter(BaseMap.this);
+        mRetainCalled = false;
 
         // com.nutiteq.log.Log.setLogger(new
         // com.nutiteq.log.AndroidLogger(APP));
@@ -124,8 +124,8 @@ public class BaseMap extends Activity {
         btn_gps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mapComponent != null) {
-                    if (isTrackingPosition) {
+                if (mMapComponent != null) {
+                    if (mTrackingPosition) {
                         Toast.makeText(BaseMap.this, R.string.toast_gps_stop, Toast.LENGTH_SHORT)
                                 .show();
                         locationSource.quit();
@@ -133,9 +133,9 @@ public class BaseMap extends Activity {
                     else {
                         Toast.makeText(BaseMap.this, R.string.toast_gps_start, Toast.LENGTH_SHORT)
                                 .show();
-                        mapComponent.setLocationSource(locationSource);
+                        mMapComponent.setLocationSource(locationSource);
                     }
-                    isTrackingPosition = !isTrackingPosition;
+                    mTrackingPosition = !mTrackingPosition;
                 }
             }
         });
@@ -153,15 +153,15 @@ public class BaseMap extends Activity {
         super.onDestroy();
         cleanCaches();
         mSelectedLayers.clear();
-        if (mapView != null) {
-            mapView.clean();
-            mapView = null;
+        if (mMapView != null) {
+            mMapView.clean();
+            mMapView = null;
         }
-        if (!onRetainCalled) {
+        if (!mRetainCalled) {
             android.util.Log.v(TAG, "onDestroy(): clean mapComponent");
-            if (mapComponent != null) {
-                mapComponent.stopMapping();
-                mapComponent = null;
+            if (mMapComponent != null) {
+                mMapComponent.stopMapping();
+                mMapComponent = null;
             }
         }
     }
@@ -187,16 +187,16 @@ public class BaseMap extends Activity {
         Log.i(TAG, "onLowMemory()");
         cleanCaches();
         initCaches();
-        if (mapComponent != null) {
-            mapComponent.moveMap(mapComponent.getCenterPoint());
+        if (mMapComponent != null) {
+            mMapComponent.moveMap(mMapComponent.getCenterPoint());
         }
     }
 
     @Override
     public Object onRetainNonConfigurationInstance() {
         android.util.Log.v(TAG, "onRetainNonConfigurationInstance");
-        onRetainCalled = true;
-        return mapComponent;
+        mRetainCalled = true;
+        return mMapComponent;
     }
 
     @Override
@@ -224,7 +224,7 @@ public class BaseMap extends Activity {
         }
         else if (itemid == MENU_RECORD) {
             // Record GPS trace
-            final GpsProvider gpsProvider = (GpsProvider) mapComponent.getLocationSource();
+            final GpsProvider gpsProvider = (GpsProvider) mMapComponent.getLocationSource();
             if (gpsProvider != null && gpsProvider.isRecord()) {
                 gpsProvider.setRecord(false);
                 item.setTitle(R.string.menu_record_start);
@@ -240,7 +240,7 @@ public class BaseMap extends Activity {
                 dialog.setNegativeButton(R.string.btn_no, null);
                 dialog.show();
             }
-            else if (isTrackingPosition) {
+            else if (mTrackingPosition) {
                 gpsProvider.setRecord(true);
                 item.setTitle(R.string.menu_record_stop);
                 item.setIcon(android.R.drawable.ic_media_pause);
@@ -259,7 +259,7 @@ public class BaseMap extends Activity {
     protected void setMapComponent(final MapComponent bmc, final GeoMap gm) {
         // cleanCaches(); // FIXME: This is a test
         bmc.setMap(gm);
-        bmc.setNetworkCache(new Caching(ctxt));
+        bmc.setNetworkCache(new Caching(mWindow.getContext()));
         // bmc.setImageProcessor(new NightModeImageProcessor());
         bmc.setPanningStrategy(new ThreadDrivenPanning());
         // bmc.setPanningStrategy(new EventDrivenPanning());
@@ -274,17 +274,17 @@ public class BaseMap extends Activity {
         });
         bmc.startMapping();
         bmc.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
-        mapComponent = bmc;
+        mMapComponent = bmc;
     }
 
     protected void downloadComplete() {
-        firstStart = false;
+        mFirstStart = false;
     }
 
     protected void saveTrace(GpsProvider gpsProvider) {
         if (gpsProvider.getTrace().size() > 0) {
             // Choose format
-            int format = Integer.parseInt(prefs.getString(Prefs.KEY_TRACE_FORMAT,
+            int format = Integer.parseInt(mPreferances.getString(Prefs.KEY_TRACE_FORMAT,
                     Prefs.DEFAULT_TRACE_FORMAT));
             ExportTrace export;
             switch (format) {
@@ -300,15 +300,15 @@ public class BaseMap extends Activity {
             // Export
             String file = "";
             if (export != null && (file = export.export(gpsProvider.getTrace())) != "") {
-                Toast.makeText(ctxt, String.format(getString(R.string.toast_trace_saved), file),
+                Toast.makeText(mWindow.getContext(), String.format(getString(R.string.toast_trace_saved), file),
                         Toast.LENGTH_LONG).show();
             }
             else {
-                Toast.makeText(ctxt, R.string.toast_trace_error, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mWindow.getContext(), R.string.toast_trace_error, Toast.LENGTH_SHORT).show();
             }
         }
         else {
-            Toast.makeText(ctxt, R.string.toast_trace_empty, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mWindow.getContext(), R.string.toast_trace_empty, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -326,12 +326,12 @@ public class BaseMap extends Activity {
 
         if (ACTION_PICK.equals(action)) {
             // Select place mode
-            Toast.makeText(ctxt, R.string.toast_pick_point, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mWindow.getContext(), R.string.toast_pick_point, Toast.LENGTH_SHORT).show();
 
-            mapComponent.setMapListener(new MapView(ctxt, mapComponent) {
+            mMapComponent.setMapListener(new MapView(mWindow.getContext(), mMapComponent) {
                 @Override
                 public void mapClicked(WgsPoint p) {
-                    mapComponent.setMapListener(mapView);
+                    mMapComponent.setMapListener(mMapView);
                     Intent i = new Intent(BaseMap.this, Directions.class);
                     i.putExtra(EXTRA_FIELD, intent.getIntExtra(EXTRA_FIELD, R.id.start));
                     i.putExtra(EXTRA_COORD, p.getLon() + "," + p.getLat());
@@ -343,14 +343,14 @@ public class BaseMap extends Activity {
 
         }
         else if (ACTION_TOAST.equals(action)) {
-            Toast.makeText(ctxt, intent.getStringExtra(EXTRA_MSG), Toast.LENGTH_SHORT).show();
+            Toast.makeText(mWindow.getContext(), intent.getStringExtra(EXTRA_MSG), Toast.LENGTH_SHORT).show();
 
         }
         else if (ACTION_GOTO.equals(action)) {
 
             if (intent.hasExtra(EXTRA_LABEL)) {
-                search_query = intent.getStringExtra(EXTRA_LABEL);
-                ((TextView) findViewById(R.id.search_query)).setText(search_query);
+                mSearchQuery = intent.getStringExtra(EXTRA_LABEL);
+                ((TextView) findViewById(R.id.search_query)).setText(mSearchQuery);
 
                 // Get positions and Zoom
                 final double minx = intent.getDoubleExtra(EXTRA_MINLON, 0);
@@ -363,13 +363,13 @@ public class BaseMap extends Activity {
                 // FIXME: There is a problem zooming by more than 1 level at
                 // once
                 // mapComponent.setZoom(mapComponent.getMap().getMaxZoom()-1);
-                mapComponent.zoomIn();
-                mapComponent.zoomIn();
-                mapComponent.zoomIn();
-                mapComponent.zoomIn();
-                mapComponent.setMiddlePoint(new WgsPoint(intent.getDoubleExtra(EXTRA_LON, 0),
+                mMapComponent.zoomIn();
+                mMapComponent.zoomIn();
+                mMapComponent.zoomIn();
+                mMapComponent.zoomIn();
+                mMapComponent.setMiddlePoint(new WgsPoint(intent.getDoubleExtra(EXTRA_LON, 0),
                         intent.getDoubleExtra(EXTRA_LAT, 0)));
-                mapComponent.pointerReleasedManual(mapComponent.getWidth() / 2, mapComponent
+                mMapComponent.pointerReleasedManual(mMapComponent.getWidth() / 2, mMapComponent
                         .getHeight() / 2);
             }
 
@@ -391,7 +391,7 @@ public class BaseMap extends Activity {
             WgsPoint to = new WgsPoint(endx, endy);
 
             // Get route and draw it
-            YourNavigationDirections yours = new YourNavigationDirections(waiter, from, to, type,
+            YourNavigationDirections yours = new YourNavigationDirections(mWaiter, from, to, type,
                     YourNavigationDirections.ROUTE_TYPE_FASTEST) {
                 @Override
                 public void dataRetrieved(final byte[] data) {
@@ -405,7 +405,7 @@ public class BaseMap extends Activity {
                     dialog.dismiss();
                 }
             };
-            mapComponent.enqueueDownload(yours, Cache.CACHE_LEVEL_NONE);
+            mMapComponent.enqueueDownload(yours, Cache.CACHE_LEVEL_NONE);
 
             // OpenLSDirections ols = new OpenLSDirections(waiter,
             // OpenLSDirections.NUTITEQ_DEFAULT_SERVICE_URL, "en-US", from, to);
@@ -432,15 +432,15 @@ public class BaseMap extends Activity {
     }
 
     protected void setMapView() {
-        if (mapView != null) {
-            mapView.clean();
-            mapLayout.removeView(mapView);
-            mapView = null;
+        if (mMapView != null) {
+            mMapView.clean();
+            mMapLayout.removeView(mMapView);
+            mMapView = null;
         }
-        mapView = new MapView(ctxt, mapComponent);
-        mapLayout.addView(mapView);
-        mapView.setClickable(true);
-        mapView.setEnabled(true);
+        mMapView = new MapView(mWindow.getContext(), mMapComponent);
+        mMapLayout.addView(mMapView);
+        mMapView.setClickable(true);
+        mMapView.setEnabled(true);
     }
 
     protected void setOverlay(final Overlay overlay) {
@@ -484,7 +484,7 @@ public class BaseMap extends Activity {
             dialog.setNeutralButton(R.string.btn_apply, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    GeoMap gm = mapComponent.getMap();
+                    GeoMap gm = mMapComponent.getMap();
                     if (mSelectedLayers.size() > 0) {
                         overlay.setLayersSelected(TextUtils.join(",", mSelectedLayers.toArray()));
                         gm.addTileOverlay(overlay);
@@ -492,13 +492,13 @@ public class BaseMap extends Activity {
                     else {
                         gm.addTileOverlay(null);
                     }
-                    mapComponent.refreshTileOverlay();
+                    mMapComponent.refreshTileOverlay();
                 }
             });
             dialog.show();
         }
         else {
-            GeoMap gm = mapComponent.getMap();
+            GeoMap gm = mMapComponent.getMap();
             if (mSelectedLayers.size() == 0) {
                 mSelectedLayers.add(PLACEHOLDER);
                 Toast.makeText(BaseMap.this, R.string.toast_overlay_added, Toast.LENGTH_SHORT)
@@ -511,13 +511,13 @@ public class BaseMap extends Activity {
                 Toast.makeText(BaseMap.this, R.string.toast_overlay_removed, Toast.LENGTH_SHORT)
                         .show();
             }
-            mapComponent.refreshTileOverlay();
+            mMapComponent.refreshTileOverlay();
         }
     }
 
     protected void cleanCaches() {
-        if (mapComponent != null) {
-            Caching cache = (Caching) mapComponent.getCache();
+        if (mMapComponent != null) {
+            Caching cache = (Caching) mMapComponent.getCache();
             if (cache != null) {
                 final Cache[] cl = cache.getCacheLevels();
                 for (int i = 0; i < cl.length; i++) {
@@ -530,8 +530,8 @@ public class BaseMap extends Activity {
     }
 
     protected void initCaches() {
-        if (mapComponent != null) {
-            Caching cache = (Caching) mapComponent.getCache();
+        if (mMapComponent != null) {
+            Caching cache = (Caching) mMapComponent.getCache();
             if (cache != null) {
                 final Cache[] cl = cache.getCacheLevels();
                 for (int i = 0; i < cl.length; i++) {
@@ -542,19 +542,19 @@ public class BaseMap extends Activity {
     }
 
     private void zoomToBbox(WgsPoint min, WgsPoint max) {
-        mapComponent.setZoom(mapComponent.getMap().getMinZoom());
-        mapComponent.setBoundingBox(new WgsBoundingBox(min, max));
+        mMapComponent.setZoom(mMapComponent.getMap().getMinZoom());
+        mMapComponent.setBoundingBox(new WgsBoundingBox(min, max));
     }
 
     public MapComponent getMapComponent() {
-        return mapComponent;
+        return mMapComponent;
     }
 
     public boolean isTrackingPosition() {
-        return isTrackingPosition;
+        return mTrackingPosition;
     }
 
     public void setTrackingPosition(boolean isTrackingPosition) {
-        this.isTrackingPosition = isTrackingPosition;
+        this.mTrackingPosition = isTrackingPosition;
     }
 }

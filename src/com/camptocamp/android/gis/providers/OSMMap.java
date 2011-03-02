@@ -26,7 +26,7 @@ public class OSMMap extends BaseMap {
         findViewById(R.id.search_bar).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startSearch(search_query, false, null, false);
+                startSearch(mSearchQuery, false, null, false);
             }
         });
 //        // Zoom
@@ -73,16 +73,16 @@ public class OSMMap extends BaseMap {
         int zoom = -1;
         WgsPoint pt = new WgsPoint(LNG, LAT);
         // Reset mapComponent
-        if (mapComponent != null) {
+        if (mMapComponent != null) {
             // Save zoom and point
-            zoom = mapComponent.getZoom();
-            pt = mapComponent.getMiddlePoint();
+            zoom = mMapComponent.getZoom();
+            pt = mMapComponent.getMiddlePoint();
             // Save location provider
-            if (isTrackingPosition) {
-                loc = mapComponent.getLocationSource();
+            if (mTrackingPosition) {
+                loc = mMapComponent.getLocationSource();
             }
-            mapComponent.stopMapping();
-            mapComponent = null;
+            mMapComponent.stopMapping();
+            mMapComponent = null;
         }
         // Select map
         final Object savedMapComponent = getLastNonConfigurationInstance();
@@ -94,11 +94,11 @@ public class OSMMap extends BaseMap {
                 break;
             }
             if (loc != null) {
-                mapComponent.setLocationSource(loc);
+                mMapComponent.setLocationSource(loc);
             }
         } else {
             android.util.Log.v(TAG, "using savedMapComponent");
-            mapComponent = (MapComponent) savedMapComponent;
+            mMapComponent = (MapComponent) savedMapComponent;
         }
         setMapView();
     }
