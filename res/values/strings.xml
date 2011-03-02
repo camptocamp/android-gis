@@ -14,18 +14,20 @@
     <string name="dialog_fs_cache_remove">Do you want to remove the cache ?</string>
     <string name="dialog_save_trace">Do you want save this GPS trace ?</string>
     <string name="dialog_route_create_title">Routing</string>
-    <string name="dialog_route_create_messg">Creating route...\nPlease wait!</string>
+    <string name="dialog_route_create_messg">Creating route…\nPlease wait!</string>
     <string name="dialog_route_fromto">From/To:</string>
     <string name="dialog_route_point_title">Choose point</string>
     <string name="dialog_route_point_contact">Contact</string>
     <string name="dialog_route_point_onmap">Point on map</string>
     <string name="dialog_search_results">Search results</string>
-    <string name="dialog_searching">Searching ...</string>
+    <string name="dialog_searching">Searching…</string>
     
     <string name="btn_apply">Apply</string>
+    <string name="btn_ok">OK</string>
     <string name="btn_yes">Yes</string>
     <string name="btn_no">No</string>
     <string name="btn_cancel">Cancel</string>
+    <string name="btn_add">Add</string>
     
     <string name="menu_osm">OpenStreetMap</string>
     <string name="menu_prefs">Options</string>
@@ -35,18 +37,18 @@
     
     <string name="prefs_fscacheremove">Remove cache files</string>
     
-    <string name="toast_gps_start">GPS tracking started !</string>
-    <string name="toast_gps_stop">GPS tracking stopped !</string>
-    <string name="toast_gps_disabled">Enable GPS in Preferences and retry !</string>
+    <string name="toast_gps_start">GPS tracking started!</string>
+    <string name="toast_gps_stop">GPS tracking stopped!</string>
+    <string name="toast_gps_disabled">Enable GPS in Preferences and retry!</string>
     <string name="toast_no_layer">No layer available!</string>
-    <string name="toast_overlay_added">Overlay added !</string>
-    <string name="toast_overlay_removed">Overlay removed !</string>
-    <string name="toast_fscacheremove">Cache removed !</string>
-    <string name="toast_fscacheremove_error">Error removing cache !</string>
+    <string name="toast_overlay_added">Overlay added!</string>
+    <string name="toast_overlay_removed">Overlay removed!</string>
+    <string name="toast_fscacheremove">Cache removed!</string>
+    <string name="toast_fscacheremove_error">Error removing cache!</string>
     <string name="toast_trace_saved">Trace successfully saved to: %s</string>
-    <string name="toast_trace_empty">Trace is empty !</string>
-    <string name="toast_trace_error">Error exporting trace !</string>
-    <string name="toast_route_error">Error creating trace ! (network error)</string>
+    <string name="toast_trace_empty">Trace is empty!</string>
+    <string name="toast_trace_error">Error exporting trace!</string>
+    <string name="toast_route_error">Error creating trace! (network error)</string>
     <string name="toast_route_dst_not_found">Destination address not found!</string>
     <string name="toast_route_src_not_found">From address not found!</string>
     <string name="toast_route_same">From and destination address are the same!</string>
