@@ -26,7 +26,7 @@ public class OSMMap extends BaseMap {
         findViewById(R.id.search_bar).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startSearch(search_query, false, null, false);
+                onSearchRequested();
             }
         });
 //        // Zoom
@@ -65,6 +65,12 @@ public class OSMMap extends BaseMap {
             return true;
         }
         return super.onMenuItemSelected(featureId, item);
+    }
+
+    @Override
+    public boolean onSearchRequested() {
+        startSearch(search_query, false, null, false);
+        return true;
     }
 
     protected void selectMap(int provider_id) {

@@ -346,11 +346,13 @@ public class BaseMap extends Activity {
 
         }
         else if (ACTION_GOTO.equals(action)) {
-
+            // Get label
             if (intent.hasExtra(EXTRA_LABEL)) {
                 search_query = intent.getStringExtra(EXTRA_LABEL);
                 ((TextView) findViewById(R.id.search_query)).setText(search_query);
-
+            }
+            // Get coordinates or bbox
+            if (intent.hasExtra(EXTRA_MINLAT)) {
                 // Get positions and Zoom
                 final double minx = intent.getDoubleExtra(EXTRA_MINLON, 0);
                 final double miny = intent.getDoubleExtra(EXTRA_MINLAT, 0);
@@ -359,15 +361,14 @@ public class BaseMap extends Activity {
                 zoomToBbox(new WgsPoint(minx, miny), new WgsPoint(maxx, maxy));
             }
             else if (intent.hasExtra(EXTRA_LAT) && intent.hasExtra(EXTRA_LON)) {
-                // FIXME: There is a problem zooming by more than 1 level at
-                // once
-                // mapComponent.setZoom(mapComponent.getMap().getMaxZoom()-1);
+                // FIXME: There is a problem zooming more than 1 level at once
                 mapComponent.zoomIn();
                 mapComponent.zoomIn();
                 mapComponent.zoomIn();
                 mapComponent.zoomIn();
                 mapComponent.setMiddlePoint(new WgsPoint(intent.getDoubleExtra(EXTRA_LON, 0),
                         intent.getDoubleExtra(EXTRA_LAT, 0)));
+                // Open label
                 mapComponent.pointerReleasedManual(mapComponent.getWidth() / 2, mapComponent
                         .getHeight() / 2);
             }
