@@ -299,15 +299,19 @@ public class BaseMap extends Activity {
             // Export
             String file = "";
             if (export != null && (file = export.export(gpsProvider.getTrace())) != "") {
-                Toast.makeText(mWindow.getContext(), String.format(getString(R.string.toast_trace_saved), file),
+                Toast.makeText(mWindow.getContext(),
+                        String.format(getString(R.string.toast_trace_saved), file),
                         Toast.LENGTH_LONG).show();
             }
             else {
-                Toast.makeText(mWindow.getContext(), R.string.toast_trace_error, Toast.LENGTH_SHORT).show();
+                Toast
+                        .makeText(mWindow.getContext(), R.string.toast_trace_error,
+                                Toast.LENGTH_SHORT).show();
             }
         }
         else {
-            Toast.makeText(mWindow.getContext(), R.string.toast_trace_empty, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mWindow.getContext(), R.string.toast_trace_empty, Toast.LENGTH_SHORT)
+                    .show();
         }
     }
 
@@ -325,7 +329,8 @@ public class BaseMap extends Activity {
 
         if (ACTION_PICK.equals(action)) {
             // Select place mode
-            Toast.makeText(mWindow.getContext(), R.string.toast_pick_point, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mWindow.getContext(), R.string.toast_pick_point, Toast.LENGTH_SHORT)
+                    .show();
 
             mMapComponent.setMapListener(new MapView(mWindow.getContext(), mMapComponent) {
                 @Override
@@ -342,15 +347,19 @@ public class BaseMap extends Activity {
 
         }
         else if (ACTION_TOAST.equals(action)) {
-            Toast.makeText(mWindow.getContext(), intent.getStringExtra(EXTRA_MSG), Toast.LENGTH_SHORT).show();
+            Toast.makeText(mWindow.getContext(), intent.getStringExtra(EXTRA_MSG),
+                    Toast.LENGTH_SHORT).show();
 
         }
         else if (ACTION_GOTO.equals(action)) {
-
+            // Get label
             if (intent.hasExtra(EXTRA_LABEL)) {
+
                 mSearchQuery = intent.getStringExtra(EXTRA_LABEL);
                 ((TextView) findViewById(R.id.search_query)).setText(mSearchQuery);
-
+            }
+            // Get coordinates or bbox
+            if (intent.hasExtra(EXTRA_MINLAT)) {
                 // Get positions and Zoom
                 final double minx = intent.getDoubleExtra(EXTRA_MINLON, 0);
                 final double miny = intent.getDoubleExtra(EXTRA_MINLAT, 0);
@@ -359,15 +368,14 @@ public class BaseMap extends Activity {
                 zoomToBbox(new WgsPoint(minx, miny), new WgsPoint(maxx, maxy));
             }
             else if (intent.hasExtra(EXTRA_LAT) && intent.hasExtra(EXTRA_LON)) {
-                // FIXME: There is a problem zooming by more than 1 level at
-                // once
-                // mapComponent.setZoom(mapComponent.getMap().getMaxZoom()-1);
+                // FIXME: There is a problem zooming more than 1 level at once
                 mMapComponent.zoomIn();
                 mMapComponent.zoomIn();
                 mMapComponent.zoomIn();
                 mMapComponent.zoomIn();
                 mMapComponent.setMiddlePoint(new WgsPoint(intent.getDoubleExtra(EXTRA_LON, 0),
                         intent.getDoubleExtra(EXTRA_LAT, 0)));
+                // Open label
                 mMapComponent.pointerReleasedManual(mMapComponent.getWidth() / 2, mMapComponent
                         .getHeight() / 2);
             }

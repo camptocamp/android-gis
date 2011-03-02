@@ -26,20 +26,9 @@ public class OSMMap extends BaseMap {
         findViewById(R.id.search_bar).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startSearch(mSearchQuery, false, null, false);
+                onSearchRequested();
             }
         });
-//        // Zoom
-//        findViewById(R.id.zoom_up).setOnClickListener(new View.OnClickListener() {
-//            public void onClick(final View v) {
-//                mapComponent.zoomIn();
-//            }
-//        });
-//        findViewById(R.id.zoom_down).setOnClickListener(new View.OnClickListener() {
-//            public void onClick(final View v) {
-//                mapComponent.zoomOut();
-//            }
-//        });
     }
 
     @Override
@@ -65,6 +54,12 @@ public class OSMMap extends BaseMap {
             return true;
         }
         return super.onMenuItemSelected(featureId, item);
+    }
+
+    @Override
+    public boolean onSearchRequested() {
+        startSearch(mSearchQuery, false, null, false);
+        return true;
     }
 
     protected void selectMap(int provider_id) {
