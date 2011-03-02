@@ -43,8 +43,6 @@ public abstract class SearchHandler extends ListActivity {
         // Handle search query (just send the query)
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             query = intent.getStringExtra(SearchManager.QUERY);
-//            query = "三田";
-            
             if (search != null) {
                 new QueryTask(SearchHandler.this).execute(query);
             }
@@ -77,7 +75,7 @@ public abstract class SearchHandler extends ListActivity {
         }
     }
 
-    private class QueryTask extends AsyncTask<String, Void, Cursor> {
+    protected class QueryTask extends AsyncTask<String, Void, Cursor> {
 
         private WeakReference<Activity> mActivity;
 
