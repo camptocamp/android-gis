@@ -33,13 +33,15 @@ public class GoogleMapComponent extends MapComponent {
     protected GoogleTile neededTile;
     protected Image logo;
     protected final String baseUrl;
+    private String lang = "";
 
     protected Timer timer = new Timer();
 
     public GoogleMapComponent(String baseUrl, WgsBoundingBox bbox, WgsPoint middlePoint, int width,
-            int height, int zoom) {
+            int height, int zoom, String lang) {
         super(bbox, middlePoint, width, height, zoom);
         this.baseUrl = baseUrl;
+        this.lang = lang;
         try {
             logo = Image.createImage("/images/google_logo_small.png");
         }
@@ -158,7 +160,7 @@ public class GoogleMapComponent extends MapComponent {
             if (toRetrieve.isValid()) {
                 String url = MessageFormat.format(baseUrl, toRetrieve.center.getLat(),
                         toRetrieve.center.getLon(), toRetrieve.middlePoint.getZoom(), toRetrieve.width,
-                        toRetrieve.height);
+                        toRetrieve.height, lang);
                 return url;
             }
             else {
