@@ -108,8 +108,6 @@ public class GoogleMapComponent extends MapComponent {
         
         if (displayTile == null || Math.abs(displayTile.middlePoint.getX() - middle.getX()) > displayWidth / 2
                 || Math.abs(displayTile.middlePoint.getY() - middle.getY()) > displayHeight / 2) {
-            
-            System.out.println(middlePoint);
             neededTile = new GoogleTile(6 * displayWidth, 6 * displayHeight, 
                     displayedMap.mapPosToWgs(middle).toWgsPoint(), middle);
             final MapTilesRequestor mapTilesRequestor = this;
