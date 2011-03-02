@@ -4,7 +4,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.animation.DecelerateInterpolator;
 
-import com.camptocamp.android.gis.control.ZoomIndicator;
 import com.camptocamp.android.gis.layer.LocationMarker;
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.cache.Cache;
@@ -39,15 +38,14 @@ public class MapComponent extends BasicMapComponent {
     public MapComponent(WgsPoint middlePoint, int width, int height, int zoom) {
         super(KEY, VDR, BaseMap.APP, width, height, middlePoint, (zoom != -1 ? zoom : ZOOM));
         // FIXME: must set according to min/max zoom levels
-        setZoomLevelIndicator(new ZoomIndicator(0, 18));
+        // setZoomLevelIndicator(new ZoomIndicator());
         ycos = Math.cos(middlePoint.getLat());
     }
 
-    public MapComponent(WgsBoundingBox bbox, WgsPoint middlePoint, int width, int height,
-            int zoom) {
+    public MapComponent(WgsBoundingBox bbox, WgsPoint middlePoint, int width, int height, int zoom) {
         super(KEY, VDR, BaseMap.APP, width, height, middlePoint, (zoom != -1 ? zoom : ZOOM));
 
-        setZoomLevelIndicator(new ZoomIndicator(0, 18));
+        // setZoomLevelIndicator(new ZoomIndicator());
         ycos = Math.cos(middlePoint.getLat());
         maxExtent = bbox;
     }
@@ -75,7 +73,8 @@ public class MapComponent extends BasicMapComponent {
             if (currentmin.getY() + panY >= min.getY() ^ currentmax.getY() + panY <= max.getY()) {
                 panY = 0;
             }
-        } else {
+        }
+        else {
             // Don't pan outside of map size
             MapPos pos = getInternalMiddlePoint();
             int quartx = getWidth() / 4;
@@ -130,9 +129,9 @@ public class MapComponent extends BasicMapComponent {
         lastpany[0] = 0;
         lastpany[1] = 0;
     }
-    
-    public void pointerReleasedManual(final int x, final int y){
-        android.util.Log.e("TEST", "x="+x+", y="+y);
+
+    public void pointerReleasedManual(final int x, final int y) {
+        android.util.Log.e("TEST", "x=" + x + ", y=" + y);
         super.pointerReleased(x, y);
     }
 

@@ -22,7 +22,7 @@ public class ZoomIndicator implements com.nutiteq.ui.ZoomIndicator {
     private Image mHorizontalPart;
     private Image mSlider;
 
-    public ZoomIndicator(final int min, final int max) {
+    public ZoomIndicator() {
         try {
             mVerticalPart = Image.createImage("/images/zoom2.png");
             mHorizontalPart = Image.createImage("/images/zoom3.png");

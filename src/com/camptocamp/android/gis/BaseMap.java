@@ -257,7 +257,6 @@ public class BaseMap extends Activity {
     }
 
     protected void setMapComponent(final MapComponent bmc, final GeoMap gm) {
-        // cleanCaches(); // FIXME: This is a test
         bmc.setMap(gm);
         bmc.setNetworkCache(new Caching(ctxt));
         // bmc.setImageProcessor(new NightModeImageProcessor());
