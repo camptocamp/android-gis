@@ -13,7 +13,7 @@ public class SwisstopoComponent extends MapComponent {
 
     public SwisstopoComponent(WgsPoint middlePoint, int width, int height, int zoom) {
         super(middlePoint, width, height, (zoom != -1 ? zoom : ZOOM));
-        setZoomLevelIndicator(new ZoomIndicator(SwisstopoMap.MIN_ZOOM, SwisstopoMap.MAX_ZOOM));
+        setZoomLevelIndicator(new ZoomIndicator());
     }
 
     @Override
