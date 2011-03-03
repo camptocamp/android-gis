@@ -85,7 +85,8 @@ public class OSMMap extends BaseMap {
             switch (provider_id) {
             case MENU_MAP_OSM:
             default:
-                setMapComponent(new MapComponent(pt, mWidth, mHeight, zoom), new OpenStreetMap());
+                mMapComponent = new MapComponent(pt, mWidth, mHeight, zoom);
+                setMapComponent(new OpenStreetMap());
                 break;
             }
             if (loc != null) {

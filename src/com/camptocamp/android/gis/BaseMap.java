@@ -76,7 +76,7 @@ public class BaseMap extends Activity {
     protected static final int MENU_RECORD = 91;
     protected static final int MENU_DIRECTION = 92;
 
-    protected SharedPreferences mPreferances;
+    protected SharedPreferences mPreferences;
     protected String mSearchQuery = "";
     protected int mWidth = 1;
     protected int mHeight = 1;
@@ -89,9 +89,7 @@ public class BaseMap extends Activity {
     private DirectionsWaiter mWaiter;
 
     protected MapComponent mMapComponent = null;
-
     protected boolean mTrackingPosition = false;
-
     protected int mProvider;
 
     @Override
@@ -101,7 +99,7 @@ public class BaseMap extends Activity {
         super.onCreate(savedInstanceState);
 
         mWindow = getWindow();
-        mPreferances = PreferenceManager.getDefaultSharedPreferences(mWindow.getContext());
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(mWindow.getContext());
         mSelectedLayers = new ArrayList<String>();
         mMapLayout = ((RelativeLayout) findViewById(R.id.map));
         mWaiter = new DirectionsWaiter(BaseMap.this);
@@ -187,14 +185,10 @@ public class BaseMap extends Activity {
         Log.i(TAG, "onLowMemory()");
         cleanCaches();
         initCaches();
-        if (mMapComponent != null) {
-            mMapComponent.moveMap(mMapComponent.getCenterPoint());
-        }
     }
 
     @Override
     public Object onRetainNonConfigurationInstance() {
-        android.util.Log.v(TAG, "onRetainNonConfigurationInstance");
         mRetainCalled = true;
         return mMapComponent;
     }
@@ -256,24 +250,23 @@ public class BaseMap extends Activity {
         // Override me
     }
 
-    protected void setMapComponent(final MapComponent bmc, final GeoMap gm) {
-        bmc.setMap(gm);
-        bmc.setNetworkCache(new Caching(mWindow.getContext()));
+    protected void setMapComponent(final GeoMap gm) {
+        mMapComponent.setMap(gm);
+        mMapComponent.setNetworkCache(new Caching(mWindow.getContext()));
         // bmc.setImageProcessor(new NightModeImageProcessor());
-        bmc.setPanningStrategy(new ThreadDrivenPanning());
+        mMapComponent.setPanningStrategy(new ThreadDrivenPanning());
         // bmc.setPanningStrategy(new EventDrivenPanning());
-        bmc.setControlKeysHandler(new AndroidKeysHandler());
-        bmc.setDownloadCounter(new NutiteqDownloadCounter());
-        bmc.setDownloadDisplay(new NutiteqDownloadDisplay() {
+        mMapComponent.setControlKeysHandler(new AndroidKeysHandler());
+        mMapComponent.setDownloadCounter(new NutiteqDownloadCounter());
+        mMapComponent.setDownloadDisplay(new NutiteqDownloadDisplay() {
             @Override
             public void downloadCompleted() {
                 downloadComplete();
                 super.downloadCompleted();
             }
         });
-        bmc.startMapping();
-        bmc.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
-        mMapComponent = bmc;
+        mMapComponent.startMapping();
+        mMapComponent.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
     }
 
     protected void downloadComplete() {
@@ -283,7 +276,7 @@ public class BaseMap extends Activity {
     protected void saveTrace(GpsProvider gpsProvider) {
         if (gpsProvider.getTrace().size() > 0) {
             // Choose format
-            int format = Integer.parseInt(mPreferances.getString(Prefs.KEY_TRACE_FORMAT,
+            int format = Integer.parseInt(mPreferences.getString(Prefs.KEY_TRACE_FORMAT,
                     Prefs.DEFAULT_TRACE_FORMAT));
             ExportTrace export;
             switch (format) {
