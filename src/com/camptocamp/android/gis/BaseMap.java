@@ -29,7 +29,6 @@ import android.widget.Toast;
 
 import com.camptocamp.android.gis.control.DirectionsWaiter;
 import com.camptocamp.android.gis.layer.Overlay;
-import com.camptocamp.android.gis.utils.Caching;
 import com.camptocamp.android.gis.utils.ExportGPX;
 import com.camptocamp.android.gis.utils.ExportKML;
 import com.camptocamp.android.gis.utils.ExportTrace;
@@ -83,9 +82,9 @@ public class BaseMap extends Activity {
     protected Window mWindow;
     protected RelativeLayout mMapLayout;
     protected boolean mFirstStart = true;
+    protected boolean mRetainCalled = false;
     private MapView mMapView = null;
     private List<String> mSelectedLayers;
-    private boolean mRetainCalled = false;
     private DirectionsWaiter mWaiter;
 
     protected MapComponent mMapComponent = null;
@@ -103,7 +102,7 @@ public class BaseMap extends Activity {
         mSelectedLayers = new ArrayList<String>();
         mMapLayout = ((RelativeLayout) findViewById(R.id.map));
         mWaiter = new DirectionsWaiter(BaseMap.this);
-        mRetainCalled = false;
+        mRetainCalled = getLastNonConfigurationInstance() == null ? false : true;
 
         // com.nutiteq.log.Log.setLogger(new
         // com.nutiteq.log.AndroidLogger(APP));
@@ -149,7 +148,7 @@ public class BaseMap extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        cleanCaches();
+        mMapComponent.cleanCache();
         mSelectedLayers.clear();
         if (mMapView != null) {
             mMapView.clean();
@@ -183,8 +182,8 @@ public class BaseMap extends Activity {
     @Override
     public void onLowMemory() {
         Log.i(TAG, "onLowMemory()");
-        cleanCaches();
-        initCaches();
+        mMapComponent.cleanCache();
+        mMapComponent.initCache(mWindow);
     }
 
     @Override
@@ -251,8 +250,9 @@ public class BaseMap extends Activity {
     }
 
     protected void setMapComponent(final GeoMap gm) {
+        mMapComponent.initCache(mWindow);
         mMapComponent.setMap(gm);
-        mMapComponent.setNetworkCache(new Caching(mWindow.getContext()));
+        // mMapComponent.setNetworkCache(new Caching(mWindow.getContext()));
         // bmc.setImageProcessor(new NightModeImageProcessor());
         mMapComponent.setPanningStrategy(new ThreadDrivenPanning());
         // bmc.setPanningStrategy(new EventDrivenPanning());
@@ -512,32 +512,6 @@ public class BaseMap extends Activity {
                         .show();
             }
             mMapComponent.refreshTileOverlay();
-        }
-    }
-
-    protected void cleanCaches() {
-        if (mMapComponent != null) {
-            Caching cache = (Caching) mMapComponent.getCache();
-            if (cache != null) {
-                final Cache[] cl = cache.getCacheLevels();
-                for (int i = 0; i < cl.length; i++) {
-                    cl[i].deinitialize();
-                }
-                // cache = null;
-                System.gc();
-            }
-        }
-    }
-
-    protected void initCaches() {
-        if (mMapComponent != null) {
-            Caching cache = (Caching) mMapComponent.getCache();
-            if (cache != null) {
-                final Cache[] cl = cache.getCacheLevels();
-                for (int i = 0; i < cl.length; i++) {
-                    cl[i].initialize();
-                }
-            }
         }
     }
 

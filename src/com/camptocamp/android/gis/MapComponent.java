@@ -2,9 +2,11 @@ package com.camptocamp.android.gis;
 
 import android.os.Handler;
 import android.os.Message;
+import android.view.Window;
 import android.view.animation.DecelerateInterpolator;
 
 import com.camptocamp.android.gis.layer.LocationMarker;
+import com.camptocamp.android.gis.utils.Caching;
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.cache.Cache;
 import com.nutiteq.components.MapPos;
@@ -163,8 +165,27 @@ public class MapComponent extends BasicMapComponent {
         return locationSource;
     }
 
-    public Cache getCache() {
-        return networkCache;
+    public void cleanCache() {
+        if (networkCache != null) {
+            final Cache[] cl = ((Caching) networkCache).getCacheLevels();
+            for (int i = 0; i < cl.length; i++) {
+                cl[i].deinitialize();
+            }
+            networkCache = null;
+        }
+    }
+
+    public void initCache(Window window) {
+        Caching cache = (Caching) networkCache;
+        if (cache != null) {
+            final Cache[] cl = cache.getCacheLevels();
+            for (int i = 0; i < cl.length; i++) {
+                cl[i].initialize();
+            }
+        }
+        else {
+            setNetworkCache(new Caching(window.getContext()));
+        }
     }
 
     // Easing Handler and variables
