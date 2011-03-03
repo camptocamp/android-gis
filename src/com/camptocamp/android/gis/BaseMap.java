@@ -87,6 +87,7 @@ public class BaseMap extends Activity {
     private MapView mMapView = null;
     private List<String> mSelectedLayers;
     private DirectionsWaiter mWaiter;
+    private Cache mCaching;
 
     protected MapComponent mMapComponent = null;
     protected boolean mTrackingPosition = false;
@@ -99,6 +100,7 @@ public class BaseMap extends Activity {
         super.onCreate(savedInstanceState);
 
         mWindow = getWindow();
+        mCaching = new Caching(mWindow.getContext());
         mPreferences = PreferenceManager.getDefaultSharedPreferences(mWindow.getContext());
         mSelectedLayers = new ArrayList<String>();
         mMapLayout = ((RelativeLayout) findViewById(R.id.map));
@@ -246,7 +248,7 @@ public class BaseMap extends Activity {
     }
 
     protected void setMapComponent(final GeoMap gm) {
-        mMapComponent.setNetworkCache(new Caching(mWindow.getContext()));
+        mMapComponent.setNetworkCache(mCaching);
         mMapComponent.initCache();
         mMapComponent.setMap(gm);
         // mMapComponent.setNetworkCache(new Caching(mWindow.getContext()));
