@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import com.camptocamp.android.gis.control.DirectionsWaiter;
 import com.camptocamp.android.gis.layer.Overlay;
+import com.camptocamp.android.gis.utils.Caching;
 import com.camptocamp.android.gis.utils.ExportGPX;
 import com.camptocamp.android.gis.utils.ExportKML;
 import com.camptocamp.android.gis.utils.ExportTrace;
@@ -43,8 +44,8 @@ import com.nutiteq.controls.AndroidKeysHandler;
 import com.nutiteq.maps.GeoMap;
 import com.nutiteq.net.NutiteqDownloadCounter;
 import com.nutiteq.services.YourNavigationDirections;
+import com.nutiteq.ui.EventDrivenPanning;
 import com.nutiteq.ui.NutiteqDownloadDisplay;
-import com.nutiteq.ui.ThreadDrivenPanning;
 
 //FIXME: Rename to Map, then Map to ~MapOpenStreetMap
 public class BaseMap extends Activity {
@@ -96,6 +97,7 @@ public class BaseMap extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "onCreate()");
 
         mWindow = getWindow();
         mPreferences = PreferenceManager.getDefaultSharedPreferences(mWindow.getContext());
@@ -147,8 +149,8 @@ public class BaseMap extends Activity {
 
     @Override
     protected void onDestroy() {
+        Log.i(TAG, "onDestroy()");
         super.onDestroy();
-        mMapComponent.cleanCache();
         mSelectedLayers.clear();
         if (mMapView != null) {
             mMapView.clean();
@@ -156,15 +158,14 @@ public class BaseMap extends Activity {
         }
         if (!mRetainCalled) {
             android.util.Log.v(TAG, "onDestroy(): clean mapComponent");
-            if (mMapComponent != null) {
-                mMapComponent.stopMapping();
-                mMapComponent = null;
-            }
+            mMapComponent.stopMapping();
+            mMapComponent = null;
         }
     }
 
     @Override
     public void onResume() {
+        Log.i(TAG, "onResume()");
         super.onResume();
         // Listening for events
         IntentFilter filter = new IntentFilter();
@@ -174,26 +175,28 @@ public class BaseMap extends Activity {
 
     @Override
     protected void onPause() {
+        Log.i(TAG, "onPause()");
         super.onPause();
         unregisterReceiver(receiver);
-        System.gc();
     }
 
     @Override
     public void onLowMemory() {
         Log.i(TAG, "onLowMemory()");
         mMapComponent.cleanCache();
-        mMapComponent.initCache(mWindow);
+        mMapComponent.initCache();
     }
 
     @Override
     public Object onRetainNonConfigurationInstance() {
+        Log.i(TAG, "onRetainNonConfigurationInstance()");
         mRetainCalled = true;
         return mMapComponent;
     }
 
     @Override
     public void onNewIntent(Intent intent) {
+        Log.i(TAG, "onNewIntent()");
         setIntent(intent);
         handleIntent();
     }
@@ -250,12 +253,13 @@ public class BaseMap extends Activity {
     }
 
     protected void setMapComponent(final GeoMap gm) {
-        mMapComponent.initCache(mWindow);
+        mMapComponent.setNetworkCache(new Caching(mWindow.getContext()));
+        mMapComponent.initCache();
         mMapComponent.setMap(gm);
         // mMapComponent.setNetworkCache(new Caching(mWindow.getContext()));
-        // bmc.setImageProcessor(new NightModeImageProcessor());
-        mMapComponent.setPanningStrategy(new ThreadDrivenPanning());
-        // bmc.setPanningStrategy(new EventDrivenPanning());
+        // mMapComponent.setImageProcessor(new NightModeImageProcessor());
+        // mMapComponent.setPanningStrategy(new ThreadDrivenPanning());
+        mMapComponent.setPanningStrategy(new EventDrivenPanning());
         mMapComponent.setControlKeysHandler(new AndroidKeysHandler());
         mMapComponent.setDownloadCounter(new NutiteqDownloadCounter());
         mMapComponent.setDownloadDisplay(new NutiteqDownloadDisplay() {

@@ -2,7 +2,6 @@ package com.camptocamp.android.gis;
 
 import android.os.Handler;
 import android.os.Message;
-import android.view.Window;
 import android.view.animation.DecelerateInterpolator;
 
 import com.camptocamp.android.gis.layer.LocationMarker;
@@ -171,20 +170,17 @@ public class MapComponent extends BasicMapComponent {
             for (int i = 0; i < cl.length; i++) {
                 cl[i].deinitialize();
             }
-            networkCache = null;
+            // networkCache = null;
         }
     }
 
-    public void initCache(Window window) {
+    public void initCache() {
         Caching cache = (Caching) networkCache;
         if (cache != null) {
             final Cache[] cl = cache.getCacheLevels();
             for (int i = 0; i < cl.length; i++) {
                 cl[i].initialize();
             }
-        }
-        else {
-            setNetworkCache(new Caching(window.getContext()));
         }
     }
 
