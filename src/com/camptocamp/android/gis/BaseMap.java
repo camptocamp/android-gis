@@ -97,7 +97,6 @@ public class BaseMap extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
         super.onCreate(savedInstanceState);
-        Log.i(TAG, "onCreate()");
 
         mWindow = getWindow();
         mPreferences = PreferenceManager.getDefaultSharedPreferences(mWindow.getContext());
@@ -149,7 +148,6 @@ public class BaseMap extends Activity {
 
     @Override
     protected void onDestroy() {
-        Log.i(TAG, "onDestroy()");
         super.onDestroy();
         mSelectedLayers.clear();
         if (mMapView != null) {
@@ -165,7 +163,6 @@ public class BaseMap extends Activity {
 
     @Override
     public void onResume() {
-        Log.i(TAG, "onResume()");
         super.onResume();
         // Listening for events
         IntentFilter filter = new IntentFilter();
@@ -175,28 +172,24 @@ public class BaseMap extends Activity {
 
     @Override
     protected void onPause() {
-        Log.i(TAG, "onPause()");
         super.onPause();
         unregisterReceiver(receiver);
     }
 
     @Override
     public void onLowMemory() {
-        Log.i(TAG, "onLowMemory()");
         mMapComponent.cleanCache();
         mMapComponent.initCache();
     }
 
     @Override
     public Object onRetainNonConfigurationInstance() {
-        Log.i(TAG, "onRetainNonConfigurationInstance()");
         mRetainCalled = true;
         return mMapComponent;
     }
 
     @Override
     public void onNewIntent(Intent intent) {
-        Log.i(TAG, "onNewIntent()");
         setIntent(intent);
         handleIntent();
     }
