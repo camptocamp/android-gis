@@ -28,6 +28,7 @@
     <string name="btn_no">No</string>
     <string name="btn_cancel">Cancel</string>
     <string name="btn_add">Add</string>
+    <string name="btn_save">Save</string>
     
     <string name="menu_osm">OpenStreetMap</string>
     <string name="menu_prefs">Options</string>

@@ -23,7 +23,7 @@ public abstract class SearchHandler extends ListActivity {
     // private static final String TAG = BaseMap.D + "SearchHandler";
     private static final String SRC = "content://%1$s.control.SearchProvider"
             + "/search_suggest_query/%2$s";
-    private ProgressDialog dialog;
+    protected ProgressDialog dialog;
 
     public static final String JSON_BBOX = "bbox";
     public static final String JSON_LABEL = "label";
@@ -101,9 +101,8 @@ public abstract class SearchHandler extends ListActivity {
 
         @Override
         protected void onPostExecute(Cursor cursor) {
-            final Activity activity = mActivity.get();
             showResult(cursor);
-            if (activity != null && dialog != null) {
+            if (dialog != null) {
                 dialog.dismiss();
                 dialog = null;
             }
