@@ -61,6 +61,10 @@ public class GpsProvider implements LocationSource, android.location.LocationLis
     public boolean isRecord() {
         return record;
     }
+    
+    public void setBaseMap(BaseMap map){
+        mMap = new WeakReference<BaseMap>(map);
+    }
 
     /**
      * Herited from android

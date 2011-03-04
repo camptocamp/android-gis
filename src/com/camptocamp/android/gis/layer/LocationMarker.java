@@ -44,7 +44,7 @@ public class LocationMarker extends NutiteqLocationMarker {
     @Override
     protected void update() {
         if (track) {
-            if (radius == 0) {
+            if (radius == -1) {
                 mapComponent.setMiddlePoint(lastWgsLocation);
             }
             else {
