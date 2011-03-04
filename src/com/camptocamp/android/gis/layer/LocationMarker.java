@@ -44,12 +44,17 @@ public class LocationMarker extends NutiteqLocationMarker {
     @Override
     protected void update() {
         if (track) {
-            // FIXME
-            final MapPos pt1 = mapComponent.getMapPosition(lastWgsLocation);
-            final MapPos pt2 = new MapPos(pt1.getX(), pt1.getY() + radius, mapComponent.getZoom());
-            final WgsPoint pt22 = mapComponent.getMap().mapPosToWgs(pt2).toWgsPoint();
-            mapComponent.setZoom(mapComponent.getMap().getMinZoom());
-            mapComponent.setBoundingBox(new WgsBoundingBox(lastWgsLocation, pt22));
+            if (radius == 0) {
+                mapComponent.setMiddlePoint(lastWgsLocation);
+            }
+            else {
+                final MapPos pt1 = mapComponent.getMapPosition(lastWgsLocation);
+                final MapPos pt2 = new MapPos(pt1.getX(), pt1.getY() + radius, mapComponent
+                        .getZoom());
+                final WgsPoint pt22 = mapComponent.getMap().mapPosToWgs(pt2).toWgsPoint();
+                mapComponent.setZoom(mapComponent.getMap().getMinZoom());
+                mapComponent.setBoundingBox(new WgsBoundingBox(lastWgsLocation, pt22));
+            }
         }
         super.update();
     }

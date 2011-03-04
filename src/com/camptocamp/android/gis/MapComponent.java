@@ -132,7 +132,6 @@ public class MapComponent extends BasicMapComponent {
     }
 
     public void pointerReleasedManual(final int x, final int y) {
-        android.util.Log.e("TEST", "x=" + x + ", y=" + y);
         super.pointerReleased(x, y);
     }
 
