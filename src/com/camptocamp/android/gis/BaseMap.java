@@ -44,8 +44,8 @@ import com.nutiteq.controls.AndroidKeysHandler;
 import com.nutiteq.maps.GeoMap;
 import com.nutiteq.net.NutiteqDownloadCounter;
 import com.nutiteq.services.YourNavigationDirections;
-import com.nutiteq.ui.EventDrivenPanning;
 import com.nutiteq.ui.NutiteqDownloadDisplay;
+import com.nutiteq.ui.ThreadDrivenPanning;
 
 //FIXME: Rename to Map, then Map to ~MapOpenStreetMap
 public class BaseMap extends Activity {
@@ -253,8 +253,8 @@ public class BaseMap extends Activity {
         mMapComponent.setMap(gm);
         // mMapComponent.setNetworkCache(new Caching(mWindow.getContext()));
         // mMapComponent.setImageProcessor(new NightModeImageProcessor());
-        // mMapComponent.setPanningStrategy(new ThreadDrivenPanning());
-        mMapComponent.setPanningStrategy(new EventDrivenPanning());
+        mMapComponent.setPanningStrategy(new ThreadDrivenPanning());
+        // mMapComponent.setPanningStrategy(new EventDrivenPanning());
         mMapComponent.setControlKeysHandler(new AndroidKeysHandler());
         mMapComponent.setDownloadCounter(new NutiteqDownloadCounter());
         mMapComponent.setDownloadDisplay(new NutiteqDownloadDisplay() {
@@ -361,10 +361,7 @@ public class BaseMap extends Activity {
             }
             else if (intent.hasExtra(EXTRA_LAT) && intent.hasExtra(EXTRA_LON)) {
                 // FIXME: There is a problem zooming more than 1 level at once
-                mMapComponent.zoomIn();
-                mMapComponent.zoomIn();
-                mMapComponent.zoomIn();
-                mMapComponent.zoomIn();
+                mMapComponent.setZoom(mMapComponent.getMap().getMaxZoom());
                 mMapComponent.setMiddlePoint(new WgsPoint(intent.getDoubleExtra(EXTRA_LON, 0),
                         intent.getDoubleExtra(EXTRA_LAT, 0)));
                 // Open label
