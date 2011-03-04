@@ -23,7 +23,7 @@ public abstract class SearchHandler extends ListActivity {
     // private static final String TAG = BaseMap.D + "SearchHandler";
     private static final String SRC = "content://%1$s.control.SearchProvider"
             + "/search_suggest_query/%2$s";
-    protected ProgressDialog dialog;
+    protected ProgressDialog mDialog;
 
     public static final String JSON_BBOX = "bbox";
     public static final String JSON_LABEL = "label";
@@ -40,11 +40,9 @@ public abstract class SearchHandler extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        // Handle search query (just send the query)
+        // Query the provider
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             mQuery = intent.getStringExtra(SearchManager.QUERY);
-//            query = "三田";
-            
             if (mSearch != null) {
                 new QueryTask(SearchHandler.this).execute(mQuery);
             }
@@ -53,7 +51,6 @@ public abstract class SearchHandler extends ListActivity {
                         Toast.LENGTH_SHORT).show();
             }
         }
-        // Handle suggestions query (just send geo data)
         else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             showResultActivity(intent.getDataString());
         }
@@ -68,15 +65,7 @@ public abstract class SearchHandler extends ListActivity {
         return R.string.dialog_searching;
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (dialog != null) {
-            dialog.dismiss();
-            dialog = null;
-        }
-    }
-
+    // TODO: Use android.content.CursorLoader() instead
     protected class QueryTask extends AsyncTask<String, Void, Cursor> {
 
         private WeakReference<Activity> mActivity;
@@ -89,7 +78,7 @@ public abstract class SearchHandler extends ListActivity {
         protected void onPreExecute() {
             final Activity a = mActivity.get();
             if (a != null) {
-                dialog = ProgressDialog.show(a, "", getString(getWaitingText()));
+                mDialog = ProgressDialog.show(a, "", getString(getWaitingText()));
             }
         }
 
@@ -102,9 +91,17 @@ public abstract class SearchHandler extends ListActivity {
         @Override
         protected void onPostExecute(Cursor cursor) {
             showResult(cursor);
-            if (dialog != null) {
-                dialog.dismiss();
-                dialog = null;
+            if (mDialog != null) {
+                mDialog.dismiss();
+                mDialog = null;
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            if (mDialog != null) {
+                mDialog.dismiss();
+                mDialog = null;
             }
         }
 
