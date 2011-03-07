@@ -92,6 +92,7 @@ public class BaseMap extends Activity {
     protected MapComponent mMapComponent = null;
     protected boolean mTrackingPosition = false;
     protected int mProvider;
+    protected GpsProvider mLocationSource;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -117,10 +118,8 @@ public class BaseMap extends Activity {
         mWidth = display.getWidth();
         mHeight = display.getHeight();
 
-        setDefaultMap();
-
         // GPS Location tracking
-        final GpsProvider locationSource = new GpsProvider(BaseMap.this);
+        mLocationSource = new GpsProvider(BaseMap.this);
         final ImageButton btn_gps = (ImageButton) findViewById(R.id.position_track);
         btn_gps.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,18 +128,19 @@ public class BaseMap extends Activity {
                     if (mTrackingPosition) {
                         Toast.makeText(BaseMap.this, R.string.toast_gps_stop, Toast.LENGTH_SHORT)
                                 .show();
-                        locationSource.quit();
+                        mLocationSource.quit();
                     }
                     else {
                         Toast.makeText(BaseMap.this, R.string.toast_gps_start, Toast.LENGTH_SHORT)
                                 .show();
-                        mMapComponent.setLocationSource(locationSource);
+                        mLocationSource.start();
                     }
                     mTrackingPosition = !mTrackingPosition;
                 }
             }
         });
 
+        setDefaultMap();
         handleIntent();
 
         // FIXME: KML TESTS
@@ -428,8 +428,8 @@ public class BaseMap extends Activity {
 
     protected void setMapView() {
         if (mMapView != null) {
-            mMapView.clean();
             mMapLayout.removeView(mMapView);
+            mMapView.clean();
             mMapView = null;
         }
         mMapView = new MapView(mWindow.getContext(), mMapComponent);
