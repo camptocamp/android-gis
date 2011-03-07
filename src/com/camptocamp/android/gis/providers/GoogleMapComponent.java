@@ -107,18 +107,21 @@ public class GoogleMapComponent extends MapComponent {
         }
 
         MapPos middle = middlePoint;
-        
-        if (displayTile == null || Math.abs(displayTile.middlePoint.getX() - middle.getX()) > displayWidth / 2
+
+        if (displayTile == null
+                || Math.abs(displayTile.middlePoint.getX() - middle.getX()) > displayWidth / 2
                 || Math.abs(displayTile.middlePoint.getY() - middle.getY()) > displayHeight / 2) {
-            neededTile = new GoogleTile(6 * displayWidth, 6 * displayHeight, 
-                    displayedMap.mapPosToWgs(middle).toWgsPoint(), middle);
+            neededTile = new GoogleTile(6 * displayWidth, 6 * displayHeight, displayedMap
+                    .mapPosToWgs(middle).toWgsPoint(), middle);
             final MapTilesRequestor mapTilesRequestor = this;
             timer.schedule(new TimerTask() {
                 GoogleTile tile = neededTile;
+
                 @Override
                 public void run() {
                     if (tile.isValid()) {
-                        taskRunner.enqueue(new GoogleTileTask(mapTilesRequestor, taskRunner, tile, 3));
+                        taskRunner.enqueue(new GoogleTileTask(mapTilesRequestor, taskRunner, tile,
+                                3));
                     }
                 }
             }, 50);
@@ -156,10 +159,9 @@ public class GoogleMapComponent extends MapComponent {
         @Override
         public String resourcePath() {
             if (toRetrieve.isValid()) {
-                String url = MessageFormat.format(baseUrl, toRetrieve.center.getLat(),
-                        toRetrieve.center.getLon(), toRetrieve.middlePoint.getZoom(), toRetrieve.width,
+                return MessageFormat.format(baseUrl, toRetrieve.center.getLat(), toRetrieve.center
+                        .getLon(), toRetrieve.middlePoint.getZoom(), toRetrieve.width,
                         toRetrieve.height, lang);
-                return url;
             }
             else {
                 return null;
@@ -193,7 +195,7 @@ public class GoogleMapComponent extends MapComponent {
      * The Google tile (single).
      * 
      * @author sbrunner
-     *
+     * 
      */
     private class GoogleTile {
         private final int width;
@@ -203,8 +205,8 @@ public class GoogleMapComponent extends MapComponent {
         private Image image;
         private boolean valid = true;
 
-        private GoogleTile(final int width, final int height,
-                final WgsPoint center, MapPos middlePoint) {
+        private GoogleTile(final int width, final int height, final WgsPoint center,
+                MapPos middlePoint) {
             this.width = width;
             this.height = height;
             this.center = center;
