@@ -42,9 +42,7 @@ import com.nutiteq.components.WgsBoundingBox;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.controls.AndroidKeysHandler;
 import com.nutiteq.maps.GeoMap;
-import com.nutiteq.net.NutiteqDownloadCounter;
 import com.nutiteq.services.YourNavigationDirections;
-import com.nutiteq.ui.NutiteqDownloadDisplay;
 import com.nutiteq.ui.ThreadDrivenPanning;
 
 //FIXME: Rename to Map, then Map to ~MapOpenStreetMap
@@ -82,7 +80,6 @@ public class BaseMap extends Activity {
     protected int mHeight = 1;
     protected Window mWindow;
     protected RelativeLayout mMapLayout;
-    protected boolean mFirstStart = true;
     protected boolean mRetainCalled = false;
     private MapView mMapView = null;
     private List<String> mSelectedLayers;
@@ -255,20 +252,8 @@ public class BaseMap extends Activity {
         mMapComponent.setPanningStrategy(new ThreadDrivenPanning());
         // mMapComponent.setPanningStrategy(new EventDrivenPanning());
         mMapComponent.setControlKeysHandler(new AndroidKeysHandler());
-        mMapComponent.setDownloadCounter(new NutiteqDownloadCounter());
-        mMapComponent.setDownloadDisplay(new NutiteqDownloadDisplay() {
-            @Override
-            public void downloadCompleted() {
-                downloadComplete();
-                super.downloadCompleted();
-            }
-        });
         mMapComponent.startMapping();
         mMapComponent.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
-    }
-
-    protected void downloadComplete() {
-        mFirstStart = false;
     }
 
     protected void saveTrace(GpsProvider gpsProvider) {
