@@ -5,9 +5,7 @@ import android.os.Message;
 import android.view.animation.DecelerateInterpolator;
 
 import com.camptocamp.android.gis.layer.LocationMarker;
-import com.camptocamp.android.gis.utils.Caching;
 import com.nutiteq.BasicMapComponent;
-import com.nutiteq.cache.Cache;
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.WgsBoundingBox;
 import com.nutiteq.components.WgsPoint;
@@ -161,26 +159,6 @@ public class MapComponent extends BasicMapComponent {
 
     public LocationSource getLocationSource() {
         return locationSource;
-    }
-
-    public void cleanCache() {
-        if (networkCache != null) {
-            final Cache[] cl = ((Caching) networkCache).getCacheLevels();
-            for (int i = 0; i < cl.length; i++) {
-                cl[i].deinitialize();
-            }
-            // networkCache = null;
-        }
-    }
-
-    public void initCache() {
-        Caching cache = (Caching) networkCache;
-        if (cache != null) {
-            final Cache[] cl = cache.getCacheLevels();
-            for (int i = 0; i < cl.length; i++) {
-                cl[i].initialize();
-            }
-        }
     }
 
     // Easing Handler and variables

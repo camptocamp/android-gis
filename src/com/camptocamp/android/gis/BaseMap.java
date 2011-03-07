@@ -87,7 +87,7 @@ public class BaseMap extends Activity {
     private MapView mMapView = null;
     private List<String> mSelectedLayers;
     private DirectionsWaiter mWaiter;
-    private Cache mCaching;
+    private Caching mCaching;
 
     protected MapComponent mMapComponent = null;
     protected boolean mTrackingPosition = false;
@@ -101,6 +101,7 @@ public class BaseMap extends Activity {
 
         mWindow = getWindow();
         mCaching = new Caching(mWindow.getContext());
+        mCaching.initialize();
         mPreferences = PreferenceManager.getDefaultSharedPreferences(mWindow.getContext());
         mSelectedLayers = new ArrayList<String>();
         mMapLayout = ((RelativeLayout) findViewById(R.id.map));
@@ -180,8 +181,8 @@ public class BaseMap extends Activity {
 
     @Override
     public void onLowMemory() {
-        mMapComponent.cleanCache();
-        mMapComponent.initCache();
+        mCaching.deinitialize();
+        mCaching.initialize();
     }
 
     @Override
@@ -248,10 +249,8 @@ public class BaseMap extends Activity {
     }
 
     protected void setMapComponent(final GeoMap gm) {
-        mMapComponent.setNetworkCache(mCaching);
-        mMapComponent.initCache();
         mMapComponent.setMap(gm);
-        // mMapComponent.setNetworkCache(new Caching(mWindow.getContext()));
+        mMapComponent.setNetworkCache(mCaching);
         // mMapComponent.setImageProcessor(new NightModeImageProcessor());
         mMapComponent.setPanningStrategy(new ThreadDrivenPanning());
         // mMapComponent.setPanningStrategy(new EventDrivenPanning());

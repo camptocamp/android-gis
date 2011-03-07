@@ -20,8 +20,8 @@ public class Caching extends CachingChain {
     private static final String TAG = BaseMap.D + "C2CCaching";
 
     // An image is ~25kB => 1MB = 40 cached images
-    private static final int MEMORYCACHE = 1024 * 1024; // Bytes // FIXME ?
-    public static final File FSCACHEDIR = new File(Environment.getExternalStorageDirectory()
+    protected static final int MEMORYCACHE = 512 * 1024; // Bytes // FIXME ?
+    protected static final File FSCACHEDIR = new File(Environment.getExternalStorageDirectory()
             .getAbsolutePath()
             + "/Android/data/" + BaseMap.PKG + "/cache");
 
@@ -29,11 +29,11 @@ public class Caching extends CachingChain {
         super(createCacheLevels(ctxt));
     }
 
-    private static Cache[] createCacheLevels(final Context c) {
+    private static Cache[] createCacheLevels(final Context context) {
         Cache[] cl = null;
 
         // MemoryCache + FsCache
-        WeakReference<Context> weakCtxt = new WeakReference<Context>(c);
+        WeakReference<Context> weakCtxt = new WeakReference<Context>(context);
         Context ctxt = weakCtxt.get();
         if (ctxt != null) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctxt);
@@ -51,9 +51,5 @@ public class Caching extends CachingChain {
             cl = new Cache[] { new MemoryCache(MEMORYCACHE) };
         }
         return cl;
-    }
-
-    public Cache[] getCacheLevels() {
-        return cacheLevels;
     }
 }
