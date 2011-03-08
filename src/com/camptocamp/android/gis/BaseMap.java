@@ -178,7 +178,9 @@ public class BaseMap extends Activity {
 
     @Override
     public void onLowMemory() {
+        Log.w(TAG, "LOW MEMORY");
         mCaching.deinitialize();
+        System.gc();
         mCaching.initialize();
     }
 
@@ -348,9 +350,6 @@ public class BaseMap extends Activity {
                 mMapComponent.setZoom(mMapComponent.getMap().getMaxZoom());
                 mMapComponent.setMiddlePoint(new WgsPoint(intent.getDoubleExtra(EXTRA_LON, 0),
                         intent.getDoubleExtra(EXTRA_LAT, 0)));
-                // Open label
-                mMapComponent.pointerReleasedManual(mMapComponent.getWidth() / 2, mMapComponent
-                        .getHeight() / 2);
             }
 
         }

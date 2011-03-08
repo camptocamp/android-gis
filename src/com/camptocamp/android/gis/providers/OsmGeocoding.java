@@ -35,8 +35,7 @@ public class OsmGeocoding {
     }
 
     /**
-     * OsmGeocoding if reverse is true, query must be in the form:
-     * lon=0.0&lat=0.0
+     * OsmGeocoding if reverse is true, query must be in the form: lon=0.0&lat=0.0
      * 
      * @param query
      *            Streetname, country, WGS84 coordinate to search
@@ -46,7 +45,8 @@ public class OsmGeocoding {
     public OsmGeocoding(String query, boolean reverse) {
         if (reverse) {
             searchUrl = URL_REVERSE + URLEncoder.encode(query);
-        } else {
+        }
+        else {
             searchUrl = URL + URLEncoder.encode(query);
         }
         Log.v(getClass().getName(), searchUrl);
@@ -61,7 +61,8 @@ public class OsmGeocoding {
                 final JSONObject o = new JSONObject(res);
                 places[0] = new Place(o.getInt("place_id"), o.getString("display_name"), Image
                         .createImage("/images/def_kml.png"), 0, 0);
-            } else {
+            }
+            else {
                 JSONArray json = new JSONArray(res);
                 int len = json.length();
                 places = new Place[len];
@@ -73,10 +74,12 @@ public class OsmGeocoding {
                 }
             }
 
-        } catch (JSONException e) {
+        }
+        catch (JSONException e) {
             e.printStackTrace();
             return null;
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
             return null;
         }

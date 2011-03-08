@@ -21,7 +21,7 @@ public class OSMMap extends BaseMap {
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         // Search Bar
         findViewById(R.id.search_bar).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,16 +83,17 @@ public class OSMMap extends BaseMap {
         final Object savedMapComponent = getLastNonConfigurationInstance();
         if (savedMapComponent == null) {
             switch (provider_id) {
-            case MENU_MAP_OSM:
-            default:
-                mMapComponent = new MapComponent(pt, mWidth, mHeight, zoom);
-                setMapComponent(new OpenStreetMap());
-                break;
+                case MENU_MAP_OSM:
+                default:
+                    mMapComponent = new MapComponent(pt, mWidth, mHeight, zoom);
+                    setMapComponent(new OpenStreetMap());
+                    break;
             }
             if (loc != null) {
                 mMapComponent.setLocationSource(loc);
             }
-        } else {
+        }
+        else {
             android.util.Log.v(TAG, "using savedMapComponent");
             mMapComponent = (MapComponent) savedMapComponent;
         }

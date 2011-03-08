@@ -27,7 +27,8 @@ public class ZoomIndicator implements com.nutiteq.ui.ZoomIndicator {
             mVerticalPart = Image.createImage("/images/zoom2.png");
             mHorizontalPart = Image.createImage("/images/zoom3.png");
             mSlider = Image.createImage("/images/zoom1.png");
-        } catch (final IOException e) {
+        }
+        catch (final IOException e) {
             Log.printStackTrace(e);
         }
     }

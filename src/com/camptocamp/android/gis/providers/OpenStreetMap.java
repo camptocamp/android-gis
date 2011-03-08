@@ -24,7 +24,8 @@ public class OpenStreetMap extends com.nutiteq.maps.OpenStreetMap {
         if (missingTile == null) {
             try {
                 missingTile = Image.createImage("/images/notile.png");
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 missingTile = Image.createImage(getTileSize(), getTileSize());
                 final Graphics g = missingTile.getGraphics();
                 g.setColor(0xFFFF0000);
