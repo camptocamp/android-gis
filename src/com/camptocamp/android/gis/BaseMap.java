@@ -45,6 +45,8 @@ import com.nutiteq.maps.GeoMap;
 import com.nutiteq.services.YourNavigationDirections;
 import com.nutiteq.ui.ThreadDrivenPanning;
 
+import de.georepublic.android.gis.Constants;
+
 //FIXME: Rename to Map, then Map to ~MapOpenStreetMap
 public class BaseMap extends Activity {
 
@@ -350,9 +352,6 @@ public class BaseMap extends Activity {
                 mMapComponent.setZoom(mMapComponent.getMap().getMaxZoom());
                 mMapComponent.setMiddlePoint(new WgsPoint(intent.getDoubleExtra(EXTRA_LON, 0),
                         intent.getDoubleExtra(EXTRA_LAT, 0)));
-                // Open label
-                mMapComponent.pointerReleasedManual(mMapComponent.getWidth() / 2, mMapComponent
-                        .getHeight() / 2);
             }
 
         }
