@@ -180,7 +180,9 @@ public class BaseMap extends Activity {
 
     @Override
     public void onLowMemory() {
+        Log.w(TAG, "LOW MEMORY");
         mMapComponent.cleanCache();
+        System.gc();
         mMapComponent.initCache();
     }
 
