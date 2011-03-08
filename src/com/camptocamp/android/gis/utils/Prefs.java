@@ -7,7 +7,6 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
@@ -92,8 +91,7 @@ public class Prefs extends PreferenceActivity implements OnSharedPreferenceChang
     }
 
     private void removeFsCache() {
-        final Context ctxt = Prefs.this;
-        final AlertDialog.Builder dialog = new AlertDialog.Builder(ctxt);
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(getWindow().getContext());
         dialog.setMessage(R.string.dialog_fs_cache_remove);
         dialog.setPositiveButton(R.string.btn_yes, new OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
