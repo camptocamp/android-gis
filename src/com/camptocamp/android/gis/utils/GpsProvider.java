@@ -4,12 +4,8 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.microedition.lcdui.Image;
-
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
@@ -44,10 +40,9 @@ public class GpsProvider implements LocationSource, android.location.LocationLis
     private WeakReference<BaseMap> mMap;
     private int status = STATUS_CONNECTING;
 
-    protected List<Line> trace = new ArrayList<Line>();
-    protected boolean record = false;
-
-    protected boolean track = true;
+    private List<Line> trace = new ArrayList<Line>();
+    private boolean record = false;
+    private boolean track = true; // Will only track 1st time -> LocationMarker:60
 
     public GpsProvider(BaseMap a) {
         mMap = new WeakReference<BaseMap>(a);
@@ -76,13 +71,13 @@ public class GpsProvider implements LocationSource, android.location.LocationLis
         if (loc != null && isBetterLocation(loc)) {
             // Update Bearing
             // FIXME THIS IS BULLSHIT
-            if (loc.hasBearing()) {
-                setLocationMarker(new LocationMarker(new PlaceIcon(rotateImage(Utils
-                        .createImage("/res/drawable/direction.png"))), 0, track));
-            }
-            else {
-                setLocationMarker(marker_simple);
-            }
+//            if (loc.hasBearing()) {
+//                setLocationMarker(new LocationMarker(new PlaceIcon(rotateImage(Utils
+//                        .createImage("/res/drawable/direction.png"))), 0, track));
+//            }
+//            else {
+//                setLocationMarker(marker_simple);
+//            }
 
             // Update Marker
             marker.setAccuracy(loc.getAccuracy());
@@ -127,7 +122,7 @@ public class GpsProvider implements LocationSource, android.location.LocationLis
             // TODO: allow location from cellid/wifi only
             map.setTrackingPosition(false);
             map.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-            Toast.makeText(map, R.string.toast_gps_disabled, Toast.LENGTH_SHORT).show();
+            Toast.makeText(map, R.string.toast_gps_disabled, Toast.LENGTH_LONG).show();
         }
         status = STATUS_CONNECTION_LOST;
     }
@@ -159,7 +154,6 @@ public class GpsProvider implements LocationSource, android.location.LocationLis
     public void setLocationMarker(com.nutiteq.location.LocationMarker marker) {
         this.marker = (LocationMarker) marker;
         marker.setLocationSource(this);
-        // FIXME: what if this is null ?
         final BaseMap map = mMap.get();
         if (map != null) {
             marker.setMapComponent(map.getMapComponent());
@@ -210,15 +204,15 @@ public class GpsProvider implements LocationSource, android.location.LocationLis
      * Custom
      */
 
-    private Image rotateImage(Image img) {
-        Bitmap src = img.getBitmap();
-        int width = src.getWidth();
-        int height = src.getHeight();
-        Matrix matrix = new Matrix();
-        matrix.postRotate(45);
-        Bitmap dst = Bitmap.createBitmap(src, 0, 0, width, height, matrix, true);
-        return new Image(dst);
-    }
+//    private Image rotateImage(Image img) {
+//        Bitmap src = img.getBitmap();
+//        int width = src.getWidth();
+//        int height = src.getHeight();
+//        Matrix matrix = new Matrix();
+//        matrix.postRotate(45);
+//        Bitmap dst = Bitmap.createBitmap(src, 0, 0, width, height, matrix, true);
+//        return new Image(dst);
+//    }
 
     // http://developer.android.com/guide/topics/location/obtaining-user-location.html#BestEstimate
     private boolean isBetterLocation(Location loc) {

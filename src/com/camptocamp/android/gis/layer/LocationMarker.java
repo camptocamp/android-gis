@@ -57,6 +57,7 @@ public class LocationMarker extends NutiteqLocationMarker {
             }
         }
         super.update();
+        track = false;
     }
 
     @Override

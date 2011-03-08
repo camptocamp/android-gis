@@ -5,13 +5,12 @@ import android.os.Message;
 import android.view.animation.DecelerateInterpolator;
 
 import com.camptocamp.android.gis.layer.LocationMarker;
-import com.camptocamp.android.gis.utils.Caching;
 import com.nutiteq.BasicMapComponent;
-import com.nutiteq.cache.Cache;
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.WgsBoundingBox;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.location.LocationSource;
+import com.nutiteq.maps.GeoMap;
 import com.nutiteq.maps.OpenStreetMap;
 
 public class MapComponent extends BasicMapComponent {
@@ -163,26 +162,6 @@ public class MapComponent extends BasicMapComponent {
         return locationSource;
     }
 
-    public void cleanCache() {
-        if (networkCache != null) {
-            final Cache[] cl = ((Caching) networkCache).getCacheLevels();
-            for (int i = 0; i < cl.length; i++) {
-                cl[i].deinitialize();
-            }
-            // networkCache = null;
-        }
-    }
-
-    public void initCache() {
-        Caching cache = (Caching) networkCache;
-        if (cache != null) {
-            final Cache[] cl = cache.getCacheLevels();
-            for (int i = 0; i < cl.length; i++) {
-                cl[i].initialize();
-            }
-        }
-    }
-
     // Easing Handler and variables
     DecelerateInterpolator di = new DecelerateInterpolator(1.0f);
     int posx = 0;
@@ -207,12 +186,22 @@ public class MapComponent extends BasicMapComponent {
     };
 
     public double getMetersPerPixel() {
+        GeoMap map = getMap();
         // For OSM
-        if (getMap() instanceof OpenStreetMap) {
-            // Dummy calculation: 0.596 * Math.pow(2, (18 - getZoom()));
+        if (map instanceof OpenStreetMap) {
             // http://wiki.openstreetmap.org/wiki/Height_and_width_of_a_map#Pure_Math_Method
             return -(C * ycos / Math.pow(2, getZoom() + 8));
         }
-        return 0;
+        return 0; //0.596 * Math.pow(2, (map.getMaxZoom() - getZoom())); // Dummy
     }
+    
+    @Override
+    public void setLocationSource(final LocationSource source) {
+        if (source == null) {
+          return;
+        }
+        locationSource = source;
+        locationSource.getLocationMarker().setMapComponent(this);
+      }
+
 }
