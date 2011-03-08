@@ -20,6 +20,7 @@ public class Caching extends CachingChain {
     private static final String TAG = BaseMap.D + "C2CCaching";
 
     // An image is ~25kB => 1MB = 40 cached images
+    // Image in memory = bits per pixel * width * height
     protected static final int MEMORYCACHE = 512 * 1024; // Bytes // FIXME ?
     protected static final File FSCACHEDIR = new File(Environment.getExternalStorageDirectory()
             .getAbsolutePath()
