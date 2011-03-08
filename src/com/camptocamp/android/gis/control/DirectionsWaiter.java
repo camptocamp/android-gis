@@ -37,26 +37,27 @@ public class DirectionsWaiter implements com.nutiteq.services.DirectionsWaiter {
         final BaseMap a = mActivity.get();
         if (a != null) {
             switch (errors) {
-            case DirectionsService.ERROR_DESTINATION_ADDRESS_NOT_FOUND:
-                msg += a.getString(R.string.toast_route_dst_not_found);
-                break;
-            case DirectionsService.ERROR_FROM_ADDRESS_NOT_FOUND:
-                msg += a.getString(R.string.toast_route_src_not_found);
-                break;
-            case DirectionsService.ERROR_FROM_AND_DESTINATION_ADDRESS_SAME:
-                msg += a.getString(R.string.toast_route_same);
-                break;
-            case DirectionsService.ERROR_ROUTE_NOT_FOUND:
-                msg += a.getString(R.string.toast_route_not_found);
-                break;
-            default:
-                msg += a.getString(R.string.toast_route_unknown);
+                case DirectionsService.ERROR_DESTINATION_ADDRESS_NOT_FOUND:
+                    msg += a.getString(R.string.toast_route_dst_not_found);
+                    break;
+                case DirectionsService.ERROR_FROM_ADDRESS_NOT_FOUND:
+                    msg += a.getString(R.string.toast_route_src_not_found);
+                    break;
+                case DirectionsService.ERROR_FROM_AND_DESTINATION_ADDRESS_SAME:
+                    msg += a.getString(R.string.toast_route_same);
+                    break;
+                case DirectionsService.ERROR_ROUTE_NOT_FOUND:
+                    msg += a.getString(R.string.toast_route_not_found);
+                    break;
+                default:
+                    msg += a.getString(R.string.toast_route_unknown);
             }
             // Toast
             Intent i = new Intent(BaseMap.ACTION_TOAST);
             i.putExtra(BaseMap.EXTRA_MSG, msg);
             a.sendBroadcast(i);
-        } else {
+        }
+        else {
             msg += errors;
         }
         Log.e(TAG, msg);
@@ -68,7 +69,8 @@ public class DirectionsWaiter implements com.nutiteq.services.DirectionsWaiter {
         if (map != null) {
             // TODO: Remove last route
             map.getMapComponent().addLine(route.getRouteLine());
-        } else {
+        }
+        else {
             Log.e(TAG, "routeFound: Map activity is not reachable");
         }
     }

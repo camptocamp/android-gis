@@ -78,7 +78,8 @@ public class SwisstopoComponent extends MapComponent {
             middlePoint = displayedMap.zoom(middlePoint, dif);
             tileMapBounds = displayedMap.getTileMapBounds(middlePoint.getZoom());
             createZoomBufferAndUpdateScreen(scale, true, true);
-        } else if (newZoom < displayedMap.getMinZoom()) {
+        }
+        else if (newZoom < displayedMap.getMinZoom()) {
             dif = displayedMap.getMinZoom() - currentZoom;
             middlePoint = displayedMap.zoom(middlePoint, dif);
             tileMapBounds = displayedMap.getTileMapBounds(middlePoint.getZoom());
