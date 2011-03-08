@@ -131,7 +131,8 @@ public class Directions extends Activity {
             i.putExtra(BaseMap.EXTRA_TYPE, YourNavigationDirections.MOVE_METHOD_CAR);
             startActivity(i);
             finish();
-        } else {
+        }
+        else {
             // FIXME: change the color of the field bg to red
             Toast.makeText(Directions.this, R.string.toast_route_invalid, Toast.LENGTH_SHORT)
                     .show();
@@ -159,7 +160,8 @@ public class Directions extends Activity {
         protected WgsPoint doInBackground(Void... unused) {
             try {
                 return WgsPoint.parsePoint(0, pt, ",");
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 places = new OsmGeocoding(pt).getPoints();
             }
             return null;
@@ -173,11 +175,13 @@ public class Directions extends Activity {
                 // FIXME: Reverse geocode
                 addToField(field, result.getLon() + "," + result.getLat(), result);
 
-            } else {
+            }
+            else {
                 if (places.length == 1) {
                     addToField(field, places[0]);
 
-                } else if (places.length > 1) {
+                }
+                else if (places.length > 1) {
                     final CharSequence[] items = toArray(places);
                     final AlertDialog.Builder dialog = new AlertDialog.Builder(Directions.this);
                     dialog.setTitle(R.string.dialog_route_fromto);
@@ -189,7 +193,8 @@ public class Directions extends Activity {
                     });
                     dialog.setNegativeButton(R.string.btn_cancel, null);
                     dialog.show();
-                } else {
+                }
+                else {
                     Toast.makeText(Directions.this, R.string.toast_route_no_suggestion,
                             Toast.LENGTH_SHORT).show();
                 }
@@ -221,7 +226,8 @@ public class Directions extends Activity {
                 for (int i = 0; i < len; i++) {
                     if (places[i] != null && places[i].getName() != null) {
                         items[i] = places[i].getName();
-                    } else {
+                    }
+                    else {
                         items[i] = "";
                     }
                 }

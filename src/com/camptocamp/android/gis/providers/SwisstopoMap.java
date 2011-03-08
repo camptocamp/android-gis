@@ -61,7 +61,7 @@ public class SwisstopoMap extends ProjectedUnstreamedMap {
     public String buildPath(int mapX, int mapY, int zoom) {
         x = (int) Math.ceil(mapX / TILESIZE);
         y = (int) Math.ceil((getMapHeight(zoom) - TILESIZE - mapY) / TILESIZE);
-//        int r = rand.nextInt(MAX - MIN + 1) + MIN;
+        // int r = rand.nextInt(MAX - MIN + 1) + MIN;
         int r = 5;
         return String.format(baseUrl, r, zoom, (int) (x / 1000000), (int) (x / 1000) % 1000,
                 (int) (x % 1000), (int) (y / 1000000), (int) (y / 1000) % 1000, (int) (y % 1000),
@@ -78,25 +78,25 @@ public class SwisstopoMap extends ProjectedUnstreamedMap {
     }
 
     public double getResolution(int zoom) {
-        return ((CH1903)projection).getResolution(zoom);
+        return ((CH1903) projection).getResolution(zoom);
     }
-    
+
     public double PIXtoCHx(double pixel) {
-        return ((CH1903)projection).PIXtoCHx(pixel, zoom);
+        return ((CH1903) projection).PIXtoCHx(pixel, zoom);
     }
-    
+
     public double PIXtoCHy(double pixel) {
-        return ((CH1903)projection).PIXtoCHy(pixel, zoom);
+        return ((CH1903) projection).PIXtoCHy(pixel, zoom);
     }
-    
+
     public double CHxtoPIX(double metre) {
-        return ((CH1903)projection).CHxtoPIX(metre, zoom);
+        return ((CH1903) projection).CHxtoPIX(metre, zoom);
     }
 
     public double CHytoPIX(double metre) {
-        return ((CH1903)projection).CHytoPIX(metre, zoom);
+        return ((CH1903) projection).CHytoPIX(metre, zoom);
     }
-    
+
     @Override
     public int getMapWidth(final int zoom) {
         return (int) (Math.ceil((MAX_X - MIN_X) / getResolution(zoom) / TILESIZE) * TILESIZE);
@@ -116,7 +116,7 @@ public class SwisstopoMap extends ProjectedUnstreamedMap {
         if (zoom < MIN_ZOOM || zoom > MAX_ZOOM) {
             zoom = MIN_ZOOM;
         }
-        ((CH1903)projection).setyShift(getMapHeight(zoom) - getRealMapHeight(zoom));
+        ((CH1903) projection).setyShift(getMapHeight(zoom) - getRealMapHeight(zoom));
     }
 
     @Override
@@ -124,15 +124,15 @@ public class SwisstopoMap extends ProjectedUnstreamedMap {
         if (missingTile == null) {
             try {
                 missingTile = Image.createImage("/images/notile.png");
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 missingTile = Image.createImage(getTileSize(), getTileSize());
                 final Graphics g = missingTile.getGraphics();
                 g.setColor(0xFFFF0000);
                 g.fillRect(0, 0, getTileSize(), getTileSize());
             }
-          }
-          return missingTile;
+        }
+        return missingTile;
     }
-    
 
 }

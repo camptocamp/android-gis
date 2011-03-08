@@ -92,11 +92,14 @@ public class ExportGPX extends ExportTrace {
                 xml.endDocument();
                 return file.getAbsolutePath();
 
-            } catch (IllegalArgumentException e) {
+            }
+            catch (IllegalArgumentException e) {
                 e.printStackTrace();
-            } catch (IllegalStateException e) {
+            }
+            catch (IllegalStateException e) {
                 e.printStackTrace();
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 e.printStackTrace();
             }
         }

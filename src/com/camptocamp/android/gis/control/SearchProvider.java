@@ -29,9 +29,11 @@ public abstract class SearchProvider extends ContentProvider {
             HttpResponse response = client.execute(method);
             entity = response.getEntity();
             is = entity.getContent();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
-        } finally {
+        }
+        finally {
             // TODO: Check this
             data = IOUtils.readFully(is);
             if (method != null) {
@@ -40,8 +42,8 @@ public abstract class SearchProvider extends ContentProvider {
             if (entity != null) {
                 try {
                     entity.consumeContent();
-                } catch (IOException e) {
                 }
+                catch (IOException e) {}
             }
             IOUtils.closeStream(is);
         }
