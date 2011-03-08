@@ -45,8 +45,6 @@ import com.nutiteq.maps.GeoMap;
 import com.nutiteq.services.YourNavigationDirections;
 import com.nutiteq.ui.ThreadDrivenPanning;
 
-import de.georepublic.android.gis.Constants;
-
 //FIXME: Rename to Map, then Map to ~MapOpenStreetMap
 public class BaseMap extends Activity {
 
