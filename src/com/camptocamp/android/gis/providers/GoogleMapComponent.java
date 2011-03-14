@@ -160,11 +160,9 @@ public class GoogleMapComponent extends MapComponent {
         @Override
         public String resourcePath() {
             if (toRetrieve.isValid()) {
-                String url = MessageFormat.format(baseUrl, toRetrieve.center.getLat(),
-                        toRetrieve.center.getLon(), toRetrieve.middlePoint.getZoom(),
-                        toRetrieve.width, toRetrieve.height, lang);
-                android.util.Log.e("TEST", url);
-                return url;
+                return MessageFormat.format(baseUrl, toRetrieve.center.getLat(), toRetrieve.center
+                        .getLon(), toRetrieve.middlePoint.getZoom(), toRetrieve.width,
+                        toRetrieve.height, lang);
             }
             else {
                 return null;
