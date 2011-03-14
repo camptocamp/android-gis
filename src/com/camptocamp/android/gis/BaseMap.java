@@ -140,10 +140,10 @@ public class BaseMap extends Activity {
         setDefaultMap();
         handleIntent();
 
-        // FIXME: KML TESTS
+        // // FIXME: KML TESTS
         // KmlUrlReader kml = new KmlUrlReader(
         // "http://www.panoramio.com/panoramio.kml?LANG=en_US.utf8&", true);
-        // mapComponent.addKmlService(kml);
+        // mMapComponent.addKmlService(kml);
     }
 
     @Override
@@ -254,6 +254,10 @@ public class BaseMap extends Activity {
         mMapComponent.setPanningStrategy(new ThreadDrivenPanning());
         // mMapComponent.setPanningStrategy(new EventDrivenPanning());
         mMapComponent.setControlKeysHandler(new AndroidKeysHandler());
+        // mMapComponent.setOnScreenZoomControls(new NutiteqOnScreenZoomControls(Utils
+        // .createImage(NutiteqOnScreenZoomControls.DEFAULT_ZOOM_IMAGE)));
+        // mMapComponent.setZoomLevelIndicator(new DefaultZoomIndicator(gm.getMinZoom(), gm
+        // .getMaxZoom()));
         mMapComponent.startMapping();
         mMapComponent.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
     }

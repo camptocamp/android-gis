@@ -27,6 +27,7 @@ import com.nutiteq.maps.MapTilesRequestor;
 import com.nutiteq.net.DownloadCounter;
 import com.nutiteq.task.Task;
 import com.nutiteq.task.TasksRunner;
+import com.nutiteq.utils.Utils;
 
 // https://code.google.com/intl/en/apis/maps/documentation/staticmaps/#Limits
 // https://code.google.com/intl/en/apis/maps/faq.html#tos_nonweb
@@ -162,6 +163,7 @@ public class GoogleMapComponent extends MapComponent {
                 String url = MessageFormat.format(baseUrl, toRetrieve.center.getLat(),
                         toRetrieve.center.getLon(), toRetrieve.middlePoint.getZoom(),
                         toRetrieve.width, toRetrieve.height, lang);
+                android.util.Log.e("TEST", url);
                 return url;
             }
             else {
@@ -186,9 +188,7 @@ public class GoogleMapComponent extends MapComponent {
                 cleanMapBuffer();
                 repaint();
             }
-            else {
-                stream.close();
-            }
+            Utils.closeStream(stream);
         }
     }
 
