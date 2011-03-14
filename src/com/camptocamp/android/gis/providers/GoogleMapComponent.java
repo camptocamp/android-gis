@@ -9,7 +9,11 @@ import java.util.TimerTask;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
+import android.content.Context;
+import android.graphics.BitmapFactory;
+
 import com.camptocamp.android.gis.MapComponent;
+import com.camptocamp.android.gis.R;
 import com.nutiteq.cache.Cache;
 import com.nutiteq.components.ImageBuffer;
 import com.nutiteq.components.MapPos;
@@ -37,17 +41,13 @@ public class GoogleMapComponent extends MapComponent {
 
     protected Timer timer = new Timer();
 
-    public GoogleMapComponent(String baseUrl, WgsBoundingBox bbox, WgsPoint middlePoint, int width,
-            int height, int zoom, String lang) {
+    public GoogleMapComponent(Context ctxt, String baseUrl, WgsBoundingBox bbox,
+            WgsPoint middlePoint, int width, int height, int zoom, String lang) {
         super(bbox, middlePoint, width, height, zoom);
         this.baseUrl = baseUrl;
         this.lang = lang;
-        try {
-            logo = Image.createImage("/images/google_logo_small.png");
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+        logo = new Image(BitmapFactory.decodeResource(ctxt.getResources(),
+                R.drawable.google_logo_small));
     }
 
     public void paint(final Graphics g) {
@@ -159,9 +159,10 @@ public class GoogleMapComponent extends MapComponent {
         @Override
         public String resourcePath() {
             if (toRetrieve.isValid()) {
-                return MessageFormat.format(baseUrl, toRetrieve.center.getLat(), toRetrieve.center
-                        .getLon(), toRetrieve.middlePoint.getZoom(), toRetrieve.width,
-                        toRetrieve.height, lang);
+                String url = MessageFormat.format(baseUrl, toRetrieve.center.getLat(),
+                        toRetrieve.center.getLon(), toRetrieve.middlePoint.getZoom(),
+                        toRetrieve.width, toRetrieve.height, lang);
+                return url;
             }
             else {
                 return null;

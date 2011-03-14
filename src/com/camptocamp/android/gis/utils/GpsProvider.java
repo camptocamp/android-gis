@@ -4,8 +4,12 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.microedition.lcdui.Image;
+
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
@@ -22,7 +26,6 @@ import com.nutiteq.components.PlaceIcon;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.location.LocationListener;
 import com.nutiteq.location.LocationSource;
-import com.nutiteq.utils.Utils;
 
 public class GpsProvider implements LocationSource, android.location.LocationListener {
 
@@ -46,18 +49,20 @@ public class GpsProvider implements LocationSource, android.location.LocationLis
 
     public GpsProvider(BaseMap a) {
         mMap = new WeakReference<BaseMap>(a);
+
+        final Resources resources = a.getResources();
         manager = (LocationManager) a.getSystemService(Context.LOCATION_SERVICE);
-        marker_simple = new LocationMarker(new PlaceIcon(Utils
-                .createImage("/res/drawable/marker.png")), new PlaceIcon(Utils
-                .createImage("/res/drawable/marker_offline.png")), 0, track);
+        marker_simple = new LocationMarker(new PlaceIcon(new Image(BitmapFactory.decodeResource(
+                resources, R.drawable.marker))), new PlaceIcon(new Image(BitmapFactory
+                .decodeResource(resources, R.drawable.marker_offline))), 0, track);
         setLocationMarker(marker_simple);
     }
 
     public boolean isRecord() {
         return record;
     }
-    
-    public void setBaseMap(BaseMap map){
+
+    public void setBaseMap(BaseMap map) {
         mMap = new WeakReference<BaseMap>(map);
     }
 
@@ -71,13 +76,13 @@ public class GpsProvider implements LocationSource, android.location.LocationLis
         if (loc != null && isBetterLocation(loc)) {
             // Update Bearing
             // FIXME THIS IS BULLSHIT
-//            if (loc.hasBearing()) {
-//                setLocationMarker(new LocationMarker(new PlaceIcon(rotateImage(Utils
-//                        .createImage("/res/drawable/direction.png"))), 0, track));
-//            }
-//            else {
-//                setLocationMarker(marker_simple);
-//            }
+            // if (loc.hasBearing()) {
+            // setLocationMarker(new LocationMarker(new PlaceIcon(rotateImage(Utils
+            // .createImage("/res/drawable/direction.png"))), 0, track));
+            // }
+            // else {
+            // setLocationMarker(marker_simple);
+            // }
 
             // Update Marker
             marker.setAccuracy(loc.getAccuracy());
@@ -204,15 +209,15 @@ public class GpsProvider implements LocationSource, android.location.LocationLis
      * Custom
      */
 
-//    private Image rotateImage(Image img) {
-//        Bitmap src = img.getBitmap();
-//        int width = src.getWidth();
-//        int height = src.getHeight();
-//        Matrix matrix = new Matrix();
-//        matrix.postRotate(45);
-//        Bitmap dst = Bitmap.createBitmap(src, 0, 0, width, height, matrix, true);
-//        return new Image(dst);
-//    }
+    // private Image rotateImage(Image img) {
+    // Bitmap src = img.getBitmap();
+    // int width = src.getWidth();
+    // int height = src.getHeight();
+    // Matrix matrix = new Matrix();
+    // matrix.postRotate(45);
+    // Bitmap dst = Bitmap.createBitmap(src, 0, 0, width, height, matrix, true);
+    // return new Image(dst);
+    // }
 
     // http://developer.android.com/guide/topics/location/obtaining-user-location.html#BestEstimate
     private boolean isBetterLocation(Location loc) {
