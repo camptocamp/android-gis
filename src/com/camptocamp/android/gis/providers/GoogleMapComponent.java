@@ -80,8 +80,9 @@ public class GoogleMapComponent extends MapComponent {
             g.drawImage(mDisplayTile.image, displayWidth / 2 + mDisplayTile.middlePoint.getX()
                     - centerCopy.getX(), displayHeight / 2 + mDisplayTile.middlePoint.getY()
                     - centerCopy.getY(), Graphics.HCENTER | Graphics.VCENTER);
+            return true;
         }
-        return mDisplayTile != null && mDisplayTile.image != null;
+        return false;
     }
 
     /**
@@ -140,7 +141,7 @@ public class GoogleMapComponent extends MapComponent {
             if (toRetrieve == null) {
                 return;
             }
-            taskRunner.enqueueDownload(this, Cache.CACHE_LEVEL_NONE);
+            taskRunner.enqueueDownload(this, Cache.CACHE_LEVEL_MEMORY);
         }
 
         public void retrieveErrorFor(final GoogleTile errorTile) {
@@ -168,7 +169,7 @@ public class GoogleMapComponent extends MapComponent {
 
         @Override
         public int getCachingLevel() {
-            return Cache.CACHE_LEVEL_NONE;
+            return Cache.CACHE_LEVEL_MEMORY;
         }
 
         @Override
