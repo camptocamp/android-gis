@@ -81,6 +81,7 @@ public class LocationMarker extends NutiteqLocationMarker {
         super.quit();
         track = false;
     }
+
     public void setAccuracy(float accuracy) {
         this.accuracy = accuracy;
         setRadius();

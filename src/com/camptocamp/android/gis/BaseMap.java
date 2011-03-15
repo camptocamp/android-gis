@@ -137,6 +137,7 @@ public class BaseMap extends Activity {
             }
         });
 
+        // Start mapping
         setDefaultMap();
         handleIntent();
 
@@ -248,6 +249,7 @@ public class BaseMap extends Activity {
     }
 
     protected void setMapComponent(final GeoMap gm) {
+        android.util.Log.e("TEST", "setMapComponent()");
         mMapComponent.setMap(gm);
         mMapComponent.setNetworkCache(mCaching);
         // mMapComponent.setImageProcessor(new NightModeImageProcessor());

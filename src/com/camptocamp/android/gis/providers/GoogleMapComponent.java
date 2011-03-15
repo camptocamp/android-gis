@@ -9,11 +9,7 @@ import java.util.TimerTask;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
-import android.content.Context;
-import android.graphics.BitmapFactory;
-
 import com.camptocamp.android.gis.MapComponent;
-import com.camptocamp.android.gis.R;
 import com.nutiteq.cache.Cache;
 import com.nutiteq.components.ImageBuffer;
 import com.nutiteq.components.MapPos;
@@ -34,28 +30,25 @@ import com.nutiteq.utils.Utils;
 
 public class GoogleMapComponent extends MapComponent {
 
-    protected GoogleTile displayTile;
-    protected GoogleTile neededTile;
-    protected Image logo;
-    protected final String baseUrl;
-    private String lang = "";
+    protected GoogleTile mDisplayTile;
+    protected GoogleTile mNeededTile;
+    protected Image mLogo;
+    protected final String mBaseUrl;
+    private String mLang = "";
 
     protected Timer timer = new Timer();
 
-    public GoogleMapComponent(Context ctxt, String baseUrl, WgsBoundingBox bbox,
+    public GoogleMapComponent(Image logo, String baseUrl, WgsBoundingBox bbox,
             WgsPoint middlePoint, int width, int height, int zoom, String lang) {
         super(bbox, middlePoint, width, height, zoom);
-        this.baseUrl = baseUrl;
-        this.lang = lang;
-        logo = new Image(BitmapFactory.decodeResource(ctxt.getResources(),
-                R.drawable.google_logo_small));
+        mBaseUrl = baseUrl;
+        mLang = lang;
+        mLogo = logo;
     }
 
     public void paint(final Graphics g) {
         super.paint(g);
-        if (logo != null) {
-            g.drawImage(logo, 5, displayHeight, Graphics.LEFT | Graphics.BOTTOM);
-        }
+        g.drawImage(mLogo, 5, displayHeight, Graphics.LEFT | Graphics.BOTTOM);
     }
 
     @Override
@@ -79,44 +72,44 @@ public class GoogleMapComponent extends MapComponent {
      */
     protected boolean paintTile(final Graphics g, final MapTile mt, final MapPos centerCopy,
             final Rectangle change) {
-        if (neededTile != null && neededTile.image != null) {
-            displayTile = neededTile;
-            neededTile = null;
+        if (mNeededTile != null && mNeededTile.image != null) {
+            mDisplayTile = mNeededTile;
+            mNeededTile = null;
         }
-        if (displayTile != null && displayTile.image != null) {
-            g.drawImage(displayTile.image, displayWidth / 2 + displayTile.middlePoint.getX()
-                    - centerCopy.getX(), displayHeight / 2 + displayTile.middlePoint.getY()
+        if (mDisplayTile != null && mDisplayTile.image != null) {
+            g.drawImage(mDisplayTile.image, displayWidth / 2 + mDisplayTile.middlePoint.getX()
+                    - centerCopy.getX(), displayHeight / 2 + mDisplayTile.middlePoint.getY()
                     - centerCopy.getY(), Graphics.HCENTER | Graphics.VCENTER);
         }
-        return displayTile != null && displayTile.image != null;
+        return mDisplayTile != null && mDisplayTile.image != null;
     }
 
     /**
      * Enqueue tile to download.
      */
     protected void enqueueTiles() {
-        if (neededTile != null) {
-            if (neededTile.middlePoint.equals(middlePoint)) {
+        if (mNeededTile != null) {
+            if (mNeededTile.middlePoint.equals(middlePoint)) {
                 return;
             }
-            neededTile.invalidate();
+            mNeededTile.invalidate();
         }
-        else if (displayTile != null) {
-            if (displayTile.middlePoint.equals(middlePoint)) {
+        else if (mDisplayTile != null) {
+            if (mDisplayTile.middlePoint.equals(middlePoint)) {
                 return;
             }
         }
 
         MapPos middle = middlePoint;
 
-        if (displayTile == null
-                || Math.abs(displayTile.middlePoint.getX() - middle.getX()) > displayWidth / 2
-                || Math.abs(displayTile.middlePoint.getY() - middle.getY()) > displayHeight / 2) {
-            neededTile = new GoogleTile(6 * displayWidth, 6 * displayHeight, displayedMap
+        if (mDisplayTile == null
+                || Math.abs(mDisplayTile.middlePoint.getX() - middle.getX()) > displayWidth / 2
+                || Math.abs(mDisplayTile.middlePoint.getY() - middle.getY()) > displayHeight / 2) {
+            mNeededTile = new GoogleTile(6 * displayWidth, 6 * displayHeight, displayedMap
                     .mapPosToWgs(middle).toWgsPoint(), middle);
             final MapTilesRequestor mapTilesRequestor = this;
             timer.schedule(new TimerTask() {
-                GoogleTile tile = neededTile;
+                GoogleTile tile = mNeededTile;
 
                 @Override
                 public void run() {
@@ -160,9 +153,9 @@ public class GoogleMapComponent extends MapComponent {
         @Override
         public String resourcePath() {
             if (toRetrieve.isValid()) {
-                return MessageFormat.format(baseUrl, toRetrieve.center.getLat(), toRetrieve.center
+                return MessageFormat.format(mBaseUrl, toRetrieve.center.getLat(), toRetrieve.center
                         .getLon(), toRetrieve.middlePoint.getZoom(), toRetrieve.width,
-                        toRetrieve.height, lang);
+                        toRetrieve.height, mLang);
             }
             else {
                 return null;

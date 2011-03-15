@@ -8,8 +8,8 @@ import android.view.View;
 import com.camptocamp.android.gis.BaseMap;
 import com.camptocamp.android.gis.MapComponent;
 import com.camptocamp.android.gis.R;
+import com.camptocamp.android.gis.utils.GpsProvider;
 import com.nutiteq.components.WgsPoint;
-import com.nutiteq.location.LocationSource;
 
 public class OSMMap extends BaseMap {
 
@@ -63,7 +63,6 @@ public class OSMMap extends BaseMap {
     }
 
     protected void selectMap(int provider_id) {
-        LocationSource loc = null;
         mProvider = provider_id;
         int zoom = -1;
         WgsPoint pt = new WgsPoint(LNG, LAT);
@@ -74,7 +73,7 @@ public class OSMMap extends BaseMap {
             pt = mMapComponent.getMiddlePoint();
             // Save location provider
             if (mTrackingPosition) {
-                loc = mMapComponent.getLocationSource();
+                mLocationSource = (GpsProvider) mMapComponent.getLocationSource();
             }
             mMapComponent.stopMapping();
             mMapComponent = null;
@@ -89,8 +88,9 @@ public class OSMMap extends BaseMap {
                     setMapComponent(new OpenStreetMap());
                     break;
             }
-            if (loc != null) {
-                mMapComponent.setLocationSource(loc);
+            if (mLocationSource != null) {
+                ((GpsProvider) mLocationSource).setBaseMap(this);
+                mMapComponent.setLocationSource(mLocationSource);
             }
         }
         else {
