@@ -6,12 +6,15 @@ import android.view.animation.DecelerateInterpolator;
 
 import com.camptocamp.android.gis.layer.LocationMarker;
 import com.nutiteq.BasicMapComponent;
+import com.nutiteq.android.MapView;
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.WgsBoundingBox;
 import com.nutiteq.components.WgsPoint;
 import com.nutiteq.location.LocationSource;
 import com.nutiteq.maps.GeoMap;
 import com.nutiteq.maps.OpenStreetMap;
+
+import de.georepublic.android.gis.OnScreenZoomControls;
 
 public class MapComponent extends BasicMapComponent {
 
@@ -26,6 +29,7 @@ public class MapComponent extends BasicMapComponent {
     private static final int ZOOM = 7;
     private static final double C = 40076592d; // m
 
+    public MapView mMapView;
     private WgsBoundingBox maxExtent = null;
     private final int[] lastpanx = new int[2];
     private final int[] lastpany = new int[2];
@@ -38,7 +42,7 @@ public class MapComponent extends BasicMapComponent {
     public MapComponent(WgsPoint middlePoint, int width, int height, int zoom) {
         super(KEY, VDR, BaseMap.APP, width, height, middlePoint, (zoom != -1 ? zoom : ZOOM));
         // FIXME: must set according to min/max zoom levels
-        // setZoomLevelIndicator(new ZoomIndicator());
+        // setZoomLevelIndicator(new ZoomIndicator())
         ycos = Math.cos(middlePoint.getLat());
     }
 
@@ -115,11 +119,14 @@ public class MapComponent extends BasicMapComponent {
 
     @Override
     public void pointerPressed(final int x, final int y) {
-        super.pointerPressed(x, y);
-        resetEasing();
-    }
+        // super.pointerPressed(x, y);
+        // Super actions
+        pointerXMove = 0;
+        pointerYMove = 0;
+        pointerX = x - displayX;
+        pointerY = y - displayY;
 
-    private void resetEasing() {
+        // Reset easing (kinetic pan)
         mHandler.removeMessages(MOVE);
         posx = 0;
         posy = 0;
@@ -128,10 +135,18 @@ public class MapComponent extends BasicMapComponent {
         lastpanx[1] = 0;
         lastpany[0] = 0;
         lastpany[1] = 0;
-    }
 
-    public void pointerReleasedManual(final int x, final int y) {
-        super.pointerReleased(x, y);
+        // Change zoom button image
+        final OnScreenZoomControls zoomControl = (OnScreenZoomControls) onScreenZoomControls;
+        int controlAction = onScreenZoomControls.getControlAction(pointerX, pointerY);
+        switch (controlAction) {
+            case OnScreenZoomControls.CONTROL_ZOOM_IN:
+                zoomControl.zoomInPressed(mMapView.getGraphics(), displayWidth, displayHeight);
+                break;
+            case OnScreenZoomControls.CONTROL_ZOOM_OUT:
+                zoomControl.zoomOutPressed(mMapView.getGraphics(), displayWidth, displayHeight);
+                break;
+        }
     }
 
     @Override
@@ -140,6 +155,10 @@ public class MapComponent extends BasicMapComponent {
 
         int panx = lastpanx[0] + lastpanx[1];
         int pany = lastpany[0] + lastpany[1];
+
+        // Change zoom button image back to normal
+        ((OnScreenZoomControls) onScreenZoomControls).paint(mMapView.getGraphics(), displayWidth,
+                displayHeight);
 
         // Double Tap ZoomIn
         long now = System.currentTimeMillis();

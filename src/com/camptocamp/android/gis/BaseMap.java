@@ -81,7 +81,7 @@ public class BaseMap extends Activity {
     protected Window mWindow;
     protected RelativeLayout mMapLayout;
     protected boolean mRetainCalled = false;
-    private MapView mMapView = null;
+    protected MapView mMapView = null;
     private List<String> mSelectedLayers;
     private DirectionsWaiter mWaiter;
     private Caching mCaching;
@@ -423,6 +423,7 @@ public class BaseMap extends Activity {
             mMapView = null;
         }
         mMapView = new MapView(mWindow.getContext(), mMapComponent);
+        mMapComponent.mMapView = mMapView;
         mMapLayout.addView(mMapView);
         mMapView.setClickable(true);
         mMapView.setEnabled(true);
