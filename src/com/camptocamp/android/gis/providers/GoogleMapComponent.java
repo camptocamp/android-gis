@@ -30,6 +30,7 @@ import com.nutiteq.utils.Utils;
 
 public class GoogleMapComponent extends MapComponent {
 
+    private static final int TILE_SIZE = 640; // Maximum GMaps Static size
     protected GoogleTile mDisplayTile;
     protected GoogleTile mNeededTile;
     protected Image mLogo;
@@ -104,10 +105,12 @@ public class GoogleMapComponent extends MapComponent {
         MapPos middle = middlePoint;
 
         if (mDisplayTile == null
-                || Math.abs(mDisplayTile.middlePoint.getX() - middle.getX()) > displayWidth / 2
-                || Math.abs(mDisplayTile.middlePoint.getY() - middle.getY()) > displayHeight / 2) {
-            mNeededTile = new GoogleTile(6 * displayWidth, 6 * displayHeight, displayedMap
-                    .mapPosToWgs(middle).toWgsPoint(), middle);
+                || Math.abs(mDisplayTile.middlePoint.getX() - middle.getX()) > Math
+                        .abs(displayWidth - TILE_SIZE)
+                || Math.abs(mDisplayTile.middlePoint.getY() - middle.getY()) > Math
+                        .abs(displayHeight - TILE_SIZE)) {
+            mNeededTile = new GoogleTile(TILE_SIZE, TILE_SIZE, displayedMap.mapPosToWgs(middle)
+                    .toWgsPoint(), middle);
             final MapTilesRequestor mapTilesRequestor = this;
             timer.schedule(new TimerTask() {
                 GoogleTile tile = mNeededTile;
@@ -119,7 +122,7 @@ public class GoogleMapComponent extends MapComponent {
                                 3));
                     }
                 }
-            }, 0);
+            }, 10);
         }
     }
 
