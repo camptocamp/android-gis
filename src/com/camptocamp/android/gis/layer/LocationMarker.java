@@ -66,7 +66,7 @@ public class LocationMarker extends NutiteqLocationMarker {
         // Update accuracy circle
         if (radius > 0) {
             final int size = (int) Math.ceil(radius * 2);
-            bitmap = Bitmap.createBitmap(size, size, Config.RGB_565);
+            bitmap = Bitmap.createBitmap(size, size, Config.ARGB_8888);
             canvas = new Canvas(bitmap);
             canvas.drawCircle(radius, radius, radius, paint);
             final int x = mapPosition.getX() - mp.getX() + screenCenterX;

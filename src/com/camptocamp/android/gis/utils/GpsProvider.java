@@ -85,8 +85,8 @@ public class GpsProvider implements LocationSource, android.location.LocationLis
             // }
 
             // Update Marker
-            marker.setAccuracy(loc.getAccuracy());
             marker.setLocation(new WgsPoint(loc.getLongitude(), loc.getLatitude()));
+            marker.setAccuracy(loc.getAccuracy());
 
             // Update trace
             // TODO: Cut if signal lost ?
