@@ -36,6 +36,7 @@ import com.camptocamp.android.gis.utils.ExportKML;
 import com.camptocamp.android.gis.utils.ExportTrace;
 import com.camptocamp.android.gis.utils.GpsProvider;
 import com.camptocamp.android.gis.utils.Prefs;
+import com.mgmaps.cache.ScreenCache;
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.android.MapView;
 import com.nutiteq.cache.Cache;
@@ -181,6 +182,7 @@ public class BaseMap extends Activity {
     @Override
     public void onLowMemory() {
         Log.w(TAG, "LOW MEMORY");
+        ScreenCache.getInstance().reset();
         mCaching.deinitialize();
         System.gc();
         mCaching.initialize();

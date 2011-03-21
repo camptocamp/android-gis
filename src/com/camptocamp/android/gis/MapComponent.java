@@ -8,6 +8,7 @@ import com.camptocamp.android.gis.control.OnScreenZoomControls;
 import com.camptocamp.android.gis.layer.LocationMarker;
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.android.MapView;
+import com.nutiteq.components.ImageBuffer;
 import com.nutiteq.components.MapPos;
 import com.nutiteq.components.WgsBoundingBox;
 import com.nutiteq.components.WgsPoint;
@@ -233,6 +234,10 @@ public class MapComponent extends BasicMapComponent {
         }
         locationSource = source;
         locationSource.getLocationMarker().setMapComponent(this);
+    }
+    
+    public void setMapBuffer(ImageBuffer mapBuffer){
+        this.mapBuffer = mapBuffer;
     }
 
     public void cleanTaskRunner() {
