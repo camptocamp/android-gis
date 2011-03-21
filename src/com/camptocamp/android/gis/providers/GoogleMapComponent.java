@@ -119,7 +119,7 @@ public class GoogleMapComponent extends MapComponent {
                                 3));
                     }
                 }
-            }, 50);
+            }, 0);
         }
     }
 

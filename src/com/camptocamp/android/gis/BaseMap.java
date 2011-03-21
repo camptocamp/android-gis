@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.camptocamp.android.gis.control.DirectionsWaiter;
+import com.camptocamp.android.gis.control.OnScreenZoomControls;
 import com.camptocamp.android.gis.layer.Overlay;
 import com.camptocamp.android.gis.utils.Caching;
 import com.camptocamp.android.gis.utils.ExportGPX;
@@ -253,13 +254,12 @@ public class BaseMap extends Activity {
         mMapComponent.setMap(gm);
         mMapComponent.setNetworkCache(mCaching);
         // mMapComponent.setImageProcessor(new NightModeImageProcessor());
-        mMapComponent.setPanningStrategy(new ThreadDrivenPanning());
         // mMapComponent.setPanningStrategy(new EventDrivenPanning());
+        mMapComponent.setPanningStrategy(new ThreadDrivenPanning());
         mMapComponent.setControlKeysHandler(new AndroidKeysHandler());
-        // mMapComponent.setOnScreenZoomControls(new NutiteqOnScreenZoomControls(Utils
-        // .createImage(NutiteqOnScreenZoomControls.DEFAULT_ZOOM_IMAGE)));
-        // mMapComponent.setZoomLevelIndicator(new DefaultZoomIndicator(gm.getMinZoom(), gm
-        // .getMaxZoom()));
+        // FIXME: Don't pass context but pass Image
+        mMapComponent.setOnScreenZoomControls(new OnScreenZoomControls(getResources()));
+        mMapComponent.setZoomLevelIndicator(null);
         mMapComponent.startMapping();
         mMapComponent.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
     }

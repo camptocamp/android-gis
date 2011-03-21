@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.animation.DecelerateInterpolator;
 
+import com.camptocamp.android.gis.control.OnScreenZoomControls;
 import com.camptocamp.android.gis.layer.LocationMarker;
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.android.MapView;
@@ -13,8 +14,6 @@ import com.nutiteq.components.WgsPoint;
 import com.nutiteq.location.LocationSource;
 import com.nutiteq.maps.GeoMap;
 import com.nutiteq.maps.OpenStreetMap;
-
-import de.georepublic.android.gis.OnScreenZoomControls;
 
 public class MapComponent extends BasicMapComponent {
 
@@ -93,7 +92,20 @@ public class MapComponent extends BasicMapComponent {
             }
         }
 
-        super.panMap(panX, panY);
+        // Don't enqueueTiles() when panning kinetically
+         if (current > 0.9f) {
+             super.panMap(panX, panY);
+         } else {
+             if (paintingScreen) {
+                 return;
+               }
+               mapBufferMoveX -= panX;
+               mapBufferMoveY -= panY;
+               middlePoint.setX(middlePoint.getX() + panX);
+               middlePoint.setY(middlePoint.getY() + panY);
+               repaint();
+         }
+
         ycos = Math.cos(getMiddlePoint().getLat());
     }
 
@@ -197,7 +209,7 @@ public class MapComponent extends BasicMapComponent {
                 panMap(x, y);
                 posx += x;
                 posy += y;
-                current += 0.1;
+                current += 0.1f;
                 mHandler.sendMessageDelayed(Message.obtain(mHandler, MOVE, msg.arg1, msg.arg2),
                         DELAY);
             }
