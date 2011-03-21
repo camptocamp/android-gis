@@ -35,7 +35,7 @@ public class GoogleMapComponent extends MapComponent {
     protected GoogleTile mNeededTile;
     protected Image mLogo;
     protected final String mBaseUrl;
-    private String mLang = "";
+    protected String mLang = "";
 
     protected Timer timer = new Timer();
 
@@ -89,6 +89,11 @@ public class GoogleMapComponent extends MapComponent {
     /**
      * Enqueue tile to download.
      */
+    @SuppressWarnings("unchecked")
+    protected void enqueueTile(final MapTile mt) {
+        neededTiles.addElement(mt);
+    }
+
     protected void enqueueTiles() {
         if (mNeededTile != null) {
             if (mNeededTile.middlePoint.equals(middlePoint)) {
@@ -144,7 +149,7 @@ public class GoogleMapComponent extends MapComponent {
             if (toRetrieve == null) {
                 return;
             }
-            taskRunner.enqueueDownload(this, Cache.CACHE_LEVEL_MEMORY);
+            taskRunner.enqueueDownload(this, Cache.CACHE_LEVEL_NONE);
         }
 
         public void retrieveErrorFor(final GoogleTile errorTile) {
@@ -172,12 +177,17 @@ public class GoogleMapComponent extends MapComponent {
 
         @Override
         public int getCachingLevel() {
-            return Cache.CACHE_LEVEL_MEMORY;
+            return Cache.CACHE_LEVEL_NONE;
         }
 
         @Override
         public void streamOpened(InputStream stream, DownloadCounter counter, Cache networkCache)
                 throws IOException {
+            // Always recycle previous tile (no cache)
+            if (mDisplayTile != null && mDisplayTile.image != null) {
+                mDisplayTile.image.getBitmap().recycle();
+            }
+            // Get new tile stream and display it
             if (toRetrieve.isValid()) {
                 toRetrieve.image = Image.createImage(stream);
                 cleanMapBuffer();
