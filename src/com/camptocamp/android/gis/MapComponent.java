@@ -38,6 +38,8 @@ public class MapComponent extends BasicMapComponent {
     private int lastposx = 0;
     private int lastposy = 0;
     private long lasttouch;
+    
+    public int mProviderId;
 
     public MapComponent(WgsPoint middlePoint, int width, int height, int zoom) {
         super(KEY, VDR, BaseMap.APP, width, height, middlePoint, (zoom != -1 ? zoom : ZOOM));

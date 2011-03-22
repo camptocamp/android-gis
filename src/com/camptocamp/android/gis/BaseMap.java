@@ -103,7 +103,7 @@ public class BaseMap extends Activity {
         mCaching = new Caching(mWindow.getContext());
         mCaching.initialize();
         mPreferences = PreferenceManager.getDefaultSharedPreferences(mWindow.getContext());
-        mSelectedLayers = new ArrayList<String>();
+        mSelectedLayers = new ArrayList<String>(0);
         mMapLayout = ((RelativeLayout) findViewById(R.id.map));
         mWaiter = new DirectionsWaiter(BaseMap.this);
         mRetainCalled = getLastNonConfigurationInstance() == null ? false : true;
@@ -159,6 +159,8 @@ public class BaseMap extends Activity {
         }
         if (!mRetainCalled) {
             android.util.Log.v(TAG, "onDestroy(): clean mapComponent");
+            mCaching.deinitialize();
+            mCaching = null;
             mMapComponent.stopMapping();
             mMapComponent = null;
         }

@@ -43,7 +43,7 @@ public class GpsProvider implements LocationSource, android.location.LocationLis
     private WeakReference<BaseMap> mMap;
     private int status = STATUS_CONNECTING;
 
-    private List<Line> trace = new ArrayList<Line>();
+    private List<Line> trace = new ArrayList<Line>(0);
     private boolean record = false;
     private boolean track = true; // Will only track 1st time -> LocationMarker:60
 

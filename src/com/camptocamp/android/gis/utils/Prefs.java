@@ -120,7 +120,7 @@ public class Prefs extends PreferenceActivity implements OnSharedPreferenceChang
                         new String[] { CacheIndexDatabaseHelper.KEY_RESOURCE_PATH,
                                 CacheIndexDatabaseHelper.KEY_RESOURCE_SIZE }, null, null, null,
                         null, null);
-                final List<String> removedFiles = new ArrayList<String>();
+                final List<String> removedFiles = new ArrayList<String>(c.getCount());
                 while (c.moveToNext()) {
                     removedFiles.add(c.getString(0));
                 }

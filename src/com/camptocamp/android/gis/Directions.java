@@ -31,7 +31,7 @@ public class Directions extends Activity {
     private static final String TAG = BaseMap.D + "Directions";
     protected static final int PICK = 0;
 
-    private final List<WgsPoint> pts = new ArrayList<WgsPoint>();
+    private final List<WgsPoint> pts = new ArrayList<WgsPoint>(0);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

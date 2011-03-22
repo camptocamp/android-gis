@@ -181,8 +181,8 @@ public class GoogleMapComponent extends MapComponent {
         }
 
         @Override
-        public void streamOpened(InputStream stream, DownloadCounter counter, Cache networkCache)
-                throws IOException {
+        public void streamOpened(InputStream stream, DownloadCounter counter,
+                final Cache networkCache) throws IOException {
             // Always recycle previous tile (no cache)
             if (mDisplayTile != null && mDisplayTile.image != null) {
                 mDisplayTile.image.getBitmap().recycle();
