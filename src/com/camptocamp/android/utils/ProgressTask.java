@@ -6,7 +6,8 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 
-public abstract class ProgressTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
+public abstract class ProgressTask<Params, Progress, Result> extends
+        AsyncTask<Params, Progress, Result> {
 
     // Activity that launch the task
     protected WeakReference<Activity> mActivity;
@@ -48,7 +49,9 @@ public abstract class ProgressTask<Params, Progress, Result> extends AsyncTask<P
 
     @Override
     protected void onCancelled() {
-        mDialog.dismiss();
-        mDialog = null;
+        if (mDialog != null) {
+            mDialog.dismiss();
+            mDialog = null;
+        }
     }
 }
