@@ -311,14 +311,10 @@ public class BaseMap extends Activity {
     protected void handleIntent() {
         final Intent intent = getIntent();
         String action = intent.getAction();
-
-        Log.v(TAG, "intent=" + intent.toString());
-
         if (ACTION_PICK.equals(action)) {
             // Select place mode
             Toast.makeText(mWindow.getContext(), R.string.toast_pick_point, Toast.LENGTH_SHORT)
                     .show();
-
             mMapComponent.setMapListener(new MapView(mWindow.getContext(), mMapComponent) {
                 @Override
                 public void mapClicked(WgsPoint p) {
@@ -355,10 +351,10 @@ public class BaseMap extends Activity {
                 zoomToBbox(new WgsPoint(minx, miny), new WgsPoint(maxx, maxy));
             }
             else if (intent.hasExtra(EXTRA_LAT) && intent.hasExtra(EXTRA_LON)) {
-                // FIXME: There is a problem zooming more than 1 level at once
+                Log.e("TEST", "maxZoom="+mMapComponent.getMap().getMaxZoom());
                 mMapComponent.setZoom(mMapComponent.getMap().getMaxZoom());
-                mMapComponent.setMiddlePoint(new WgsPoint(intent.getDoubleExtra(EXTRA_LON, 0),
-                        intent.getDoubleExtra(EXTRA_LAT, 0)));
+                mMapComponent.moveMap(new WgsPoint(intent.getDoubleExtra(EXTRA_LON, 0), intent
+                        .getDoubleExtra(EXTRA_LAT, 0)));
             }
 
         }
