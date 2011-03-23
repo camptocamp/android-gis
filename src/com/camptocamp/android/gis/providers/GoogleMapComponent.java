@@ -74,6 +74,10 @@ public class GoogleMapComponent extends MapComponent {
     protected boolean paintTile(final Graphics g, final MapTile mt, final MapPos centerCopy,
             final Rectangle change) {
         if (mNeededTile != null && mNeededTile.image != null) {
+            // Always recycle previous tile (no cache)
+            if (mDisplayTile != null && mDisplayTile.image != null) {
+                mDisplayTile.image.getBitmap().recycle();
+            }
             mDisplayTile = mNeededTile;
             mNeededTile = null;
         }
@@ -183,10 +187,6 @@ public class GoogleMapComponent extends MapComponent {
         @Override
         public void streamOpened(InputStream stream, DownloadCounter counter,
                 final Cache networkCache) throws IOException {
-            // Always recycle previous tile (no cache)
-            if (mDisplayTile != null && mDisplayTile.image != null) {
-                mDisplayTile.image.getBitmap().recycle();
-            }
             // Get new tile stream and display it
             if (toRetrieve.isValid()) {
                 toRetrieve.image = Image.createImage(stream);
