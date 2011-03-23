@@ -10,11 +10,11 @@ public abstract class ProgressTask<Params, Progress, Result> extends
         AsyncTask<Params, Progress, Result> {
 
     // Activity that launch the task
-    protected WeakReference<Activity> mActivity;
+    protected final WeakReference<Activity> mActivity;
     // Used progress dialog
     protected ProgressDialog mDialog;
     // Message do display
-    protected String mMessage;
+    protected final String mMessage;
 
     public ProgressTask(final Activity activity, final String message) {
         mActivity = new WeakReference<Activity>(activity);
@@ -34,13 +34,6 @@ public abstract class ProgressTask<Params, Progress, Result> extends
 
     @Override
     protected void onPostExecute(final Result result) {
-        onDestroy();
-    }
-
-    /**
-     * Should be call when the activity is destroy
-     */
-    public void onDestroy() {
         if (mDialog != null) {
             mDialog.dismiss();
             mDialog = null;
