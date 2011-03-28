@@ -6,8 +6,11 @@ import java.util.List;
 
 import javax.microedition.lcdui.Image;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.DialogInterface.OnClickListener;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.location.Location;
@@ -16,7 +19,6 @@ import android.location.LocationProvider;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.camptocamp.android.gis.BaseMap;
 import com.camptocamp.android.gis.Line;
@@ -122,12 +124,19 @@ public class GpsProvider implements LocationSource, android.location.LocationLis
     @Override
     public void onProviderDisabled(final String provider) {
         final BaseMap map = mMap.get();
+        // TODO: allow location from cellid/wifi only
         // GPS provider is disabled
         if (map != null && LocationManager.GPS_PROVIDER.equals(provider)) {
-            // TODO: allow location from cellid/wifi only
+            AlertDialog.Builder dialog = new AlertDialog.Builder(map);
+            dialog.setTitle(R.string.toast_gps_disabled);
+            dialog.setPositiveButton(R.string.btn_ok, new OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    map.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                }
+            });
+            dialog.show();
             map.setTrackingPosition(false);
-            map.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-            Toast.makeText(map, R.string.toast_gps_disabled, Toast.LENGTH_LONG).show();
         }
         status = STATUS_CONNECTION_LOST;
     }
