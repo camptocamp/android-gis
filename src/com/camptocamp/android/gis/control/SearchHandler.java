@@ -7,6 +7,7 @@ import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -56,6 +57,12 @@ public abstract class SearchHandler extends ListActivity {
         }
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        mDialog = null;
+        super.onConfigurationChanged(newConfig);
+    }
+
     /**
      * The text display in the waiting dialogue
      * 
@@ -91,6 +98,7 @@ public abstract class SearchHandler extends ListActivity {
         @Override
         protected void onPostExecute(Cursor cursor) {
             showResult(cursor);
+            mActivity = null;
             if (mDialog != null) {
                 mDialog.dismiss();
                 mDialog = null;
@@ -99,6 +107,7 @@ public abstract class SearchHandler extends ListActivity {
 
         @Override
         protected void onCancelled() {
+            mActivity = null;
             if (mDialog != null) {
                 mDialog.dismiss();
                 mDialog = null;
