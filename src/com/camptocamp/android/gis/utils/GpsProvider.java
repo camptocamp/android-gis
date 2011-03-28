@@ -128,7 +128,7 @@ public class GpsProvider implements LocationSource, android.location.LocationLis
         // GPS provider is disabled
         if (map != null && LocationManager.GPS_PROVIDER.equals(provider)) {
             AlertDialog.Builder dialog = new AlertDialog.Builder(map);
-            dialog.setTitle(R.string.toast_gps_disabled);
+            dialog.setMessage(R.string.toast_gps_disabled);
             dialog.setPositiveButton(R.string.btn_ok, new OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
