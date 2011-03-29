@@ -31,7 +31,7 @@ public class OnScreenZoomControls implements com.nutiteq.controls.OnScreenZoomCo
 
     public void paint(final Graphics g, final int displayWidth, final int displayHeight) {
         posx = displayWidth / 2;
-        posy = displayHeight - 5;
+        posy = displayHeight;
         g.setClip(0, 0, displayWidth, displayHeight);
         if (mZoomIn && !mRelease) {
             g.drawImage(btnZoomInPressed, posx, posy, Graphics.BOTTOM | Graphics.RIGHT);
