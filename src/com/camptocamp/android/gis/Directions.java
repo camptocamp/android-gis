@@ -77,6 +77,7 @@ public class Directions extends Activity {
             String addr = "";
             Cursor c = managedQuery(data.getData(), null, null, null, null);
             if (c.moveToFirst()) {
+                // FIXME: Doesn't work in 1.6
                 addr = c
                         .getString(c
                                 .getColumnIndexOrThrow(ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS));
@@ -98,6 +99,7 @@ public class Directions extends Activity {
                         // List contact with geographic information
                         if (Integer.parseInt(Build.VERSION.SDK) >= 5) {
                             Intent i1 = new Intent(Intent.ACTION_PICK);
+                            // FIXME: Doesn't work in 1.6
                             i1
                                     .setType(ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_TYPE);
                             startActivityForResult(i1, field);
