@@ -38,7 +38,7 @@ public class MapComponent extends BasicMapComponent {
     private int lastposx = 0;
     private int lastposy = 0;
     private long lasttouch;
-    
+
     public int mProviderId;
 
     public MapComponent(WgsPoint middlePoint, int width, int height, int zoom) {
@@ -96,18 +96,19 @@ public class MapComponent extends BasicMapComponent {
         }
 
         // Don't enqueueTiles() when panning kinetically
-         if (current > 0.9f) {
-             super.panMap(panX, panY);
-         } else {
-             if (paintingScreen) {
-                 return;
-               }
-               mapBufferMoveX -= panX;
-               mapBufferMoveY -= panY;
-               middlePoint.setX(middlePoint.getX() + panX);
-               middlePoint.setY(middlePoint.getY() + panY);
-               repaint();
-         }
+        if (current > 0.9f) {
+            super.panMap(panX, panY);
+        }
+        else {
+            if (paintingScreen) {
+                return;
+            }
+            mapBufferMoveX -= panX;
+            mapBufferMoveY -= panY;
+            middlePoint.setX(middlePoint.getX() + panX);
+            middlePoint.setY(middlePoint.getY() + panY);
+            repaint();
+        }
 
         ycos = Math.cos(getMiddlePoint().getLat());
     }
@@ -152,28 +153,22 @@ public class MapComponent extends BasicMapComponent {
         lastpany[1] = 0;
 
         // Change zoom button image
-        final OnScreenZoomControls zoomControl = (OnScreenZoomControls) onScreenZoomControls;
-        int controlAction = onScreenZoomControls.getControlAction(pointerX, pointerY);
-        switch (controlAction) {
-            case OnScreenZoomControls.CONTROL_ZOOM_IN:
-                zoomControl.zoomInPressed(mMapView.getGraphics(), displayWidth, displayHeight);
-                break;
-            case OnScreenZoomControls.CONTROL_ZOOM_OUT:
-                zoomControl.zoomOutPressed(mMapView.getGraphics(), displayWidth, displayHeight);
-                break;
-        }
+        OnScreenZoomControls zoomControl = (OnScreenZoomControls) onScreenZoomControls;
+        zoomControl.mRelease = false;
+        onScreenZoomControls.getControlAction(pointerX, pointerY);
+        repaint();
     }
 
     @Override
     public void pointerReleased(final int x, final int y) {
+        // Reset zoom button
+        OnScreenZoomControls zoomControl = (OnScreenZoomControls) onScreenZoomControls;
+        zoomControl.mRelease = true;
+
         super.pointerReleased(x, y);
 
         int panx = lastpanx[0] + lastpanx[1];
         int pany = lastpany[0] + lastpany[1];
-
-        // Change zoom button image back to normal
-        ((OnScreenZoomControls) onScreenZoomControls).paint(mMapView.getGraphics(), displayWidth,
-                displayHeight);
 
         // Double Tap ZoomIn
         long now = System.currentTimeMillis();
@@ -237,8 +232,8 @@ public class MapComponent extends BasicMapComponent {
         locationSource = source;
         locationSource.getLocationMarker().setMapComponent(this);
     }
-    
-    public void setMapBuffer(ImageBuffer mapBuffer){
+
+    public void setMapBuffer(ImageBuffer mapBuffer) {
         this.mapBuffer = mapBuffer;
     }
 

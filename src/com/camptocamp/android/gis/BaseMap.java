@@ -261,7 +261,7 @@ public class BaseMap extends Activity {
         mMapComponent.setPanningStrategy(new ThreadDrivenPanning());
         mMapComponent.setControlKeysHandler(new AndroidKeysHandler());
         // FIXME: Don't pass context but pass Image
-        mMapComponent.setOnScreenZoomControls(new OnScreenZoomControls(getResources()));
+        mMapComponent.setOnScreenZoomControls(new OnScreenZoomControls(getResources()));        
         mMapComponent.setZoomLevelIndicator(null);
         mMapComponent.startMapping();
         mMapComponent.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);

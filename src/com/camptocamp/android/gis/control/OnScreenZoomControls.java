@@ -14,8 +14,11 @@ public class OnScreenZoomControls implements com.nutiteq.controls.OnScreenZoomCo
     private Image btnZoomInPressed;
     private Image btnZoomOut;
     private Image btnZoomOutPressed;
+    private boolean mZoomOut = false;
+    private boolean mZoomIn = false;
     private int posx;
     private int posy;
+    public boolean mRelease = false;
 
     public OnScreenZoomControls(final Resources res) {
         btnZoomIn = new Image(BitmapFactory.decodeResource(res, R.drawable.btn_zoom_down_normal));
@@ -30,34 +33,32 @@ public class OnScreenZoomControls implements com.nutiteq.controls.OnScreenZoomCo
         posx = displayWidth / 2;
         posy = displayHeight - 5;
         g.setClip(0, 0, displayWidth, displayHeight);
-        g.drawImage(btnZoomIn, posx, posy, Graphics.BOTTOM | Graphics.RIGHT);
-        g.drawImage(btnZoomOut, posx, posy, Graphics.BOTTOM | Graphics.LEFT);
-    }
-
-    public void zoomInPressed(final Graphics g, final int displayWidth, final int displayHeight) {
-        posx = displayWidth / 2;
-        posy = displayHeight - 5;
-        g.setClip(0, 0, displayWidth, displayHeight);
-        g.drawImage(btnZoomInPressed, posx, posy, Graphics.BOTTOM | Graphics.RIGHT);
-    }
-
-    public void zoomOutPressed(final Graphics g, final int displayWidth, final int displayHeight) {
-        // FIXME: Merge with zoomInPressed()
-        posx = displayWidth / 2;
-        posy = displayHeight - 5;
-        g.setClip(0, 0, displayWidth, displayHeight);
-        g.drawImage(btnZoomOutPressed, posx, posy, Graphics.BOTTOM | Graphics.LEFT);
+        if (mZoomIn && !mRelease) {
+            g.drawImage(btnZoomInPressed, posx, posy, Graphics.BOTTOM | Graphics.RIGHT);
+        }
+        else {
+            g.drawImage(btnZoomIn, posx, posy, Graphics.BOTTOM | Graphics.RIGHT);
+        }
+        if (mZoomOut && !mRelease) {
+            g.drawImage(btnZoomOutPressed, posx, posy, Graphics.BOTTOM | Graphics.LEFT);
+        }
+        else {
+            g.drawImage(btnZoomOut, posx, posy, Graphics.BOTTOM | Graphics.LEFT);
+        }
     }
 
     @Override
     public int getControlAction(int x, int y) {
-        // TODO: Change image on click
+        mZoomIn = false;
+        mZoomOut = false;
         if (y > posy - btnZoomIn.getHeight() && y < posy) {
             if (x < posx && x > posx - btnZoomIn.getWidth()) {
-                return CONTROL_ZOOM_OUT;
+                mZoomIn = true;
+                return CONTROL_ZOOM_IN;
             }
             else if (x > posx && x < posx + btnZoomOut.getWidth()) {
-                return CONTROL_ZOOM_IN;
+                mZoomOut = true;
+                return CONTROL_ZOOM_OUT;
             }
         }
         return -1;
