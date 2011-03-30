@@ -2,7 +2,7 @@ package com.camptocamp.android.gis.providers;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.MessageFormat;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -166,9 +166,9 @@ public class GoogleMapComponent extends MapComponent {
         @Override
         public String resourcePath() {
             if (toRetrieve.isValid()) {
-                return MessageFormat.format(mBaseUrl, toRetrieve.center.getLat(), toRetrieve.center
-                        .getLon(), toRetrieve.middlePoint.getZoom(), toRetrieve.width,
-                        toRetrieve.height, mLang);
+                return String.format(Locale.ENGLISH, mBaseUrl, toRetrieve.center.getLat(),
+                        toRetrieve.center.getLon(), toRetrieve.middlePoint.getZoom(),
+                        toRetrieve.width, toRetrieve.height, mLang);
             }
             else {
                 return null;
