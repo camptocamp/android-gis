@@ -14,6 +14,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Process;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -254,17 +255,33 @@ public class BaseMap extends Activity {
     }
 
     protected void setMapComponent(final GeoMap gm) {
-        mMapComponent.setMap(gm);
-        mMapComponent.setNetworkCache(mCaching);
-        // mMapComponent.setImageProcessor(new NightModeImageProcessor());
-        // mMapComponent.setPanningStrategy(new EventDrivenPanning());
-        mMapComponent.setPanningStrategy(new ThreadDrivenPanning());
-        mMapComponent.setControlKeysHandler(new AndroidKeysHandler());
-        // FIXME: Don't pass context but pass Image
-        mMapComponent.setOnScreenZoomControls(new OnScreenZoomControls(getResources()));        
-        mMapComponent.setZoomLevelIndicator(null);
-        mMapComponent.startMapping();
-        mMapComponent.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
+        try {
+            mMapComponent.setMap(gm);
+            mMapComponent.setNetworkCache(mCaching);
+            // mMapComponent.setImageProcessor(new NightModeImageProcessor());
+            // mMapComponent.setPanningStrategy(new EventDrivenPanning());
+            mMapComponent.setPanningStrategy(new ThreadDrivenPanning());
+            mMapComponent.setControlKeysHandler(new AndroidKeysHandler());
+            // FIXME: Don't pass context but pass Image
+            mMapComponent.setOnScreenZoomControls(new OnScreenZoomControls(getResources()));
+            mMapComponent.setZoomLevelIndicator(null);
+            mMapComponent.startMapping();
+            mMapComponent.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
+        }
+        catch (OutOfMemoryError e) {
+            e.printStackTrace();
+            AlertDialog.Builder dialog = new AlertDialog.Builder(getWindow().getContext());
+            dialog.setTitle("OutOfMemory");
+            dialog.setMessage(e.getLocalizedMessage());
+            dialog.setPositiveButton("Quit", new AlertDialog.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                    Process.killProcess(Process.myPid());
+                }
+            });
+            dialog.show();
+        }
     }
 
     protected void saveTrace(GpsProvider gpsProvider) {

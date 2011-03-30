@@ -9,6 +9,9 @@ import java.util.TimerTask;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
+import android.graphics.Bitmap;
+import android.util.DisplayMetrics;
+
 import com.camptocamp.android.gis.MapComponent;
 import com.nutiteq.cache.Cache;
 import com.nutiteq.components.ImageBuffer;
@@ -190,6 +193,10 @@ public class GoogleMapComponent extends MapComponent {
             // Get new tile stream and display it
             if (toRetrieve.isValid()) {
                 toRetrieve.image = Image.createImage(stream);
+                
+                Bitmap bitmap = toRetrieve.image.getBitmap();
+                bitmap.setDensity(DisplayMetrics.DENSITY_MEDIUM);
+                
                 cleanMapBuffer();
                 repaint();
             }
