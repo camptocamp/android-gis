@@ -220,7 +220,10 @@ public class MapComponent extends BasicMapComponent {
             // http://wiki.openstreetmap.org/wiki/Height_and_width_of_a_map#Pure_Math_Method
             return -(C * ycos / Math.pow(2, getZoom() + 8));
         }
-        return 0; // 0.596 * Math.pow(2, (map.getMaxZoom() - getZoom())); // Dummy
+        // else {
+        // return 0.596 * Math.pow(2, (map.getMaxZoom() - getZoom())); // Dummy
+        // }
+        return 0;
     }
 
     @Override

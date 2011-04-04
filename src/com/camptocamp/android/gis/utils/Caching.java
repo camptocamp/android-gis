@@ -18,7 +18,7 @@ import com.nutiteq.cache.MemoryCache;
 public class Caching extends CachingChain {
 
     private static final String TAG = BaseMap.D + "C2CCaching";
-    protected static final int MEMORYCACHE = 40; // # of elements
+    protected static final int MEMORYCACHE = 100; // # of elements
     protected static final File FSCACHEDIR = new File(Environment.getExternalStorageDirectory()
             .getAbsolutePath()
             + "/Android/data/" + BaseMap.PKG + "/cache");

@@ -63,7 +63,6 @@ public class OSMMap extends BaseMap {
     }
 
     protected void selectMap(int provider_id) {
-        mProvider = provider_id;
         int zoom = -1;
         WgsPoint pt = new WgsPoint(LNG, LAT);
         // Reset mapComponent

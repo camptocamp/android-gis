@@ -105,6 +105,8 @@ public class GpsProvider implements LocationSource, android.location.LocationLis
             // Network location no more needed as primary source
             if (LocationManager.GPS_PROVIDER.equals(loc.getProvider()) && location != null
                     && LocationManager.NETWORK_PROVIDER.equals(location)) {
+                // FIXME: This leaks memory, see
+                // https://code.google.com/p/android/issues/detail?id=15170
                 manager.removeUpdates(GpsProvider.this);
                 manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, UP_ACTIVE, UP_DIST,
                         GpsProvider.this);

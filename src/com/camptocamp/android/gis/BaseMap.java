@@ -14,7 +14,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Process;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -91,7 +90,7 @@ public class BaseMap extends Activity {
 
     protected MapComponent mMapComponent = null;
     protected boolean mTrackingPosition = false;
-    protected int mProvider;
+    // protected int mProvider;
     protected GpsProvider mLocationSource;
 
     @Override
@@ -274,20 +273,8 @@ public class BaseMap extends Activity {
             mMapComponent.setTouchClickTolerance(BasicMapComponent.FINGER_CLICK_TOLERANCE);
         }
         catch (OutOfMemoryError e) {
-            e.printStackTrace();
             mMapComponent.cleanTaskRunner();
-            mMapComponent.cleanNetworkCache();
-            AlertDialog.Builder dialog = new AlertDialog.Builder(BaseMap.this);
-            dialog.setTitle("OutOfMemory");
-            dialog.setMessage(e.getLocalizedMessage());
-            dialog.setPositiveButton("Quit", new AlertDialog.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    finish();
-                    Process.killProcess(Process.myPid());
-                }
-            });
-            dialog.show();
+            mMapView.oomQuit(e);
         }
     }
 
@@ -444,7 +431,7 @@ public class BaseMap extends Activity {
             mMapView.clean();
             mMapView = null;
         }
-        mMapView = new MapView(mWindow.getContext(), mMapComponent);
+        mMapView = new MapView(BaseMap.this, mMapComponent);
         mMapComponent.mMapView = mMapView;
         mMapLayout.addView(mMapView);
         mMapView.setClickable(true);

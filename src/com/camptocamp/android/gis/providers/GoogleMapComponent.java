@@ -31,9 +31,9 @@ import com.nutiteq.utils.Utils;
 public class GoogleMapComponent extends MapComponent {
 
     public static final int TILE_SIZE = 640; // Maximum GMaps Static size
+    public Image mLogo;
     protected GoogleTile mDisplayTile;
     protected GoogleTile mNeededTile;
-    protected Image mLogo;
     protected final String mBaseUrl;
     protected String mLang = "";
 
@@ -135,10 +135,11 @@ public class GoogleMapComponent extends MapComponent {
         }
     }
 
-    public class GoogleTileTask implements Task, ResourceRequestor, ResourceStreamWaiter {
-        private final MapTilesRequestor tilesRequestor;
-        private final TasksRunner taskRunner;
-        private final GoogleTile toRetrieve;
+    public class GoogleTileTask extends Object implements Task, ResourceRequestor,
+            ResourceStreamWaiter {
+        private MapTilesRequestor tilesRequestor;
+        private TasksRunner taskRunner;
+        private GoogleTile toRetrieve;
         private final int retryLeft;
 
         public GoogleTileTask(final MapTilesRequestor tilesRequestor, final TasksRunner taskRunner,
@@ -147,6 +148,13 @@ public class GoogleMapComponent extends MapComponent {
             this.taskRunner = taskRunner;
             this.toRetrieve = toRetrieve;
             this.retryLeft = retryLeft;
+        }
+
+        @Override
+        protected void finalize() {
+            tilesRequestor = null;
+            taskRunner = null;
+            toRetrieve = null;
         }
 
         public void execute() {
@@ -203,7 +211,7 @@ public class GoogleMapComponent extends MapComponent {
      * @author sbrunner
      * 
      */
-    private class GoogleTile {
+    private class GoogleTile extends Object {
         private final int width;
         private final int height;
         private final WgsPoint center;
@@ -217,6 +225,14 @@ public class GoogleMapComponent extends MapComponent {
             this.height = height;
             this.center = center;
             this.middlePoint = middlePoint.copy();
+        }
+
+        @Override
+        protected void finalize() {
+            if (image != null && image.getBitmap() != null) {
+                image.getBitmap().recycle();
+                image = null;
+            }
         }
 
         public boolean isValid() {
