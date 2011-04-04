@@ -9,9 +9,6 @@ import java.util.TimerTask;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
-import android.graphics.Bitmap;
-import android.util.DisplayMetrics;
-
 import com.camptocamp.android.gis.MapComponent;
 import com.nutiteq.cache.Cache;
 import com.nutiteq.components.ImageBuffer;
@@ -33,7 +30,7 @@ import com.nutiteq.utils.Utils;
 
 public class GoogleMapComponent extends MapComponent {
 
-    private static final int TILE_SIZE = 640; // Maximum GMaps Static size
+    public static final int TILE_SIZE = 640; // Maximum GMaps Static size
     protected GoogleTile mDisplayTile;
     protected GoogleTile mNeededTile;
     protected Image mLogo;
@@ -193,10 +190,6 @@ public class GoogleMapComponent extends MapComponent {
             // Get new tile stream and display it
             if (toRetrieve.isValid()) {
                 toRetrieve.image = Image.createImage(stream);
-                
-                Bitmap bitmap = toRetrieve.image.getBitmap();
-                bitmap.setDensity(DisplayMetrics.DENSITY_MEDIUM);
-                
                 cleanMapBuffer();
                 repaint();
             }

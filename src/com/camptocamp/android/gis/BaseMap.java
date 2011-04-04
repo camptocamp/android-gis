@@ -114,9 +114,7 @@ public class BaseMap extends Activity {
         // com.nutiteq.log.Log.enableAll();
 
         // Width and Height
-        Display display = getWindowManager().getDefaultDisplay();
-        mWidth = display.getWidth();
-        mHeight = display.getHeight();
+        setSizes();
 
         // GPS Location tracking
         mLocationSource = new GpsProvider(BaseMap.this);
@@ -194,6 +192,7 @@ public class BaseMap extends Activity {
     @Override
     public Object onRetainNonConfigurationInstance() {
         mRetainCalled = true;
+        setSizes();
         return mMapComponent;
     }
 
@@ -250,6 +249,12 @@ public class BaseMap extends Activity {
         return true;
     }
 
+    protected void setSizes() {
+        Display display = getWindowManager().getDefaultDisplay();
+        mWidth = display.getWidth();
+        mHeight = display.getHeight();
+    }
+
     protected void setDefaultMap() {
         // Override me
     }
@@ -270,7 +275,9 @@ public class BaseMap extends Activity {
         }
         catch (OutOfMemoryError e) {
             e.printStackTrace();
-            AlertDialog.Builder dialog = new AlertDialog.Builder(getWindow().getContext());
+            mMapComponent.cleanTaskRunner();
+            mMapComponent.cleanNetworkCache();
+            AlertDialog.Builder dialog = new AlertDialog.Builder(BaseMap.this);
             dialog.setTitle("OutOfMemory");
             dialog.setMessage(e.getLocalizedMessage());
             dialog.setPositiveButton("Quit", new AlertDialog.OnClickListener() {
