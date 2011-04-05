@@ -185,7 +185,7 @@ public class GpsProvider implements LocationSource, android.location.LocationLis
     }
 
     @Override
-    public void start() {
+    public void start() {        
         // get last known location
         Location loc = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if (loc != null) {
@@ -193,6 +193,8 @@ public class GpsProvider implements LocationSource, android.location.LocationLis
             loc.setTime(System.currentTimeMillis());
             onLocationChanged(loc);
         }
+        // Track first good location
+        marker.setTrackingEnabled(true);
         // Register for location updates
         manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, UP_IDLE, UP_DIST,
                 GpsProvider.this);
