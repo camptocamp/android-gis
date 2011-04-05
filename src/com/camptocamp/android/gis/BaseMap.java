@@ -123,13 +123,14 @@ public class BaseMap extends Activity {
             public void onClick(View v) {
                 if (mMapComponent != null) {
                     if (mTrackingPosition) {
-                        Toast.makeText(BaseMap.this, R.string.toast_gps_stop, Toast.LENGTH_SHORT)
-                                .show();
+                        // Toast.makeText(BaseMap.this, R.string.toast_gps_stop, Toast.LENGTH_SHORT)
+                        // .show();
                         mLocationSource.quit();
                     }
                     else {
-                        Toast.makeText(BaseMap.this, R.string.toast_gps_start, Toast.LENGTH_SHORT)
-                                .show();
+                        // Toast.makeText(BaseMap.this, R.string.toast_gps_start,
+                        // Toast.LENGTH_SHORT)
+                        // .show();
                         mLocationSource.start();
                     }
                     mTrackingPosition = !mTrackingPosition;
