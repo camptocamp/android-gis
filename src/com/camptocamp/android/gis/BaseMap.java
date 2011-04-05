@@ -274,7 +274,7 @@ public class BaseMap extends Activity {
         }
         catch (OutOfMemoryError e) {
             mMapComponent.cleanTaskRunner();
-            mMapView.oomQuit(e);
+            MapView.oomQuit(BaseMap.this, e);
         }
     }
 
