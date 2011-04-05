@@ -34,8 +34,10 @@ public abstract class SearchProvider extends ContentProvider {
             e.printStackTrace();
         }
         finally {
-            // TODO: Check this
-            data = IOUtils.readFully(is);
+            if (is != null) {
+                // TODO: Check this
+                data = IOUtils.readFully(is);
+            }
             if (method != null) {
                 method.abort();
             }
