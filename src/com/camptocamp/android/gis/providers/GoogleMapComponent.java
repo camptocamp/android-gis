@@ -9,6 +9,8 @@ import java.util.TimerTask;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
+import android.util.Log;
+
 import com.camptocamp.android.gis.MapComponent;
 import com.nutiteq.cache.Cache;
 import com.nutiteq.components.ImageBuffer;
@@ -60,6 +62,17 @@ public class GoogleMapComponent extends MapComponent {
         return super.paintMap(buffer);
     }
 
+    public void clean() {
+        if (mDisplayTile != null && mDisplayTile.valid) {
+            mDisplayTile.image.getBitmap().recycle();
+            mDisplayTile = null;
+        }
+        if (mNeededTile != null && mNeededTile.valid) {
+            mNeededTile.image.getBitmap().recycle();
+            mNeededTile = null;
+        }
+    }
+
     /**
      * Paint a map tile.
      * 
@@ -77,6 +90,7 @@ public class GoogleMapComponent extends MapComponent {
             // Always recycle previous tile (no cache)
             if (mDisplayTile != null && mDisplayTile.image != null) {
                 mDisplayTile.image.getBitmap().recycle();
+                Log.e("TEST", "recycle paintTile " + mDisplayTile.center.toString());
             }
             mDisplayTile = mNeededTile;
             mNeededTile = null;
@@ -114,15 +128,14 @@ public class GoogleMapComponent extends MapComponent {
         MapPos middle = middlePoint;
 
         if (mDisplayTile == null
-                || Math.abs(mDisplayTile.middlePoint.getX() - middle.getX()) > Math
-                        .abs(displayWidth - TILE_SIZE) / 2
-                || Math.abs(mDisplayTile.middlePoint.getY() - middle.getY()) > Math
-                        .abs(displayHeight - TILE_SIZE) / 2) {
-            mNeededTile = new GoogleTile(TILE_SIZE, TILE_SIZE, displayedMap.mapPosToWgs(middle)
-                    .toWgsPoint(), middle);
+                || Math.abs(mDisplayTile.middlePoint.getX() - middle.getX()) > displayWidth / 4
+                || Math.abs(mDisplayTile.middlePoint.getY() - middle.getY()) > displayHeight / 4) {
+            mNeededTile = new GoogleTile((int) Math.round(displayWidth * 1.5), (int) Math
+                    .round(displayHeight * 1.5), displayedMap.mapPosToWgs(middle).toWgsPoint(),
+                    middle);
             final MapTilesRequestor mapTilesRequestor = this;
             timer.schedule(new TimerTask() {
-                GoogleTile tile = mNeededTile;
+                final GoogleTile tile = mNeededTile;
 
                 @Override
                 public void run() {
@@ -232,6 +245,7 @@ public class GoogleMapComponent extends MapComponent {
             if (image != null && image.getBitmap() != null) {
                 image.getBitmap().recycle();
                 image = null;
+                Log.e("TEST", "finalize recycle " + center.toString());
             }
         }
 

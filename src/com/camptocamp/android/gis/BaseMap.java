@@ -101,7 +101,7 @@ public class BaseMap extends Activity {
         super.onCreate(savedInstanceState);
 
         mWindow = getWindow();
-        mCaching = new Caching(mWindow.getContext());
+        mCaching = new Caching(getApplicationContext());
         mCaching.initialize();
         mPreferences = PreferenceManager.getDefaultSharedPreferences(mWindow.getContext());
         mSelectedLayers = new ArrayList<String>(0);
@@ -428,6 +428,18 @@ public class BaseMap extends Activity {
     }
 
     protected void setMapView() {
+        // FIXME: Try to use this so MapView isn't instancied at every map change :)
+        // if (mMapView == null) {
+        // mMapView = new MyMapView(BaseMap.this, mMapComponent);
+        // }
+        // else {
+        // mMapView.setMapComponenent(mMapComponent);
+        // mMapLayout.removeView(mMapView);
+        // }
+        // mMapComponent.mMapView = mMapView;
+        // mMapLayout.addView(mMapView);
+        // mMapView.setClickable(true);
+        // mMapView.setEnabled(true);
         if (mMapView != null) {
             mMapLayout.removeView(mMapView);
             mMapView.clean();
