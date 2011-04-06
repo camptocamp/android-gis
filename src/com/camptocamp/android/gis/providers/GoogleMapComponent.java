@@ -9,8 +9,6 @@ import java.util.TimerTask;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
-import android.util.Log;
-
 import com.camptocamp.android.gis.MapComponent;
 import com.nutiteq.cache.Cache;
 import com.nutiteq.components.ImageBuffer;
@@ -90,7 +88,6 @@ public class GoogleMapComponent extends MapComponent {
             // Always recycle previous tile (no cache)
             if (mDisplayTile != null && mDisplayTile.image != null) {
                 mDisplayTile.image.getBitmap().recycle();
-                Log.e("TEST", "recycle paintTile " + mDisplayTile.center.toString());
             }
             mDisplayTile = mNeededTile;
             mNeededTile = null;
@@ -245,7 +242,6 @@ public class GoogleMapComponent extends MapComponent {
             if (image != null && image.getBitmap() != null) {
                 image.getBitmap().recycle();
                 image = null;
-                Log.e("TEST", "finalize recycle " + center.toString());
             }
         }
 
