@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.camptocamp.android.gis.control.DirectionsWaiter;
+import com.camptocamp.android.gis.control.MyMapView;
 import com.camptocamp.android.gis.control.OnScreenZoomControls;
 import com.camptocamp.android.gis.layer.Overlay;
 import com.camptocamp.android.gis.utils.Caching;
@@ -432,7 +433,7 @@ public class BaseMap extends Activity {
             mMapView.clean();
             mMapView = null;
         }
-        mMapView = new MapView(BaseMap.this, mMapComponent);
+        mMapView = new MyMapView(BaseMap.this, mMapComponent);
         mMapComponent.mMapView = mMapView;
         mMapLayout.addView(mMapView);
         mMapView.setClickable(true);

@@ -5,7 +5,6 @@ import java.lang.ref.WeakReference;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Debug;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
