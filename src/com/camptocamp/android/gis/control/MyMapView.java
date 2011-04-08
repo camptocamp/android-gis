@@ -23,6 +23,11 @@ public class MyMapView extends com.nutiteq.android.MapView {
 
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
+        if (mapComponent == null) {
+            // FIXME: Why is this happening ?
+            // adb shell monkey -p de.georepublic.android.gis -v 500 --throttle 20
+            return false;
+        }
         final int action = event.getAction();
         if (!mGestureInProgress) {
             if ((action == MotionEvent.ACTION_POINTER_1_DOWN || action == MotionEvent.ACTION_POINTER_2_DOWN)

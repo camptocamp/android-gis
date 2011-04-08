@@ -65,7 +65,9 @@ public class GoogleMapComponent extends MapComponent {
             mDisplayTile.image.getBitmap().recycle();
             mDisplayTile = null;
         }
-        if (mNeededTile != null && mNeededTile.valid) {
+        if (mNeededTile != null && mNeededTile.valid && mNeededTile.image != null
+                && mNeededTile.image.getBitmap() != null
+                && !mNeededTile.image.getBitmap().isRecycled()) {
             mNeededTile.image.getBitmap().recycle();
             mNeededTile = null;
         }
