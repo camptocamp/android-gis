@@ -21,9 +21,9 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -82,7 +82,7 @@ public class BaseMap extends Activity {
     protected int mWidth = 1;
     protected int mHeight = 1;
     protected Window mWindow;
-    protected RelativeLayout mMapLayout;
+    protected ViewGroup mMapLayout;
     protected boolean mRetainCalled = false;
     protected MapView mMapView = null;
     private List<String> mSelectedLayers;
@@ -105,7 +105,7 @@ public class BaseMap extends Activity {
         mCaching.initialize();
         mPreferences = PreferenceManager.getDefaultSharedPreferences(mWindow.getContext());
         mSelectedLayers = new ArrayList<String>(0);
-        mMapLayout = ((RelativeLayout) findViewById(R.id.map));
+        mMapLayout = ((ViewGroup) findViewById(R.id.map));
         mWaiter = new DirectionsWaiter(BaseMap.this);
         mRetainCalled = getLastNonConfigurationInstance() == null ? false : true;
 

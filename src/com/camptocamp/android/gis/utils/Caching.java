@@ -34,17 +34,18 @@ public class Caching extends CachingChain {
 
         MemoryInfo mem = new MemoryInfo();
         Debug.getMemoryInfo(mem);
-        final int memorycache_size = mem.dalvikPrivateDirty * 1024;
+        // final int memorycache_size = mem.dalvikPrivateDirty * 1024;
+        final int memorycache_size = 480 * 1024;
 
         android.util.Log.e(TAG, "---DEBUG---");
         android.util.Log.e(TAG, "dalvikPss=" + mem.dalvikPss);
         android.util.Log.e(TAG, "dalvikPrivateDirty=" + mem.dalvikPrivateDirty);
         android.util.Log.e(TAG, "dalvikSharedDirty=" + mem.dalvikSharedDirty);
         android.util.Log.e(TAG, "---");
-//        android.util.Log.e(TAG, "getTotalPss=" + mem.getTotalPss());
-//        android.util.Log.e(TAG, "getTotalPrivateDirty=" + mem.getTotalPrivateDirty());
-//        android.util.Log.e(TAG, "getTotgetTotalSharedDirtyalPss=" + mem.getTotalSharedDirty());
-//        android.util.Log.e(TAG, "---");
+        // android.util.Log.e(TAG, "getTotalPss=" + mem.getTotalPss());
+        // android.util.Log.e(TAG, "getTotalPrivateDirty=" + mem.getTotalPrivateDirty());
+        // android.util.Log.e(TAG, "getTotgetTotalSharedDirtyalPss=" + mem.getTotalSharedDirty());
+        // android.util.Log.e(TAG, "---");
 
         Cache[] cl = null;
 
