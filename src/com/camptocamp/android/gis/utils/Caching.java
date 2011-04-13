@@ -41,10 +41,10 @@ public class Caching extends CachingChain {
         android.util.Log.e(TAG, "dalvikPrivateDirty=" + mem.dalvikPrivateDirty);
         android.util.Log.e(TAG, "dalvikSharedDirty=" + mem.dalvikSharedDirty);
         android.util.Log.e(TAG, "---");
-        android.util.Log.e(TAG, "getTotalPss=" + mem.getTotalPss());
-        android.util.Log.e(TAG, "getTotalPrivateDirty=" + mem.getTotalPrivateDirty());
-        android.util.Log.e(TAG, "getTotgetTotalSharedDirtyalPss=" + mem.getTotalSharedDirty());
-        android.util.Log.e(TAG, "---");
+//        android.util.Log.e(TAG, "getTotalPss=" + mem.getTotalPss());
+//        android.util.Log.e(TAG, "getTotalPrivateDirty=" + mem.getTotalPrivateDirty());
+//        android.util.Log.e(TAG, "getTotgetTotalSharedDirtyalPss=" + mem.getTotalSharedDirty());
+//        android.util.Log.e(TAG, "---");
 
         Cache[] cl = null;
 

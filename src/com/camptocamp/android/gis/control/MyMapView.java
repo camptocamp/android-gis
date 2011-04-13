@@ -1,15 +1,19 @@
 package com.camptocamp.android.gis.control;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.FloatMath;
 import android.view.MotionEvent;
 
 import com.nutiteq.BasicMapComponent;
+import com.nutiteq.android.MotionEventWrap;
 
 public class MyMapView extends com.nutiteq.android.MapView {
 
     private static final int MIN = 60;
     private static final int MAX = 120;
+    private static final int ACTION_POINTER_1_DOWN = 5;
+    private static final int ACTION_POINTER_2_DOWN = 261;
     private boolean mGestureInProgress;
 
     private float mOldDist;
@@ -23,6 +27,9 @@ public class MyMapView extends com.nutiteq.android.MapView {
 
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
+        boolean hasMultiTouch = Integer.parseInt(Build.VERSION.SDK) >= 5;
+        int nPointer = hasMultiTouch ? MotionEventWrap.getPointerCount(event) : 1;
+
         if (mapComponent == null) {
             // FIXME: Why is this happening ?
             // adb shell monkey -p de.georepublic.android.gis -v 500 --throttle 20
@@ -30,8 +37,8 @@ public class MyMapView extends com.nutiteq.android.MapView {
         }
         final int action = event.getAction();
         if (!mGestureInProgress) {
-            if ((action == MotionEvent.ACTION_POINTER_1_DOWN || action == MotionEvent.ACTION_POINTER_2_DOWN)
-                    && event.getPointerCount() >= 2) {
+            if ((action == ACTION_POINTER_1_DOWN || action == ACTION_POINTER_2_DOWN)
+                    && nPointer >= 2 && hasMultiTouch) {
                 mOldDist = getDistance(event);
                 // if (mOldDist > 10f) {
                 // // Start MT gesture
@@ -83,8 +90,8 @@ public class MyMapView extends com.nutiteq.android.MapView {
     }
 
     private float getDistance(final MotionEvent event) {
-        final float x = event.getX(0) - event.getX(1);
-        final float y = event.getY(0) - event.getY(1);
+        final float x = MotionEventWrap.getX(event, 0) - MotionEventWrap.getX(event, 1);
+        final float y = MotionEventWrap.getY(event, 0) - MotionEventWrap.getY(event, 1);
         return FloatMath.sqrt(x * x + y * y);
     }
 }
