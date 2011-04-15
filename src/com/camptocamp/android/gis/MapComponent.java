@@ -21,7 +21,9 @@ public class MapComponent extends BasicMapComponent {
     private static final String KEY = "182be0c5cdcd5072bb1864cdee4d3d6e4c593f89365962.70956542";
     private static final String VDR = "Camptocamp SA";
     private static final int MOVE = 0;
+    private static final int RESET = 1;
     private static final long DELAY = 24; // ms
+    private static final long DELAY_RESET = 1000; // ms
     private static final long DOUBLETAP_DELTA = 500; // ms
     private static final int DOUBLETAP_RADIUS = 50; // px
     private static final int DOUBLETAP_PAN = 2; // px
@@ -110,6 +112,9 @@ public class MapComponent extends BasicMapComponent {
         }
 
         ycos = Math.cos(getMiddlePoint().getLat());
+
+        // Send reset if still for DELAY_RESET time
+        mHandler.sendEmptyMessageDelayed(RESET, DELAY_RESET);
     }
 
     @Override
@@ -199,16 +204,26 @@ public class MapComponent extends BasicMapComponent {
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if (current <= 1.0f) {
-                ip = di.getInterpolation(current);
-                int x = (int) Math.floor(((ip * msg.arg1) - posx));
-                int y = (int) Math.floor(((ip * msg.arg2) - posy));
-                panMap(x, y);
-                posx += x;
-                posy += y;
-                current += 0.1f;
-                mHandler.sendMessageDelayed(Message.obtain(mHandler, MOVE, msg.arg1, msg.arg2),
-                        DELAY);
+            if (msg.what == MOVE) {
+                mHandler.removeMessages(RESET);
+                if (current <= 1.0f) {
+                    ip = di.getInterpolation(current);
+                    int x = (int) Math.floor(((ip * msg.arg1) - posx));
+                    int y = (int) Math.floor(((ip * msg.arg2) - posy));
+                    panMap(x, y);
+                    posx += x;
+                    posy += y;
+                    current += 0.1f;
+                    mHandler.sendMessageDelayed(Message.obtain(mHandler, MOVE, msg.arg1, msg.arg2),
+                            DELAY);
+                }
+            }
+            else if (msg.what == RESET) {
+                mHandler.removeMessages(MOVE);
+                lastpanx[0] = 0;
+                lastpany[0] = 0;
+                lastpanx[1] = 0;
+                lastpany[1] = 0;
             }
         }
     };

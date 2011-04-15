@@ -35,7 +35,7 @@ public class Caching extends CachingChain {
         MemoryInfo mem = new MemoryInfo();
         Debug.getMemoryInfo(mem);
         // final int memorycache_size = mem.dalvikPrivateDirty * 1024;
-        final int memorycache_size = 480 * 1024;
+        final int memorycache_size = 256 * 1024;
 
         android.util.Log.e(TAG, "---DEBUG---");
         android.util.Log.e(TAG, "dalvikPss=" + mem.dalvikPss);
