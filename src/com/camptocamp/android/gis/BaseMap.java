@@ -328,10 +328,10 @@ public class BaseMap extends Activity {
             // Select place mode
             Toast.makeText(mWindow.getContext(), R.string.toast_pick_point, Toast.LENGTH_SHORT)
                     .show();
-            mMapComponent.setMapListener(new MapView(mWindow.getContext(), mMapComponent) {
+            mMapComponent.setMapListener(new MyMapView(mWindow.getContext(), mMapComponent) {
                 @Override
                 public void mapClicked(WgsPoint p) {
-                    mMapComponent.setMapListener(mMapView);
+                    // mMapComponent.setMapListener(mMapView); // FIXME: What this was for ?
                     Intent i = new Intent(BaseMap.this, Directions.class);
                     i.putExtra(EXTRA_FIELD, intent.getIntExtra(EXTRA_FIELD, R.id.start));
                     i.putExtra(EXTRA_COORD, p.getLon() + "," + p.getLat());
@@ -435,6 +435,7 @@ public class BaseMap extends Activity {
         // else {
         // mMapView.setMapComponenent(mMapComponent);
         // mMapLayout.removeView(mMapView);
+        // ((MyMapView) mMapView).set(mMapComponent, BaseMap.this);
         // }
         // mMapComponent.mMapView = mMapView;
         // mMapLayout.addView(mMapView);
@@ -448,8 +449,6 @@ public class BaseMap extends Activity {
         mMapView = new MyMapView(BaseMap.this, mMapComponent);
         mMapComponent.mMapView = mMapView;
         mMapLayout.addView(mMapView);
-        mMapView.setClickable(true);
-        mMapView.setEnabled(true);
     }
 
     protected void setOverlay(final Overlay overlay) {

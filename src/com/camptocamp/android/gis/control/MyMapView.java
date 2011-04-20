@@ -5,8 +5,10 @@ import android.os.Build;
 import android.util.FloatMath;
 import android.view.MotionEvent;
 
+import com.camptocamp.android.gis.MapComponent;
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.android.MotionEventWrap;
+import com.nutiteq.android.RepaintHandler;
 
 public class MyMapView extends com.nutiteq.android.MapView {
 
@@ -23,6 +25,16 @@ public class MyMapView extends com.nutiteq.android.MapView {
 
     public MyMapView(Context context, BasicMapComponent component) {
         super(context, component);
+    }
+
+    public void set(Context context, MapComponent mc) {
+        mapComponent = mc;
+        mContext = context;
+        appMapListener = mc.getMapListener();
+        mc.setMapListener(this);
+        setFocusable(true);
+        setClickable(true);
+        setEnabled(true);
     }
 
     @Override

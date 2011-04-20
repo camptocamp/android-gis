@@ -20,8 +20,8 @@ import com.nutiteq.cache.MemoryCache;
 public class Caching extends CachingChain {
 
     private static final String TAG = BaseMap.D + "C2CCaching";
-    protected static final int MEMORYCACHE_LENGTH = 50; // # of elements
-    // protected static final int MEMORYCACHE_SIZE = 480 * 1024; // Size in Bytes
+    protected static final int MEMORYCACHE_LENGTH = 100; // # of elements
+    protected static final int MEMORYCACHE_SIZE = 1024 * 1024; // Size in Bytes
     protected static final File FSCACHEDIR = new File(Environment.getExternalStorageDirectory()
             .getAbsolutePath()
             + "/Android/data/" + BaseMap.PKG + "/cache");
@@ -34,8 +34,6 @@ public class Caching extends CachingChain {
 
         MemoryInfo mem = new MemoryInfo();
         Debug.getMemoryInfo(mem);
-        // final int memorycache_size = mem.dalvikPrivateDirty * 1024;
-        final int memorycache_size = 256 * 1024;
 
         android.util.Log.e(TAG, "---DEBUG---");
         android.util.Log.e(TAG, "dalvikPss=" + mem.dalvikPss);
@@ -57,7 +55,7 @@ public class Caching extends CachingChain {
             if (prefs.getBoolean(Prefs.KEY_FS_CACHING, Prefs.DEFAULT_FS_CACHING)) {
                 int size = prefs.getInt(Prefs.KEY_FS_CACHING_SIZE, Prefs.DEFAULT_FS_CACHING_SIZE);
                 Log.v(TAG, "fs caching on, size=" + size);
-                cl = new Cache[] { new MemoryCache(MEMORYCACHE_LENGTH, memorycache_size),
+                cl = new Cache[] { new MemoryCache(MEMORYCACHE_LENGTH, MEMORYCACHE_SIZE),
                         new AndroidFileSystemCache(ctxt, BaseMap.APP, FSCACHEDIR, size) };
             }
         }
@@ -65,7 +63,7 @@ public class Caching extends CachingChain {
         // MemoryCache only
         if (cl == null) {
             Log.v(TAG, "fs caching off");
-            cl = new Cache[] { new MemoryCache(MEMORYCACHE_LENGTH, memorycache_size) };
+            cl = new Cache[] { new MemoryCache(MEMORYCACHE_LENGTH, MEMORYCACHE_SIZE) };
         }
         return cl;
     }
