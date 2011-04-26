@@ -111,7 +111,7 @@ public class GoogleMapComponent extends MapComponent {
         neededTiles.addElement(mt);
     }
 
-    protected void enqueueTiles() {
+    public void enqueueTiles() {
         if (mNeededTile != null) {
             if (mNeededTile.middlePoint.equals(middlePoint)) {
                 return;
