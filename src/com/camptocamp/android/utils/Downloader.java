@@ -8,14 +8,20 @@ import javax.microedition.io.HttpConnection;
 
 import android.util.Log;
 
+import com.nutiteq.utils.IOUtils;
+
+import de.georepublic.android.gis.ui.Main;
+
 public class Downloader {
-	public static final String USERAGENT_KEY = "User-Agent";
-	public static final String USERAGENT = "Android GIS (http://camptocamp.com)";
+
+    public static final String TAG = Main.D + "Downloader";
+    public static final String USERAGENT_KEY = "User-Agent";
+    public static final String USERAGENT = "Android GIS (http://camptocamp.com)";
 
     public static String getStringResponse(String url) {
         HttpConnection conn = null;
         InputStream is = null;
-        StringBuffer sb = new StringBuffer();
+        final StringBuffer sb = new StringBuffer();
         try {
             conn = (HttpConnection) Connector.open(url, Connector.READ);
             conn.setRequestProperty(USERAGENT_KEY, USERAGENT);
@@ -26,20 +32,11 @@ public class Downloader {
             }
         }
         catch (IOException e) {
-            Log.e(Downloader.class.getName(), e.getClass().getName() + " - " + e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
         finally {
-            try {
-                if (is != null) {
-                    is.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            }
-            catch (Exception e) {
-                Log.e(Downloader.class.getName(), e.getClass().getName() + " - " + e.getMessage());
-            }
+            IOUtils.closeStream(is);
+            IOUtils.closeConnection(conn);
         }
         return sb.toString();
     }
