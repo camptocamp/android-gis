@@ -49,7 +49,6 @@ import com.nutiteq.maps.GeoMap;
 import com.nutiteq.services.YourNavigationDirections;
 import com.nutiteq.ui.ThreadDrivenPanning;
 
-
 //FIXME: Rename to Map, then Map to ~MapOpenStreetMap
 public class BaseMap extends Activity {
 
@@ -74,6 +73,7 @@ public class BaseMap extends Activity {
     public static final String EXTRA_COORD = "extra_coord";
     public static final String EXTRA_LAT = "extra_lat";
     public static final String EXTRA_LON = "extra_lon";
+    public static final String EXTRA_ZOOM = "extra_zoom";
 
     protected static final int MENU_PREFS = 90;
     protected static final int MENU_RECORD = 91;
@@ -366,7 +366,13 @@ public class BaseMap extends Activity {
                 zoomToBbox(new WgsPoint(minx, miny), new WgsPoint(maxx, maxy));
             }
             else if (intent.hasExtra(EXTRA_LAT) && intent.hasExtra(EXTRA_LON)) {
-                mMapComponent.setZoom(mMapComponent.getMap().getMaxZoom() - 1);
+                if (intent.hasExtra(EXTRA_ZOOM)) {
+                    mMapComponent.setZoom(intent.getIntExtra(EXTRA_ZOOM, mMapComponent.getMap()
+                            .getMaxZoom()));
+                }
+                else {
+                    mMapComponent.setZoom(mMapComponent.getMap().getMaxZoom());
+                }
                 mMapComponent.moveMap(new WgsPoint(intent.getDoubleExtra(EXTRA_LON, 0), intent
                         .getDoubleExtra(EXTRA_LAT, 0)));
             }
