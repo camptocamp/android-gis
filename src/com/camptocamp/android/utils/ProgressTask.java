@@ -2,6 +2,7 @@ package com.camptocamp.android.utils;
 
 import java.lang.ref.WeakReference;
 
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
@@ -34,17 +35,11 @@ public abstract class ProgressTask<Params, Progress, Result> extends
 
     @Override
     protected void onPostExecute(final Result result) {
-        if (mDialog != null) {
-            mDialog.dismiss();
-            mDialog = null;
-        }
+        Utils.dismissDialog(mDialog);
     }
 
     @Override
     protected void onCancelled() {
-        if (mDialog != null) {
-            mDialog.dismiss();
-            mDialog = null;
-        }
+        Utils.dismissDialog(mDialog);
     }
 }

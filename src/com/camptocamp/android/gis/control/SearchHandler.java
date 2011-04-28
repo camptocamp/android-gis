@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import com.camptocamp.android.gis.BaseMap;
 import com.camptocamp.android.gis.R;
+import com.camptocamp.android.utils.Utils;
+
 
 // TODO: Refactor and remove ACTION_GOTO from here (in showResultActivity())
 
@@ -99,19 +101,13 @@ public abstract class SearchHandler extends ListActivity {
         protected void onPostExecute(Cursor cursor) {
             showResult(cursor);
             mActivity = null;
-            if (mDialog != null) {
-                mDialog.dismiss();
-                mDialog = null;
-            }
+            Utils.dismissDialog(mDialog);
         }
 
         @Override
         protected void onCancelled() {
             mActivity = null;
-            if (mDialog != null) {
-                mDialog.dismiss();
-                mDialog = null;
-            }
+            Utils.dismissDialog(mDialog);
         }
 
     }

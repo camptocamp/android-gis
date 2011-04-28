@@ -37,6 +37,7 @@ import com.camptocamp.android.gis.utils.ExportKML;
 import com.camptocamp.android.gis.utils.ExportTrace;
 import com.camptocamp.android.gis.utils.GpsProvider;
 import com.camptocamp.android.gis.utils.Prefs;
+import com.camptocamp.android.utils.Utils;
 import com.mgmaps.cache.ScreenCache;
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.android.MapView;
@@ -47,6 +48,7 @@ import com.nutiteq.controls.AndroidKeysHandler;
 import com.nutiteq.maps.GeoMap;
 import com.nutiteq.services.YourNavigationDirections;
 import com.nutiteq.ui.ThreadDrivenPanning;
+
 
 //FIXME: Rename to Map, then Map to ~MapOpenStreetMap
 public class BaseMap extends Activity {
@@ -392,13 +394,13 @@ public class BaseMap extends Activity {
                 @Override
                 public void dataRetrieved(final byte[] data) {
                     super.dataRetrieved(data);
-                    dialog.dismiss();
+                    Utils.dismissDialog(dialog);
                 }
 
                 @Override
                 public void notifyError() {
                     super.notifyError();
-                    dialog.dismiss();
+                    Utils.dismissDialog(dialog);
                 }
             };
             mMapComponent.enqueueDownload(yours, Cache.CACHE_LEVEL_NONE);
