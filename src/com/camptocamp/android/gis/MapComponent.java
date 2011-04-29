@@ -22,7 +22,7 @@ public class MapComponent extends BasicMapComponent {
     private static final String VDR = "Camptocamp SA";
     private static final int MOVE = 0;
     private static final int RESET = 1;
-    private static final long DELAY = 24; // ms
+    private static final long DELAY = 50; // ms
     private static final long DELAY_RESET = 1000; // ms
     private static final long DOUBLETAP_DELTA = 500; // ms
     private static final int DOUBLETAP_RADIUS = 50; // px
