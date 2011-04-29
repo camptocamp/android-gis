@@ -87,7 +87,7 @@ public class BaseMap extends Activity {
     protected ViewGroup mMapLayout;
     protected boolean mRetainCalled = false;
     protected MapView mMapView = null;
-    private List<String> mSelectedLayers;
+    protected List<String> mSelectedLayers;
     private DirectionsWaiter mWaiter;
     private Caching mCaching;
 

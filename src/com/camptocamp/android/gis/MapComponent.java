@@ -32,8 +32,8 @@ public class MapComponent extends BasicMapComponent {
 
     public MapView mMapView;
     private WgsBoundingBox maxExtent = null;
-    private final int[] lastpanx = new int[2];
-    private final int[] lastpany = new int[2];
+    protected final int[] lastpanx = new int[2];
+    protected final int[] lastpany = new int[2];
 
     private double ycos = 0;
     private int lastposx = 0;
@@ -195,35 +195,39 @@ public class MapComponent extends BasicMapComponent {
         return locationSource;
     }
 
-    // Easing Handler and variables
-    DecelerateInterpolator di = new DecelerateInterpolator(1.0f);
-    int posx = 0;
-    int posy = 0;
-    float ip = 0f;
-    float current = 0f;
-    private final Handler mHandler = new Handler() {
+    // Kinetic Pan
+    // Variables and Handler
+    protected final DecelerateInterpolator di = new DecelerateInterpolator(1.0f);
+    protected int posx = 0;
+    protected int posy = 0;
+    protected float ip = 0f;
+    protected float current = 0f;
+
+    protected final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what == MOVE) {
-                mHandler.removeMessages(RESET);
-                if (current <= 1.0f) {
-                    ip = di.getInterpolation(current);
-                    int x = (int) Math.floor(((ip * msg.arg1) - posx));
-                    int y = (int) Math.floor(((ip * msg.arg2) - posy));
-                    panMap(x, y);
-                    posx += x;
-                    posy += y;
-                    current += 0.1f;
-                    mHandler.sendMessageDelayed(Message.obtain(mHandler, MOVE, msg.arg1, msg.arg2),
-                            DELAY);
-                }
-            }
-            else if (msg.what == RESET) {
-                mHandler.removeMessages(MOVE);
-                lastpanx[0] = 0;
-                lastpany[0] = 0;
-                lastpanx[1] = 0;
-                lastpany[1] = 0;
+            switch (msg.what) {
+                case MOVE:
+                    removeMessages(RESET);
+                    if (current <= 1.0f) {
+                        ip = di.getInterpolation(current);
+                        final int x = (int) Math.floor(((ip * msg.arg1) - posx));
+                        final int y = (int) Math.floor(((ip * msg.arg2) - posy));
+                        panMap(x, y);
+                        posx += x;
+                        posy += y;
+                        current += 0.1f;
+                        sendMessageDelayed(Message.obtain(mHandler, MOVE, msg.arg1, msg.arg2),
+                                DELAY);
+                    }
+                    break;
+                case RESET:
+                    removeMessages(MOVE);
+                    lastpanx[0] = 0;
+                    lastpany[0] = 0;
+                    lastpanx[1] = 0;
+                    lastpany[1] = 0;
+                    break;
             }
         }
     };
