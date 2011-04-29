@@ -37,11 +37,6 @@
 			<locationURI>_android_maps_lib_nutiteq_f7e7b6a6/android/src</locationURI>
 		</link>
 		<link>
-			<name>maps-lib-nutiteq_resources_images</name>
-			<type>2</type>
-			<locationURI>_android_maps_lib_nutiteq_f7e7b6a6/resources/images</locationURI>
-		</link>
-		<link>
 			<name>maps-lib-nutiteq_src</name>
 			<type>2</type>
 			<locationURI>_android_maps_lib_nutiteq_f7e7b6a6/src</locationURI>
