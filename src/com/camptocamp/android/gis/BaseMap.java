@@ -47,7 +47,7 @@ import com.nutiteq.components.WgsPoint;
 import com.nutiteq.controls.AndroidKeysHandler;
 import com.nutiteq.maps.GeoMap;
 import com.nutiteq.services.YourNavigationDirections;
-import com.nutiteq.ui.ThreadDrivenPanning;
+import com.nutiteq.ui.EventDrivenPanning;
 
 //FIXME: Rename to Map, then Map to ~MapOpenStreetMap
 public class BaseMap extends Activity {
@@ -267,8 +267,8 @@ public class BaseMap extends Activity {
             mMapComponent.setMap(gm);
             mMapComponent.setNetworkCache(mCaching);
             // mMapComponent.setImageProcessor(new NightModeImageProcessor());
-            // mMapComponent.setPanningStrategy(new EventDrivenPanning());
-            mMapComponent.setPanningStrategy(new ThreadDrivenPanning());
+            mMapComponent.setPanningStrategy(new EventDrivenPanning());
+            // mMapComponent.setPanningStrategy(new ThreadDrivenPanning());
             mMapComponent.setControlKeysHandler(new AndroidKeysHandler());
             // FIXME: Don't pass context but pass Image
             mMapComponent.setOnScreenZoomControls(new OnScreenZoomControls(getResources()));
