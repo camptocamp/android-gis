@@ -160,11 +160,13 @@ public class BaseMap extends Activity {
             mMapView = null;
         }
         if (!mRetainCalled) {
-            android.util.Log.v(TAG, "onDestroy(): clean mapComponent");
             mCaching.deinitialize();
             mCaching = null;
-            mMapComponent.stopMapping();
-            mMapComponent = null;
+            if (mMapComponent != null) {
+                android.util.Log.v(TAG, "onDestroy(): clean mapComponent");
+                mMapComponent.stopMapping();
+                mMapComponent = null;
+            }
         }
     }
 
