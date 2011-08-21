@@ -8,6 +8,9 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -18,22 +21,26 @@ import com.nutiteq.utils.IOUtils;
 
 public abstract class SearchProvider extends ContentProvider {
 
+    private static final int TIMEOUT_CONN = 3000;
+    private static final int TIMEOUT_DATA = 5000;
+
     protected byte[] getData(String url) {
         HttpEntity entity = null;
         InputStream is = null;
         HttpGet method = null;
         byte[] data = null;
         try {
-            DefaultHttpClient client = new DefaultHttpClient();
+            HttpParams params = new BasicHttpParams();
+            HttpConnectionParams.setConnectionTimeout(params, TIMEOUT_CONN);
+            HttpConnectionParams.setSoTimeout(params, TIMEOUT_DATA);
+            DefaultHttpClient client = new DefaultHttpClient(params);
             method = new HttpGet(new URI(url));
             HttpResponse response = client.execute(method);
             entity = response.getEntity();
             is = entity.getContent();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             if (is != null) {
                 // TODO: Check this
                 data = IOUtils.readFully(is);
@@ -44,8 +51,8 @@ public abstract class SearchProvider extends ContentProvider {
             if (entity != null) {
                 try {
                     entity.consumeContent();
+                } catch (IOException e) {
                 }
-                catch (IOException e) {}
             }
             IOUtils.closeStream(is);
         }
