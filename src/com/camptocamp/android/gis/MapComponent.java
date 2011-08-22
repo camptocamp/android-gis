@@ -1,5 +1,6 @@
 package com.camptocamp.android.gis;
 
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Message;
 import android.view.animation.DecelerateInterpolator;
@@ -80,8 +81,7 @@ public class MapComponent extends BasicMapComponent {
             if (currentmin.getY() + panY >= min.getY() ^ currentmax.getY() + panY <= max.getY()) {
                 panY = 0;
             }
-        }
-        else {
+        } else {
             // Don't pan outside of map size
             MapPos pos = getInternalMiddlePoint();
             int quartx = getWidth() / 4;
@@ -99,8 +99,7 @@ public class MapComponent extends BasicMapComponent {
         // Don't enqueueTiles() when panning kinetically
         if (current > 0.9f) {
             super.panMap(panX, panY);
-        }
-        else {
+        } else {
             if (paintingScreen) {
                 return;
             }
@@ -256,6 +255,10 @@ public class MapComponent extends BasicMapComponent {
 
     public void cleanTaskRunner() {
         taskRunner.getQueue().clear();
+    }
+
+    public Bitmap getScreenshot() {
+        return mapBuffer.getFrontImage().getBitmap();
     }
 
 }
