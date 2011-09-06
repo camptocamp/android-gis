@@ -21,7 +21,7 @@ public class Caching extends CachingChain {
 
     private static final String TAG = BaseMap.D + "C2CCaching";
     protected static final int MEMORYCACHE_LENGTH = 100; // # of elements
-    protected static final int MEMORYCACHE_SIZE = 1024 * 1024; // Size in Bytes
+    protected static final int MEMORYCACHE_SIZE = 10 * 1024 * 1024; // Size in Bytes
     protected static final File FSCACHEDIR = new File(Environment.getExternalStorageDirectory()
             .getAbsolutePath()
             + "/Android/data/" + BaseMap.PKG + "/cache");
