@@ -19,7 +19,6 @@ import com.camptocamp.android.gis.R;
 import com.camptocamp.android.utils.Utils;
 
 
-// TODO: Refactor and remove ACTION_GOTO from here (in showResultActivity())
 
 public abstract class SearchHandler extends ListActivity {
 
